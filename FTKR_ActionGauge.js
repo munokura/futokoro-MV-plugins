@@ -65,7 +65,6 @@ The gauge count fluctuates between 0 and 100.
 License for this Plugin
 -----------------------------------------------------------------------------
 This plugin is released under the MIT License.
-This plugin is released under the MIT License.
 
 Copyright (c) 2017 Futokoro
 http://opensource.org/licenses/mit-license.php
