@@ -16,68 +16,140 @@ FTKR.ACG = FTKR.ACG || {};
 
 //=============================================================================
 /*:
- * @plugindesc v0.7.0 アクションゲージプラグイン
- * @author フトコロ
- *
- * @param ゲージカウントの格納先
- * @desc 指定したゲーム内変数にストップ時のカウントを格納する
- * @default 
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * アクションゲージを実装します。
- * 
- * 試作版です。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 使い方
- *-----------------------------------------------------------------------------
- * ＜ゲージを表示する＞
- * 以下のプラグインコマンドでアクションゲージの表示します。
- * 
- * ACG_アクションゲージ表示
- * 
- * 
- * ＜ゲージを動かす＞
- * 「START」を実行すると、ゲージが動き出します。
- * 
- * 動き出したゲージは、「STOP」を押すと止まります。
- * 
- * ゲージが止まった後は、「END」を押すとゲージが消えます。
- * このとき、ゲージのカウント数をプラグインパラメータで指定したゲーム内変数に
- * 格納します。
- * 
- * ゲージのカウント数は、0～100の間で変動します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v0.7.0 - 2017/04/21 : 試作版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v0.7.0 Action Gauge Plugin
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+Implements an action gauge.
+
+This is a prototype.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+-----------------------------------------------------------------------------
+How to Use
+-----------------------------------------------------------------------------
+<Displaying the Gauge>
+Display the action gauge using the following plugin command.
+
+ACG_ActionGaugeShow
+
+<Moving the Gauge>
+Execute "START" to start the gauge.
+
+Press "STOP" to stop the moving gauge.
+
+After the gauge has stopped, press "END" to make it disappear.
+The gauge count is stored in the in-game variable specified in the plugin parameter.
+
+The gauge count fluctuates between 0 and 100.
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+---------------------------------------------------------------------------
+Change History
+----------------------------------------------------------------------------
+
+v0.7.0 - 2017/04/21: Prototype created
+
+----------------------------------------------------------------------------
+
+@param ゲージカウントの格納先
+@text Gauge count storage destination
+@desc Store the count at the time of stopping in the specified in-game variable
 */
+
+
+/*:ja
+@plugindesc v0.7.0 アクションゲージプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+アクションゲージを実装します。
+
+試作版です。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+-----------------------------------------------------------------------------
+使い方
+-----------------------------------------------------------------------------
+＜ゲージを表示する＞
+以下のプラグインコマンドでアクションゲージの表示します。
+
+ACG_アクションゲージ表示
+
+
+＜ゲージを動かす＞
+「START」を実行すると、ゲージが動き出します。
+
+動き出したゲージは、「STOP」を押すと止まります。
+
+ゲージが止まった後は、「END」を押すとゲージが消えます。
+このとき、ゲージのカウント数をプラグインパラメータで指定したゲーム内変数に
+格納します。
+
+ゲージのカウント数は、0～100の間で変動します。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v0.7.0 - 2017/04/21 : 試作版作成
+
+-----------------------------------------------------------------------------
+
+@param ゲージカウントの格納先
+@text ゲージカウントの格納先
+@desc 指定したゲーム内変数にストップ時のカウントを格納する
+*/
+
 //=============================================================================
 
 //=============================================================================
@@ -92,7 +164,7 @@ FTKR.ACG.variablesId = Number(FTKR.ACG.parameters['ゲージカウントの格�
 //=============================================================================
 
 FTKR.ACG.Game_Map_initialize = Game_Map.prototype.initialize;
-Game_Map.prototype.initialize = function() {
+Game_Map.prototype.initialize = function () {
     FTKR.ACG.Game_Map_initialize.call(this);
     this._gaugeWindow = {};
     this._gaugeCount = 0;
@@ -100,42 +172,42 @@ Game_Map.prototype.initialize = function() {
     this._isActionGaugeShow = false;
 };
 
-Game_Map.prototype.gauge = function() {
+Game_Map.prototype.gauge = function () {
     return this._gaugeWindow;
 };
 
-Game_Map.prototype.hasGauge = function() {
+Game_Map.prototype.hasGauge = function () {
     return this._isActionGaugeShow;
 };
 
-Game_Map.prototype.createGaugeWindow = function(x, y, width, height, maxCount) {
+Game_Map.prototype.createGaugeWindow = function (x, y, width, height, maxCount) {
     this._gaugeWindow = new Window_MapInfo(x, y, width, height, maxCount);
     this._isActionGaugeShow = true;
 };
 
-Game_Map.prototype.removeGaugeWindow = function() {
+Game_Map.prototype.removeGaugeWindow = function () {
     this._isActionGaugeShow = false;
 };
 
-Game_Map.prototype.gaugeStart = function() {
+Game_Map.prototype.gaugeStart = function () {
     this._gaugeStart = true;
     return this._gaugeCount;
 };
 
-Game_Map.prototype.gaugeStop = function() {
+Game_Map.prototype.gaugeStop = function () {
     this._gaugeStart = false;
     return this._gaugeCount;
 };
 
-Game_Map.prototype.gaugeMove = function() {
+Game_Map.prototype.gaugeMove = function () {
     return this._gaugeStart;
 }
 
-Game_Map.prototype.getGaugeCount = function(count) {
+Game_Map.prototype.getGaugeCount = function (count) {
     this._gaugeCount = count;
 };
 
-Game_Map.prototype.gaugeCount = function(){
+Game_Map.prototype.gaugeCount = function () {
     return this._gaugeCount;
 };
 
@@ -150,7 +222,7 @@ function Window_StopButton() {
 Window_StopButton.prototype = Object.create(Window_Selectable.prototype);
 Window_StopButton.prototype.constructor = Window_StopButton;
 
-Window_StopButton.prototype.initialize = function(y) {
+Window_StopButton.prototype.initialize = function (y) {
     var width = 100;
     var height = this.fittingHeight(1);
     var x = (Graphics.boxWidth - width) / 2;
@@ -160,20 +232,20 @@ Window_StopButton.prototype.initialize = function(y) {
     this.refresh();
 };
 
-Window_StopButton.prototype.maxCols = function() {
+Window_StopButton.prototype.maxCols = function () {
     return 1;
 };
 
-Window_StopButton.prototype.maxItems = function() {
+Window_StopButton.prototype.maxItems = function () {
     return this._data ? this._data.length : 1;
 };
 
-Window_StopButton.prototype.item = function() {
+Window_StopButton.prototype.item = function () {
     return this._data && this.index() >= 0 ? this._data[this.index()] : null;
 };
 
-Window_StopButton.prototype.makeItemList = function() {
-    switch(this._condition) {
+Window_StopButton.prototype.makeItemList = function () {
+    switch (this._condition) {
         case 'init':
             var command = 'START';
             break;
@@ -184,20 +256,20 @@ Window_StopButton.prototype.makeItemList = function() {
             var command = 'END';
             break;
     }
-    this._data = [{dicision:true, disp:command},];
+    this._data = [{ dicision: true, disp: command },];
 };
 
-Window_StopButton.prototype.refresh = function() {
+Window_StopButton.prototype.refresh = function () {
     this.makeItemList();
     this.createContents();
     this.drawAllItems();
 };
 
-Window_StopButton.prototype.isCurrentItemEnabled = function() {
+Window_StopButton.prototype.isCurrentItemEnabled = function () {
     return true;
 };
 
-Window_StopButton.prototype.drawItem = function(index) {
+Window_StopButton.prototype.drawItem = function (index) {
     var rect = this.itemRect(index);
     this.changePaintOpacity(true);
     this.drawText(this._data[index].disp, rect.x, rect.y, rect.width, 'center');
@@ -215,7 +287,7 @@ function Window_MapInfo() {
 Window_MapInfo.prototype = Object.create(Window_Base.prototype);
 Window_MapInfo.prototype.constructor = Window_MapInfo;
 
-Window_MapInfo.prototype.initialize = function(x, y, width, height, maxCount) {
+Window_MapInfo.prototype.initialize = function (x, y, width, height, maxCount) {
     width = width || Graphics.boxWidth / 2;
     height = height || this.fittingHeight(1);
     x = x || (Graphics.boxWidth - width) / 2;
@@ -225,17 +297,17 @@ Window_MapInfo.prototype.initialize = function(x, y, width, height, maxCount) {
     this._maxCount = maxCount || 100;
 };
 
-Window_MapInfo.prototype.update = function() {
+Window_MapInfo.prototype.update = function () {
     this.refresh();
 };
 
-Window_MapInfo.prototype.refresh = function() {
+Window_MapInfo.prototype.refresh = function () {
     this.contents.clear();
     var color1 = this.hpGaugeColor1();
     var color2 = this.hpGaugeColor2();
     var rate = this._gaugeCount / this._maxCount;
     this.drawGauge(0, 0, this.width, rate, color1, color2)
-    if($gameMap.gaugeMove()) {
+    if ($gameMap.gaugeMove()) {
         this._gaugeCount++;
         if (this._gaugeCount >= this._maxCount) this._gaugeCount = 0;
     } else {
@@ -244,21 +316,21 @@ Window_MapInfo.prototype.refresh = function() {
 };
 
 // フォントサイズ
-Window_MapInfo.prototype.standardFontSize = function() {
+Window_MapInfo.prototype.standardFontSize = function () {
     return 28;
 };
 
 // ウィンドウの透明度
-Window_MapInfo.prototype.standardBackOpacity = function() {
+Window_MapInfo.prototype.standardBackOpacity = function () {
     return 192;
 };
 
 // ウィンドウの余白
-Window_MapInfo.prototype.standardPadding = function() {
+Window_MapInfo.prototype.standardPadding = function () {
     return 18;
 };
 
-Window_MapInfo.prototype.drawGauge = function(x, y, width, rate, color1, color2) {
+Window_MapInfo.prototype.drawGauge = function (x, y, width, rate, color1, color2) {
     var fillW = Math.floor(width * rate);
     this.contents.fillRect(x, y, width, this.lineHeight(), this.gaugeBackColor());
     this.contents.gradientFillRect(x, y, fillW, this.lineHeight(), color1, color2);
@@ -269,17 +341,17 @@ Window_MapInfo.prototype.drawGauge = function(x, y, width, rate, color1, color2)
 //=============================================================================
 
 FTKR.ACG.Scene_Map_update = Scene_Map.prototype.update;
-Scene_Map.prototype.update = function() {
+Scene_Map.prototype.update = function () {
     FTKR.ACG.Scene_Map_update.call(this);
     this.updateAcgGauge();
 };
 
-Scene_Map.prototype.updateAcgGauge = function() {
-    if($gameMap.hasGauge() && !this._gaugeWindow){
+Scene_Map.prototype.updateAcgGauge = function () {
+    if ($gameMap.hasGauge() && !this._gaugeWindow) {
         this._gaugeWindow = $gameMap.gauge();
         this.addWindow(this._gaugeWindow);
         this.createStopButton();
-    } else if(this._gaugeWindow && !$gameMap.hasGauge()) {
+    } else if (this._gaugeWindow && !$gameMap.hasGauge()) {
         this._windowLayer.removeChild(this._gaugeWindow);
         this._windowLayer.removeChild(this._stopButton);
         delete this._gaugeWindow;
@@ -287,7 +359,7 @@ Scene_Map.prototype.updateAcgGauge = function() {
     }
 };
 
-Scene_Map.prototype.createStopButton = function() {
+Scene_Map.prototype.createStopButton = function () {
     var y = this._gaugeWindow.y + this._gaugeWindow.height;
     this._stopButton = new Window_StopButton(y);
     this._stopButton.setHandler('ok', this.onGaugeStop.bind(this));
@@ -296,7 +368,7 @@ Scene_Map.prototype.createStopButton = function() {
     this._stopButton.activate();
 };
 
-Scene_Map.prototype.onGaugeStop = function() {
+Scene_Map.prototype.onGaugeStop = function () {
     var stop = this._stopButton;
     switch (stop._condition) {
         case 'init':
@@ -326,12 +398,13 @@ Scene_Map.prototype.onGaugeStop = function() {
 //=============================================================================
 
 var _ACG_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-Game_Interpreter.prototype.pluginCommand = function(command, args) {
+Game_Interpreter.prototype.pluginCommand = function (command, args) {
     _ACG_Game_Interpreter_pluginCommand.call(this, command, args);
     if (command.match(/ACG_(.+)/i)) {
         command = RegExp.$1;
         switch (true) {
             case /アクションゲージ表示/i.test(command):
+            case /ActionGaugeShow/i.test(command):
                 $gameMap.createGaugeWindow();
                 this.setWaitMode('gauge');
                 break;
@@ -340,15 +413,15 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
 };
 
 FTKR.ACG.Game_Interpreter_updateWaitMode = Game_Interpreter.prototype.updateWaitMode;
-Game_Interpreter.prototype.updateWaitMode = function() {
+Game_Interpreter.prototype.updateWaitMode = function () {
     var waiting = false;
     switch (this._waitMode) {
-    case 'gauge':
-        waiting = $gameMap.hasGauge();
-        break;
-    default:
-        waiting = FTKR.ACG.Game_Interpreter_updateWaitMode.call(this);
-        break;
+        case 'gauge':
+            waiting = $gameMap.hasGauge();
+            break;
+        default:
+            waiting = FTKR.ACG.Game_Interpreter_updateWaitMode.call(this);
+            break;
     }
     if (!waiting) {
         this._waitMode = '';

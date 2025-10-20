@@ -16,284 +16,572 @@ FTKR.BAP = FTKR.BAP || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.1.0 消費コスト用のパラメータ「アクションポイント(AP)」を導入するプラグイン
- * @author フトコロ
- *
- * @param Init Start AP
- * @desc パーティーのアクションポイントの初期値を設定します。
- * @default 4
- * @type number
- * @min 0
- *
- * @param Init Max AP
- * @desc パーティーのアクションポイントの最大値を設定します。
- * @default 4
- * @type number
- * @min 0
- *
- * @param Item AP Cost
- * @desc スキルやアイテムのアクションポイントを設定します。メモ欄で設定しない場合は、この値になります。
- * @default 1
- * @type number
- * @min 0
- *
- * @param Turn Refresh AP
- * @desc ターンごとに回復するアクションポイントをスクリプトで設定します。-1 にすると全回復します。
- * @default -1
- *
- * @param Enabled Preserve AP
- * @desc 戦闘毎にAPを持ち越しするか設定します。
- * @type boolean
- * @on 有効(AP持ち越し)
- * @off 無効
- * @default false
- * 
- * @param Enabled Use AP0Skills Regardless Of AP
- * @desc パーティーの残りAPが0でも、AP0スキルは使用可能にする。
- * @type boolean
- * @on 有効
- * @off 無効
- * @default false
- * 
- * @param --- アクションポイントの表示 ---
- * 
- * @param Show AP Window
- * @desc アクションポイントをバトル画面に表示するか設定します。
- * @type select
- * @option 表示しない
- * @value 0
- * @option プレイヤーターンのみ表示する
- * @value 1
- * @option 常に表示する
- * @value 2
- * @default 2
- *
- * @param Display AP
- * @desc アクションポイントの表示名を設定します。
- * @default AP
- * 
- * @param AP Draw Type
- * @desc アクションポイントの表示方法を選択します。
- * @type select
- * @option 数値(現在値のみ)
- * @value 0
- * @option 数値(現在値と最大値)
- * @value 1
- * @option アイコン(現在値と最大値)
- * @value 2
- * @option アイコン(現在値のみ)
- * @value 3
- * @default 0
- * 
- * @param apGauge
- * @text ゲージ設定
- * 
- * @param Display AP Gauge
- * @parent apGauge
- * @desc アクションポイントのゲージを表示します。
- * @type boolean
- * @on 表示する
- * @off 表示しない
- * @default false
- * 
- * @param AP Gauge Color1
- * @parent apGauge
- * @desc アクションポイントのゲージ色1を設定します。
- * @default 10
- * @type number
- * @min 0
- *
- * @param AP Gauge Color2
- * @parent apGauge
- * @desc アクションポイントのゲージ色2を設定します。
- * @default 2
- * @type number
- * @min 0
- *
- * @param apIcon
- * @text アイコン設定
- * 
- * @param AP Icon Index
- * @parent apIcon
- * @desc アクションポイントを表すアイコンを設定します。
- * @default 162
- * @type number
- * @min 0
- *
- * @param AP Empty Icon Index
- * @parent apIcon
- * @desc アクションポイントの空部分を表すアイコンを設定します。
- * @default 160
- * @type number
- * @min 0
- * 
- * @param Draw Icon Space
- * @parent apIcon
- * @desc アクションポイントのアイコンの表示間隔を設定します。
- * @default 0
- * @type number
- * @min 0
- * 
- * @param apCost
- * @text コスト表示設定
- * 
- * @param AP Cost Color
- * @parent apCost
- * @desc アクションポイントコストの表示色を設定します。
- * @default 0
- * @type number
- * @min 0
- * @max 31
- *
- * @param Display AP Width Cmd
- * @parent apCost
- * @desc コマンド欄のアクションポイントコストの表示幅を設定します。(半角文字数、0で非表示)
- * @default 3
- * @type number
- * @min 0
- *
- * @param Display AP Width Item
- * @parent apCost
- * @desc スキルやアイテム欄のアクションポイントコストの表示幅を設定します。(半角文字数、0で非表示)
- * @default 4
- * @type number
- * @min 0
- *
- * @param AP Window Layout
- * @desc APウィンドウのレイアウト設定
- * 空欄の場合は、デフォルトの表示位置です。
- * @type struct<window>
- * @default 
- * 
- * @param --- 戦闘行動の強制 ---
- * 
- * @param Enabled Force Action AP Cost
- * @desc 戦闘行動の強制で実行したスキルのAP消費を有効にする。APが足りない場合は、スキルを実行できません。
- * @type boolean
- * @on 有効
- * @off 無効
- * @default false
- *
- * @param atcode
- * @text --- 特徴および使用効果コードID ---
- * 
- * @param TRAIT_AP_PLUS
- * @desc 他のプラグインと競合を起こす場合以外は変更しないでください。
- * @default 163
- * @type number
- * @min 0
- * @parent atcode
- * 
- * @param TRAIT_AP_RATE
- * @desc 他のプラグインと競合を起こす場合以外は変更しないでください。
- * @default 164
- * @type number
- * @min 0
- * @parent atcode
- * 
- * @param TRAIT_AP_COST_PLUS
- * @desc 他のプラグインと競合を起こす場合以外は変更しないでください。
- * @default 165
- * @type number
- * @min 0
- * @parent atcode
- * 
- * @param TRAIT_AP_COST_RATE
- * @desc 他のプラグインと競合を起こす場合以外は変更しないでください。
- * @default 166
- * @type number
- * @min 0
- * @parent atcode
- * 
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * パーティーメンバーで共有する消費コスト用のパラメータ「アクションポイント(AP)」を
- * 導入します。
- * 
- * プラグインの使い方は、下のオンラインマニュアルページを見てください。
- * https://github.com/futokoro/RPGMaker/blob/master/FTKR_BattleActionPoints.ja.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、このプラグインを追加して
- *    ください。
- * 
- * 2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
- * 
- *    FTKR_CustomSimpleActorStatus.js (ステータス表示を変更)
- *    FTKR_AlternatingTurnBattle.js
- *    FTKR_ExBattleCommand.js
- *    ↑このプラグインよりも上に登録↑
- *    FTKR_BattleActionPoints.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * このプラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * このプラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.1.0 - 2018/12/10 : FTKR_ExBattleCommand v2.0.0 に対応。
- * 
- * v1.0.3 - 2018/12/08 : 不具合修正
- *    1. FTKR_AlternatingTurnBattle のv2.0.2の修正に伴い、ターン回復の処理を修正。
- * 
- * v1.0.2 - 2018/12/04 : 不具合修正
- *    1. プラグインパラメータ Show AP Window が正しく反映されない不具合を修正。
- * 
- * v1.0.1 - 2018/12/03 : 不具合修正
- *    1. プラグインコマンドの誤記修正。
- * 
- * v1.0.0 - 2018/12/02 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.1.0 Plugin that introduces the parameter "Action Points (AP)" for consumption costs
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+This plugin introduces "Action Points (AP)," a cost parameter shared among party members.
+
+For instructions on how to use the plugin, see the online manual page below.
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_BattleActionPoints.ja.md
+
+-----------------------------------------------------------------------------
+Setup Instructions
+---------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. When combining with the following plugins, be sure to pay attention to the order of plugin management.
+
+FTKR_CustomSimpleActorStatus.js (Changes status display)
+FTKR_AlternatingTurnBattle.js
+FTKR_ExBattleCommand.js
+↑Register above this plugin↑
+FTKR_BattleActionPoints.js
+
+-----------------------------------------------------------------------------
+About this plugin's license (License)
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change history
+-----------------------------------------------------------------------------
+
+v1.1.0 - 2018/12/10: Compatible with FTKR_ExBattleCommand v2.0.0.
+
+v1.0.3 - 2018/12/08: Bug fixes
+1. Fixed turn recovery processing in accordance with the v2.0.2 fix for FTKR_AlternatingTurnBattle.
+
+v1.0.2 - 2018/12/04: Bug fixes
+1. Fixed an issue where the plugin parameter "Show AP Window" was not properly Reflectioned.
+
+v1.0.1 - 2018/12/03: Bug fixes
+1. Fixed a typo in the plugin command.
+
+v1.0.0 - 2018/12/02: First version created
+
+-----------------------------------------------------------------------------
+
+@param Init Start AP
+@desc Sets the initial number of action points for the party.
+@default 4
+@type number
+@min 0
+
+@param Init Max AP
+@desc Sets the maximum number of action points for the party.
+@default 4
+@type number
+@min 0
+
+@param Item AP Cost
+@desc Sets the action points for skills and items. If you do not set it in the Note field, this value will be used.
+@default 1
+@type number
+@min 0
+
+@param Turn Refresh AP
+@desc Set the action points recovered each turn with a script. Set it to -1 to fully recover.
+@default -1
+
+@param Enabled Preserve AP
+@desc Set whether to carry over AP for each battle.
+@default false
+@type boolean
+@on Enabled (AP carryover)
+@off invalid
+
+@param Enabled Use AP0Skills Regardless Of AP
+@desc Even if the party's remaining AP is 0, AP0 skills can be used.
+@default false
+@type boolean
+@on valid
+@off invalid
+
+@param --- アクションポイントの表示 ---
+@text --- Action Points Display ---
+
+@param Show AP Window
+@desc Set whether to display action points on the battle screen.
+@default 2
+@type select
+@option Do not display
+@value 0
+@option Show only player turns
+@value 1
+@option Always show
+@value 2
+
+@param Display AP
+@desc Set the display name of the action point.
+@default AP
+
+@param AP Draw Type
+@desc Select how to display action points.
+@default 0
+@type select
+@option Numerical value (current value only)
+@value 0
+@option Numerical values (current and maximum values)
+@value 1
+@option Icons (current and maximum values)
+@value 2
+@option Icon (current value only)
+@value 3
+
+@param apGauge
+@text Gauge Settings
+
+@param Display AP Gauge
+@desc Displays the action point gauge.
+@default false
+@type boolean
+@parent apGauge
+@on Show
+@off Do not display
+
+@param AP Gauge Color1
+@desc Sets the action point gauge color 1.
+@default 10
+@type number
+@min 0
+@parent apGauge
+
+@param AP Gauge Color2
+@desc Sets the action point gauge color 2.
+@default 2
+@type number
+@min 0
+@parent apGauge
+
+@param apIcon
+@text Icon Settings
+
+@param AP Icon Index
+@desc Sets the icon that represents the action point.
+@default 162
+@type number
+@min 0
+@parent apIcon
+
+@param AP Empty Icon Index
+@desc Sets the icon that represents the empty part of the action point.
+@default 160
+@type number
+@min 0
+@parent apIcon
+
+@param Draw Icon Space
+@desc Sets the interval at which action point icons are displayed.
+@default 0
+@type number
+@min 0
+@parent apIcon
+
+@param apCost
+@text Cost display settings
+
+@param AP Cost Color
+@desc Sets the display color for action point costs.
+@default 0
+@type number
+@min 0
+@max 31
+@parent apCost
+
+@param Display AP Width Cmd
+@desc Sets the display width of the action point cost in the command field (number of characters, 0 to hide).
+@default 3
+@type number
+@min 0
+@parent apCost
+
+@param Display AP Width Item
+@desc Set the display width of the action point cost in the skill and item columns. (Number of characters, 0 to hide)
+@default 4
+@type number
+@min 0
+@parent apCost
+
+@param AP Window Layout
+@desc AP window layout settings If left blank, the default display position will be used.
+@type struct<window>
+
+@param --- 戦闘行動の強制 ---
+@text --- Battle Mandate ---
+
+@param Enabled Force Action AP Cost
+@desc Enables AP consumption for skills executed by forced Battle actions. If you do not have enough AP, you cannot execute the skill.
+@default false
+@type boolean
+@on valid
+@off invalid
+
+@param atcode
+@text --- Traits and Usage Effects Code ID ---
+
+@param TRAIT_AP_PLUS
+@desc Do not change this unless it causes a conflict with another plugin.
+@default 163
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_AP_RATE
+@desc Do not change this unless it causes a conflict with another plugin.
+@default 164
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_AP_COST_PLUS
+@desc Do not change this unless it causes a conflict with another plugin.
+@default 165
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_AP_COST_RATE
+@desc Do not change this unless it causes a conflict with another plugin.
+@default 166
+@type number
+@min 0
+@parent atcode
 */
-//=============================================================================
+
+
 /*~struct~window:
- * @param width
- * @desc ウィンドウの幅を設定します。
- * @type number
- * @default 120
- *
- * @param positionY
- * @desc ウィンドウの表示Y座標を設定します。
- * @type number
- * @min 0
- * @default 372
- *
- * @param positionX
- * @desc ウィンドウの表示X座標を設定します。
- * @type number
- * @min 0
- * @default 0
- * 
- * @param background
- * @desc ウィンドウの背景を設定します。
- * @type select
- * @option ウィンドウ
- * @value 0
- * @option 暗くする
- * @value 1
- * @option 透明
- * @value 2
- * @default 0
- *
+@param width
+@desc Sets the window width.
+@default 120
+@type number
+
+@param positionY
+@desc Sets the window's display Y coordinate.
+@default 372
+@type number
+@min 0
+
+@param positionX
+@desc Sets the window's display X coordinate.
+@default 0
+@type number
+@min 0
+
+@param background
+@desc Sets the window background.
+@default 0
+@type select
+@option window
+@value 0
+@option Darken
+@value 1
+@option transparent
+@value 2
+*/
+
+
+/*:ja
+@plugindesc v1.1.0 消費コスト用のパラメータ「アクションポイント(AP)」を導入するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+パーティーメンバーで共有する消費コスト用のパラメータ「アクションポイント(AP)」を
+導入します。
+
+プラグインの使い方は、下のオンラインマニュアルページを見てください。
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_BattleActionPoints.ja.md
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、このプラグインを追加して
+   ください。
+
+2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
+
+   FTKR_CustomSimpleActorStatus.js (ステータス表示を変更)
+   FTKR_AlternatingTurnBattle.js
+   FTKR_ExBattleCommand.js
+   ↑このプラグインよりも上に登録↑
+   FTKR_BattleActionPoints.js
+
+
+-----------------------------------------------------------------------------
+このプラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+このプラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.1.0 - 2018/12/10 : FTKR_ExBattleCommand v2.0.0 に対応。
+
+v1.0.3 - 2018/12/08 : 不具合修正
+   1. FTKR_AlternatingTurnBattle のv2.0.2の修正に伴い、ターン回復の処理を修正。
+
+v1.0.2 - 2018/12/04 : 不具合修正
+   1. プラグインパラメータ Show AP Window が正しく反映されない不具合を修正。
+
+v1.0.1 - 2018/12/03 : 不具合修正
+   1. プラグインコマンドの誤記修正。
+
+v1.0.0 - 2018/12/02 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Init Start AP
+@desc パーティーのアクションポイントの初期値を設定します。
+@default 4
+@type number
+@min 0
+
+@param Init Max AP
+@desc パーティーのアクションポイントの最大値を設定します。
+@default 4
+@type number
+@min 0
+
+@param Item AP Cost
+@desc スキルやアイテムのアクションポイントを設定します。メモ欄で設定しない場合は、この値になります。
+@default 1
+@type number
+@min 0
+
+@param Turn Refresh AP
+@desc ターンごとに回復するアクションポイントをスクリプトで設定します。-1 にすると全回復します。
+@default -1
+
+@param Enabled Preserve AP
+@desc 戦闘毎にAPを持ち越しするか設定します。
+@default false
+@type boolean
+@on 有効(AP持ち越し)
+@off 無効
+
+@param Enabled Use AP0Skills Regardless Of AP
+@desc パーティーの残りAPが0でも、AP0スキルは使用可能にする。
+@default false
+@type boolean
+@on 有効
+@off 無効
+
+@param --- アクションポイントの表示 ---
+@text --- アクションポイントの表示 ---
+
+@param Show AP Window
+@desc アクションポイントをバトル画面に表示するか設定します。
+@default 2
+@type select
+@option 表示しない
+@value 0
+@option プレイヤーターンのみ表示する
+@value 1
+@option 常に表示する
+@value 2
+
+@param Display AP
+@desc アクションポイントの表示名を設定します。
+@default AP
+
+@param AP Draw Type
+@desc アクションポイントの表示方法を選択します。
+@default 0
+@type select
+@option 数値(現在値のみ)
+@value 0
+@option 数値(現在値と最大値)
+@value 1
+@option アイコン(現在値と最大値)
+@value 2
+@option アイコン(現在値のみ)
+@value 3
+
+@param apGauge
+@text ゲージ設定
+
+@param Display AP Gauge
+@desc アクションポイントのゲージを表示します。
+@default false
+@type boolean
+@parent apGauge
+@on 表示する
+@off 表示しない
+
+@param AP Gauge Color1
+@desc アクションポイントのゲージ色1を設定します。
+@default 10
+@type number
+@min 0
+@parent apGauge
+
+@param AP Gauge Color2
+@desc アクションポイントのゲージ色2を設定します。
+@default 2
+@type number
+@min 0
+@parent apGauge
+
+@param apIcon
+@text アイコン設定
+
+@param AP Icon Index
+@desc アクションポイントを表すアイコンを設定します。
+@default 162
+@type number
+@min 0
+@parent apIcon
+
+@param AP Empty Icon Index
+@desc アクションポイントの空部分を表すアイコンを設定します。
+@default 160
+@type number
+@min 0
+@parent apIcon
+
+@param Draw Icon Space
+@desc アクションポイントのアイコンの表示間隔を設定します。
+@default 0
+@type number
+@min 0
+@parent apIcon
+
+@param apCost
+@text コスト表示設定
+
+@param AP Cost Color
+@desc アクションポイントコストの表示色を設定します。
+@default 0
+@type number
+@min 0
+@max 31
+@parent apCost
+
+@param Display AP Width Cmd
+@desc コマンド欄のアクションポイントコストの表示幅を設定します。(半角文字数、0で非表示)
+@default 3
+@type number
+@min 0
+@parent apCost
+
+@param Display AP Width Item
+@desc スキルやアイテム欄のアクションポイントコストの表示幅を設定します。(半角文字数、0で非表示)
+@default 4
+@type number
+@min 0
+@parent apCost
+
+@param AP Window Layout
+@desc APウィンドウのレイアウト設定 空欄の場合は、デフォルトの表示位置です。
+@type struct<window>
+
+@param --- 戦闘行動の強制 ---
+@text --- 戦闘行動の強制 ---
+
+@param Enabled Force Action AP Cost
+@desc 戦闘行動の強制で実行したスキルのAP消費を有効にする。APが足りない場合は、スキルを実行できません。
+@default false
+@type boolean
+@on 有効
+@off 無効
+
+@param atcode
+@text --- 特徴および使用効果コードID ---
+
+@param TRAIT_AP_PLUS
+@desc 他のプラグインと競合を起こす場合以外は変更しないでください。
+@default 163
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_AP_RATE
+@desc 他のプラグインと競合を起こす場合以外は変更しないでください。
+@default 164
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_AP_COST_PLUS
+@desc 他のプラグインと競合を起こす場合以外は変更しないでください。
+@default 165
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_AP_COST_RATE
+@desc 他のプラグインと競合を起こす場合以外は変更しないでください。
+@default 166
+@type number
+@min 0
+@parent atcode
+*/
+
+
+/*~struct~window:ja
+@param width
+@desc ウィンドウの幅を設定します。
+@default 120
+@type number
+
+@param positionY
+@desc ウィンドウの表示Y座標を設定します。
+@default 372
+@type number
+@min 0
+
+@param positionX
+@desc ウィンドウの表示X座標を設定します。
+@default 0
+@type number
+@min 0
+
+@param background
+@desc ウィンドウの背景を設定します。
+@default 0
+@type select
+@option ウィンドウ
+@value 0
+@option 暗くする
+@value 1
+@option 透明
+@value 2
 */
 
 function Window_BattleActionPoint() {

@@ -17,75 +17,135 @@ FTKR.AltTB.STA = FTKR.AltTB.STA || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.1 ステータスウィンドウ内をクリックして、その行または列のアクターを選択する
- * @author フトコロ
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * ステータスウィンドウ内をタッチ、またはクリックすることで、その行または列に
- * 表示されているアクターに選択状態を変更することができます。
- * 
- * このプラグインには、FTKR_AlternatingTurnBattle.js (v2.0.0以降)が必要です。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、このプラグインを追加して
- *    ください。
- * 
- * 2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
- * 
- *    FTKR_AlternatingTurnBattle.js
- *    ↑このプラグインよりも上に登録↑
- *    FTKR_AltTB_SelectTouchedActor.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * このプラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * このプラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.1 - 2018/12/04 : 不具合修正
- *    1. アクターを選択するとエラーになる不具合を修正。
- * 
- * v1.0.0 - 2018/12/02 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.1 Click in the status window to select the actor in that row or column
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+By touching or clicking within the status window, you can change the selection state to the actor displayed in that row or column.
+
+This plugin requires FTKR_AlternatingTurnBattle.js (v2.0.0 or later).
+
+-----------------------------------------------------------------------------
+Setup Instructions
+----------------------------------------------------------------------------
+1. Add this plugin to the Plugin Manager.
+
+2. If combining with the following plugins, be sure to follow the plugin management order.
+
+FTKR_AlternatingTurnBattle.js
+↑Register above this plugin↑
+FTKR_AltTB_SelectTouchedActor.js
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.1 - 2018/12/04: Bug Fixes
+1. Fixed a bug that caused an error when selecting an actor.
+
+v1.0.0 - 2018/12/02: First version created
+
+---------------------------------------------------------------------------
 */
+
+
+/*:ja
+@plugindesc v1.0.1 ステータスウィンドウ内をクリックして、その行または列のアクターを選択する
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+ステータスウィンドウ内をタッチ、またはクリックすることで、その行または列に
+表示されているアクターに選択状態を変更することができます。
+
+このプラグインには、FTKR_AlternatingTurnBattle.js (v2.0.0以降)が必要です。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、このプラグインを追加して
+   ください。
+
+2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
+
+   FTKR_AlternatingTurnBattle.js
+   ↑このプラグインよりも上に登録↑
+   FTKR_AltTB_SelectTouchedActor.js
+
+
+-----------------------------------------------------------------------------
+このプラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+このプラグインはMITライセンスのもとで公開しています。
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.1 - 2018/12/04 : 不具合修正
+   1. アクターを選択するとエラーになる不具合を修正。
+
+v1.0.0 - 2018/12/02 : 初版作成
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
-if(Imported.FTKR_AltTB) (function() {
+if (Imported.FTKR_AltTB) (function () {
 
     //=============================================================================
     // BattleManager
     //=============================================================================
 
-    BattleManager.setActorWindow = function(actorWindow) {
+    BattleManager.setActorWindow = function (actorWindow) {
         this._actorCommandWindow = actorWindow;
     };
 
-    BattleManager.isTouchedOutsideActorCommandWindow = function() {
+    BattleManager.isTouchedOutsideActorCommandWindow = function () {
         return this._actorCommandWindow.active && !this._actorCommandWindow.isTouchedInsideFrame()
     };
 
     var _AltTB_BattleManager_initMembers = BattleManager.initMembers;
-    BattleManager.initMembers = function() {
+    BattleManager.initMembers = function () {
         _AltTB_BattleManager_initMembers.call(this);
         this._actorCommandWindow = null;
     };
@@ -93,9 +153,9 @@ if(Imported.FTKR_AltTB) (function() {
     //=============================================================================
     // Scene_Battle
     //=============================================================================
-    
+
     var _AltTB_Scene_Battle_createDisplayObjects = Scene_Battle.prototype.createDisplayObjects;
-    Scene_Battle.prototype.createDisplayObjects = function() {
+    Scene_Battle.prototype.createDisplayObjects = function () {
         _AltTB_Scene_Battle_createDisplayObjects.call(this);
         BattleManager.setActorWindow(this._actorCommandWindow);
     };
@@ -104,13 +164,13 @@ if(Imported.FTKR_AltTB) (function() {
     // Window_BattleStatus
     //=============================================================================
 
-    Window_BattleStatus.prototype.isCursorIndexOnMouse = function() {
+    Window_BattleStatus.prototype.isCursorIndexOnMouse = function () {
         if (!this.isTouchedInsideFrame()) return -1;
         var ih = this.itemHeight() || 36;
         var iw = this.itemWidth() || this.width;
         var index = Math.floor((TouchInput.y - this.y - this.padding) / ih) + this.topRow();
         var x = this.x;
-        for(var i = 0; i < this.maxCols(); i++) {
+        for (var i = 0; i < this.maxCols(); i++) {
             if (TouchInput.x >= x && TouchInput.x < x + iw + this.spacing()) {
                 var col = i;
                 break;
@@ -120,15 +180,15 @@ if(Imported.FTKR_AltTB) (function() {
         return Math.min(index * this.maxCols() + col, this.maxItems() - 1);
     };
 
-    Window_Selectable.prototype.isOpenAndDeactive = function() {
+    Window_Selectable.prototype.isOpenAndDeactive = function () {
         return this.isOpen() && !this.active;
     };
 
-    Window_BattleStatus.prototype.isTouchedInsideDeactive = function() {
+    Window_BattleStatus.prototype.isTouchedInsideDeactive = function () {
         return TouchInput.isTriggered() && this.isTouchedInsideFrame() && this.isOpenAndDeactive();
     };
 
-    Window_BattleStatus.prototype.processTouch = function() {
+    Window_BattleStatus.prototype.processTouch = function () {
         if (this.isTouchedInsideDeactive()) {
             var index = this.isCursorIndexOnMouse();
             if (index >= 0 && BattleManager.isTouchedOutsideActorCommandWindow()) {
@@ -144,7 +204,7 @@ if(Imported.FTKR_AltTB) (function() {
         }
     };
 
-    Window_BattleStatus.prototype.changeActorOnMouse = function(index) {
+    Window_BattleStatus.prototype.changeActorOnMouse = function (index) {
         BattleManager.changeActorAltTB(index);
         this.select(BattleManager.actor().index());
         BattleManager._actorCommandWindow.setup(BattleManager.actor());

@@ -16,451 +16,842 @@ FTKR.ASE = FTKR.ASE || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.2.6 自動戦闘時に使用するスキルの評価値を変更するプラグイン
- * @author フトコロ
- *
- * @param Skill Evaluate Log
- * @desc 評価値の計算結果をコンソールログに出力する
- * @type boolean
- * @on 有効
- * @off 無効
- * @default false
- * 
- * @param Evaluate Models
- * @desc 行動評価のモデル(簡易的な作戦)を作成します
- * ここで設定した評価モデルをアクターに反映できます
- * @type struct<auto>[]
- * @default []
- * 
- * @param Manual Mode Name
- * @desc 自動戦闘を使わない場合の作戦名称を設定します。
- * @default 手動戦闘
- * 
- * @param Default Tactics Name
- * @desc MVデフォルトの自動戦闘時の作戦名称を設定します。
- * @default 自動戦闘
- * 
- * @param Skip Party Command
- * @desc パーティーメンバー全員が自動戦闘の場合に、パーティーコマンドをスキップするか
- * @type select
- * @option スキップする(MVデフォルト)
- * @value 0
- * @option スキップしない
- * @value 1
- * @option １ターン目だけスキップしない
- * @value 2
- * @default 0
- * 
- * @param Menu Command
- * @desc メニューコマンドに作戦コマンドを追加するか
- * @type struct<command>
- * @default 
- * 
- * @param Party Command
- * @desc バトル時のパーティーコマンドに作戦コマンドを追加するか
- * @type struct<command>
- * @default 
- * 
- * @param Title Texts
- * @desc 作戦画面のタイトルウィンドウに表示する文字列を設定する
- * @type struct<title>
- * @default {"party":"パーティー","tactics":"作戦リスト"}
- * 
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 自動戦闘時に使用するスキルを選択するための評価値計算を個別に設定できます。
- * 
- * また、行動評価のモデル(簡易的な作戦)を作成することができます。
- * 
- * 設定した行動評価モデル(簡易的な作戦)をゲーム内で変更する専用画面の表示コマンドを
- * メニューコマンドおよびバトルのパーティーコマンドに追加できます。
- * プラグインパラメータ Menu Command および Party Command で設定してください。
- * 
- * 
- * プラグインの使い方は、下のオンラインマニュアルページを見てください。
- * https://github.com/futokoro/RPGMaker/blob/master/FTKR_AISkillEvaluate.ja.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
- * 
- *    FTKR_AISkillEvaluate.js
- *    ↓このプラグインよりも下に登録↓
- *    FTKR_ExBattleCommand.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * スキルごとの評価値計算式の設定
- *-----------------------------------------------------------------------------
- * スキルのメモ欄に以下のタグを追記すると、自動戦闘時に使用するスキルを
- * 選択する評価値計算を個別に設定することができます。
- * 
- * <ASE_評価値式:***>
- * <ASE_EBARUATE:***>
- *    ***に計算式を入力
- * 
- * 計算式には、ダメージ計算式と同様の記述が可能です。
- *  a      : 使用者(a.hp で使用者の現在HP)
- *  b      : 対象者(b.hp で対象者の現在HP)
- *  item   : 使用するスキル(item.mpCost でスキルの消費MP)
- *  number : スキルで対象者に与える予定のダメージ量
- * 
- * 上記の評価値式を設定しない場合は、MVデフォルトの評価値計算式(※)を使用します。
- * ※後述
- * 
- * 
- *-----------------------------------------------------------------------------
- * 自動戦闘時の評価値計算式
- *-----------------------------------------------------------------------------
- * MVのデフォルトでは、自動戦闘時には以下のルールに従い使用可能なスキルを
- * 選択可能な対象ごとに評価値を計算し、その評価値がもっとも高くなる相手に
- * 対してスキルを使用します。
- * 
- * 1. ダメージタイプが「HPダメージ、HP回復、HP吸収」以外のスキルは評価値0
- * 2. HPダメージの場合は、与えるダメージと相手の残りHPの比が評価値になる
- * 3. HP回復の場合は、回復量と相手の最大HPの比が評価値になる
- * 4. 全体を対象とするスキルは、すべての対象の評価値を合計する
- * 5. 連続回数が設定されている場合は、算出した評価値に回数の数値をかける
- * 6. ルール5までで評価値が 0 でなければ、その値にランダムで 0 ～ 1 を加算する
- * 　
- * 
- * 上記ルールを見て分かるとおりに、ダメージタイプがMP系や
- * ダメージタイプなしで使用効果のみ設定したスキルは、自動戦闘では
- * MVのデフォルトでは絶対に使用しないことになります。
- * 
- * 
- * 当プラグインを使い、タグで評価値式をそれらのスキルに設定することで
- * 自動戦闘でも使用する可能性がでるようになります。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 評価値式の記述について
- *-----------------------------------------------------------------------------
- * 基本的に、全体スキルや複数回攻撃スキルを除き、スキルの評価値は 0 ~ 1 の間に
- * 収まります。全体スキルや複数回攻撃スキルはその数倍です。
- * 
- * そのため、当プラグインで設定する評価値式の結果も、特別な理由がない限りは
- * 同等の値に収まるように設定する必要があります。
- * 
- * 例えば、攻撃力を下げるスキルに評価値式を設定する場合
- * 　<ASE_評価値式:b.atk>
- * としてしまうと、ほぼ確実にそのスキルしか使用しなくなってしまいます。
- * また、同じ相手に何度も掛けてしまうことも考えられます。
- * 
- * この場合、自分の防御力と比較させるなどすると、自分の防御力よりも攻撃力が
- * 低い相手に対しては評価値が下がるため、うまく他のスキルにも分散するように
- * なると思います。
- * 　例) <ASE_評価値式:b.atk / (a.def * 2)>
- * 
- * 
- * また、ステートや弱体･強化を掛けた相手に再度掛けないようにする場合は
- * 相手がステートが掛かっている場合に、評価値を 0 にする計算を加えます。
- * 　例) <ASE_評価値式:b.aseState(n) * b.atk / (a.def * 2)>
- * 
- * b.aseState(n) は ステートID n のステートが掛かっていると 0
- * 掛かっていないと 1 になるスクリプトです。
- * 
- * 自身に掛ける場合は、b.ase** の部分を a.ase*** に変えてください。
- * 
- * 同様に弱体や強化が掛かっているときに 0、掛かっていないときに 1 になる
- * スクリプトは以下の通りです。
- * なお、n の値は以下の通りです。
- *    0:最大HP、1:最大MP、2:攻撃力、3:防御力
- *    4:魔法攻撃、5:魔法防御、6:敏捷性、7:運
- * 
- * 1. 弱体が掛かっている
- *    b.aseDebuff(n)
- * 
- * 2. 弱体が２段階で掛かっている
- *    b.aseMaxDebuff(n)
- * 
- * 3. 強化が掛かっている
- *    b.aseBuff(n)
- * 
- * 4. 強化が２段階で掛かっている
- *    b.aseMaxBuff(n)
- * 
- * 
- * また、ステートや弱体は、戦闘のターンが進めば進むほど効果が薄くなります。
- * そこで経過ターン数で評価値を変動させるという方法もあります。
- * 経過ターン数は $gameTroop.turnCount()+1 で取得できます。
- * 
- * 　例)<ASE_評価値式:1 / ($gameTroop.turnCount() + 1)>
- * 
- * この場合、1ターン目で評価値が 1、2ターン目で 0.5、とターンが経過するごとに
- * どんどん評価値小さくなります。
- * 
- * ※スキル選択時は、まだターンが経過していないため
- * 　$gameTroop.turnCount()は 0 から始まります。
- * 
- * 
- * 同一ターン内で同じスキルを使わせたくない場合には、自分の前までのキャラが
- * 指定したスキルを選択したかどうか調べる必要があります。
- * 
- * $gamePary.aseSkill(n) はスキルID n のスキルを
- * 自分の前までのキャラが選択していた場合に 0、
- * だれも選択していない場合は 1 になるスクリプトです。
- * 
- * 　例)<ASE_評価値式:$gamePary.aseSkill(10)>
- * 
- * 
- *-----------------------------------------------------------------------------
- * 行動評価のモデル(簡易的な作戦)について
- *-----------------------------------------------------------------------------
- * 評価値式の設定とは別に、大まかな行動タイプ(*1)毎にレーティングを決めて
- * そのタイプ全体の評価値を変動させることができます。
- * 
- * (*1)HPダメージ系のスキルや、HP回復系、強化付与系などスキルの効果が近いものの分類
- * 
- * プラグインパラメータ<Evaluate Models>で設定します。
- * モデルは複数作成することができ、それらをアクターに別々に設定することができます。
- * 
- * 例えば、攻撃を重視するアクターや回復行動を重視するアクターなどを
- * 同じスキルを覚えていてもスキルの評価をアクター毎に変えることが出来ます。
- * 
- * 
- * １．プラグインパラメータ<Evaluate Models>の構成
- * プラグインパラメータはリスト形式になっており、このリスト番号が評価モデルIDに
- * なります。(後述のアクターのメモ欄にはこの番号を使用する)
- * 
- * モデル名(name)と行動評価リスト(evaluate)を設定します。
- * 
- * 
- * ２．行動評価リスト(evaluate)の構成
- * この中で、具体的に行動タイプ毎にレーティングや条件を設定します。
- * 基本的には、敵キャラに設定する行動と同じ仕組みです。
- * ここに設定した行動タイプに属するスキルのみ使用します。
- * 行動毎に以下のパラメータを設定します。
- *  
- *    行動タイプ(actionType)
- *        ：セレクトボックスから設定した行動タイプを選択します。
- *        ：なお、テキスト入力モードに変更し、直接別の数値を入力しても
- *        ：問題ありません。(後述：スキルへの行動タイプ設定）
- *    条件(conditions)
- *        ：その行動タイプを使用するための条件を設定します。
- *        ：ダメージ計算式と同様の記述を使って判定式を入力します。
- *        ：空欄にした場合は、常に使用可能と判断します。
- *    レーティング(rating)
- *        ：その行動タイプを選択する頻度を設定します。
- *        ：1～9の値を設定し、この値が評価値に掛けられます。
- * 
- * ！！注意！！********************************************
- * リストには、常に行動可能なスキルがある行動タイプを最低１つ
- * 設定してください。
- * ここでの常に行動可能なスキルとは、評価値が 0 にならず
- * コストを消費せずに使用可能なスキルのことです。
- * 　例）行動タイプ：通常攻撃
- * 
- * *******************************************************
- * 
- * ３．スキルへの行動タイプの設定
- * スキルのメモ欄に以下のタグを設定することで、行動タイプを設定できます。
- *  <ASE_行動タイプ:n>
- *      n は行動評価リストで選択した行動タイプの数字に合わせてください。
- * 
- * なお、以下の設定のスキルは、上記タグを使用しなくても、プラグイン側で
- * 行動タイプを設定します。ただし、タグ設定が優先です。
- *      1  :スキルID1 の攻撃
- *      2  :スキルID2 の防御
- *      11 :ダメージのタイプが HPダメージ 
- *      12 :ダメージのタイプが HP回復
- *      13 :ダメージのタイプが HP吸収
- *      21 :ダメージのタイプが MPダメージ 
- *      22 :ダメージのタイプが MP回復
- *      23 :ダメージのタイプが MP吸収
- *      31 :使用効果に強化を設定したスキル
- *      41 :使用効果に弱体を設定したスキル
- *      51 :使用効果にステート解除、弱体解除を設定したスキル
- * 
- * 
- * ４．アクターへの評価モデルの設定
- * アクターのメモ欄に以下のタグを設定することで、評価モデルを設定できます。
- *   <ASE_評価モデル:n>
- *        n : 評価モデルIDを設定します。
- *            \v[x]でゲーム変数を設定できます。
- *            なお、 0 でMVデフォルトの自動戦闘、 -1 で手動戦闘になります。
- * 
- * また、以下のスクリプトでアクターID n の評価モデル名を取得できます。
- *    $gameActors.actor(n).evalModelname()
- * 
- * 
- *-----------------------------------------------------------------------------
- * 作戦画面について
- *-----------------------------------------------------------------------------
- * 設定した行動評価モデル(簡易的な作戦)をゲーム内で変更する専用画面の表示コマンドを
- * メニューコマンドおよびバトルのパーティーコマンドに追加できます。
- * 
- * プラグインパラメータ Menu Command および Party Command で設定してください。
- * 
- * この時、各アクターが選択可能な作戦のリストは、アクターのメモ欄に
- * 以下のタグを記載することで設定します。
- * 
- *   <ASE_作戦リスト:n1,n2,...>
- *        n1,n2,...には、プラグインパラメータEvaluate Modelsで設定した
- *        作戦のリスト番号、MVデフォルトの自動戦闘の 0 から任意の数を
- *        記載できます。
- * 
- *    例)
- *   <ASE_作戦リスト:0,1,2>
- * 
- * なお、実際の作戦画面には、これらに加えて「手動戦闘」を追加して表示します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017,2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.2.6 - 2018/12/11 : 競合回避、不具合修正。
- *    1. FTKR_AlternatingTurnBattleとの競合回避。
- *    2. デフォルトの自動戦闘に変更できない不具合を修正。
- * 
- * v1.2.5 - 2018/10/20 : 競合回避
- *    1. 作戦画面のレイアウトが、メニュー画面の表示レイアウトに影響されないように
- *       修正。
- * 
- * v1.2.4 - 2018/03/10 : 不具合修正
- *    1. アクターの特徴で自動戦闘を追加していないと、作戦画面で作戦を変更しても
- *       正しく更新されない不具合を修正。
- *    2. バトル中に使用可能なスキルが何もない場合にエラーになる不具合を修正。
- * 
- * v1.2.3 - 2018/02/28 : ヘルプ追記
- *    1. 作戦の設定方法をヘルプに追記。
- * 
- * v1.2.2 - 2018/02/28 : 不具合修正
- *    1. プラグインパラメータEvaluate Modelsの初期値が空欄の場合に
- *       エラーになる不具合を修正。
- * 
- * v1.2.1 - 2018/02/28 : ヘルプ修正、機能追加
- *    1. ヘルプ内の誤字を修正。
- *    2. 自分の前までのキャラが指定したスキルを選択したかどうか
- *       調べるスクリプト$gameParty.aseSkill(n)を追加。
- * 
- * v1.2.0 - 2018/01/11 : 機能追加
- *    1. ゲーム中にパーティーメンバーの評価モデル(簡易的な作戦)を変更する
- *       画面を追加。メニューコマンドとバトルのパーティーコマンドに追加可能。
- *    2. パーティー全員が自動戦闘になっていても、パーティーコマンドを
- *       スキップしないようにする機能を追加。
- * 
- * v1.1.0 - 2018/01/08 : 機能追加
- *    1. 評価モデル(簡易的な作戦)をアクターに設定する機能を追加。
- * 
- * v1.0.1 - 2018/01/07 : 機能追加、ヘルプ追記
- *    1. 評価値式に予想ダメージ量を参照するコードを追加
- *    2. 評価値をコンソールログに出力する機能を追加
- *    3. ステートや強化、弱体が掛かっているかどうかによって 0 か 1 を返す
- *       スクリプトを追加
- * 
- * v1.0.0 - 2018/01/06 : 初版作成
- * 
- *-----------------------------------------------------------------------------
-*/
-//=============================================================================
-/*~struct~auto:
- * @param name
- * @desc この行動評価モデルの名前
- * @default 
- *
- * @param evaluate
- * @desc 行動評価リストを設定します
- * @type struct<eval>[]
- * @default 
- *
-*/
-/*~struct~eval:
- * @param actionType
- * @desc 設定する行動タイプをリストから選択してください
- * @type select
- * @option 通常攻撃
- * @value 1
- * @option 防御
- * @value 2
- * @option HPダメージスキル
- * @value 11
- * @option HP回復スキル
- * @value 12
- * @option MPダメージスキル
- * @value 21
- * @option 強化スキル
- * @value 31
- * @option 弱体スキル
- * @value 41
- * @option 状態回復スキル
- * @value 51
- * @default 
- *
- * @param conditions
- * @desc この行動を選択するための条件式を設定します
- * 空欄の場合は、条件を設けずに常に選択可能になります
- * @default 
- *
- * @param rating
- * @desc この行動のレーティングを設定します
- * @type number
- * @min 1
- * @max 9
- * @default 5
-*/
-/*~struct~command:
- * @param enable
- * @desc コマンドを追加するか
- * @type boolean
- * @on 追加する
- * @off 追加しない
- * @default false
- *
- * @param name
- * @desc コマンドの表示名を設定します
- * @default 作戦
- *
- * @param switchId
- * @desc 特定のスイッチIDがONの時コマンドを表示させるか
- * 0 の場合は常に表示
- * @type number
- * @min 0
- * @default 0
- *
-*/
-/*~struct~title:
- * @param party
- * @desc パーティー欄のタイトル文字列
- * @default パーティー
- *
- * @param tactics
- * @desc 作戦リスト欄のタイトル文字列
- * @default 作戦リスト
- *
+@plugindesc v1.2.6 Plugin that changes the evaluation value of skills used during auto-battle
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+You can individually set the evaluation value calculation for selecting skills to use during auto-battle.
+
+You can also create behavior evaluation models (simple strategies).
+
+You can add a command to display a dedicated screen for changing the behavior evaluation model (simple strategies) in-game to the menu commands and battle party commands.
+Set this using the plugin parameters Menu Command and Party Command.
+
+For instructions on how to use the plugin, see the online manual page below.
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_AISkillEvaluate.ja.md
+
+-----------------------------------------------------------------------------
+Setup Instructions
+---------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. When combining with the following plugins, be sure to pay attention to the order of plugin management.
+
+FTKR_AISkillEvaluate.js
+↓Register below this plugin↓
+FTKR_ExBattleCommand.js
+
+-----------------------------------------------------------------------------
+Setting the Skill Evaluation Formula
+-----------------------------------------------------------------------------
+By adding the following tag to the skill's Note field, you can individually set the evaluation formula for the skill used during auto-battle.
+
+<ASE_EBARUATE:***>
+Enter the formula in ***
+
+The formula can be written in the same way as the damage formula.
+a: The User (a.hp = user's current HP)
+b: Target (b.hp = target's current HP)
+item: Skill to be used (item.mpCost = skill's MP cost)
+number: Amount of damage to be dealt by the skill
+
+If you do not specify the evaluation formula above, the MV default evaluation formula (*) will be used.
+*See below
+
+-----------------------------------------------------------------------------
+Evaluation Value Calculation Formula for Auto Battle
+-----------------------------------------------------------------------------
+By default, MV calculates the evaluation value of available skills for each selectable target during auto battle according to the following rules. The skill is used against the target with the highest evaluation value.
+
+1. Skills with damage types other than "HP Damage, HP Recover, or HP Drain" have an evaluation value of 0.
+2. For HP damage, the evaluation value is the ratio of the damage dealt to the target's remaining HP.
+3. For HP recovery, the evaluation value is the ratio of the amount recovered to the target's maximum HP.
+4. For skills that target all targets, the evaluation values of all targets are added together.
+5. If a consecutive count is set, the calculated evaluation value is multiplied by the count.
+6. If the evaluation value is not 0 after rule 5, a random value between 0 and 1 is added to the value.
+
+As you can see from the above rules, skills with MP damage types or skills with only a use effect set without a damage type will never be used in auto battle by MV's default.
+
+By using this plugin and setting the evaluation value formula for those skills using tags,
+they can potentially be used in auto-battle.
+
+-----------------------------------------------------------------------------
+About the Evaluation Value Formula
+-----------------------------------------------------------------------------
+Basically, skill evaluation values fall between 0 and 1, except for area-of-effect skills and multiple-attack skills. Area-of-effect skills and multiple-attack skills are several times higher.
+
+Therefore, unless there is a special reason, the results of the evaluation value formula set by this plugin should be set to a similar value.
+
+For example, if you set the evaluation value formula for a skill that reduces attack power as
+<ASE_EBARUATE:b.atk>
+, you will almost certainly only use that skill.
+
+It is also possible that you may cast it multiple times on the same opponent.
+
+In this case, if you compare it to your own defense, the evaluation value will decrease for opponents with attack power lower than your own, which should effectively distribute the value to other skills.
+Example:
+<ASE_EBARUATE: b.atk / (a.def * 2)>
+
+Also, if you want to prevent a status, debuff, or buff from being applied again to an opponent,
+add a calculation to set the evaluation value to 0 if the opponent is under a status.
+Example:
+<ASE_EBARUATE: b.aseState(n) * b.atk / (a.def * 2)>
+
+b.aseState(n) is a script that returns 0 if the opponent is under a state with state ID n, and 1 if the opponent is not under a state.
+
+To cast it on yourself, change b.ase** to a.ase***.
+
+Similarly, the script returns 0 if the opponent is under a debuff or buff, and 1 if the opponent is not under a state.
+
+The following scripts return 0 if the opponent is under a debuff or buff, and 1 if the opponent is not under a state.
+
+Note that the values of n are as follows:
+0: Max HP, 1: Max MP, 2: Attack Power, 3: Guard Power
+4: Magic Attack, 5: Magic Guard, 6: Agility, 7: Luck
+
+1. Debuff applied
+b.aseDebuff(n)
+
+2. Two-stage debuff applied
+b.aseMaxDebuff(n)
+
+3. Buff applied
+b.aseBuff(n)
+
+4. Two-stage buff applied
+b.aseMaxBuff(n)
+
+Also, the effect of status effects and debuffs decreases as the battle progresses.
+
+Therefore, you can adjust the rating value based on the number of turns elapsed.
+
+The number of turns elapsed can be obtained using $gameTroop.turnCount()+1.
+
+Example:
+<ASE_EBARUATE:1 / ($gameTroop.turnCount() + 1)>
+
+In this case, the rating value will be 1 on the first turn, 0.5 on the second turn, and so on, gradually decreasing with each turn.
+
+*When selecting a skill, the turn has not yet elapsed, so
+$gameTroop.turnCount() starts at 0.
+
+If you want to prevent a character from using the same skill twice in the same turn, you need to check whether the previous character
+selected the specified skill.
+
+$gamePary.aseSkill(n) is a script that returns 0 if the previous character selected the skill with skill ID n, and 1 if no character selected it.
+
+Example:
+<ASE_EBARUATE:$gamePary.aseSkill(10)>
+
+-----------------------------------------------------------------------------
+About the Action Evaluation Model (Simple Strategy)
+----------------------------------------------------------------------------
+In addition to setting the evaluation value formula, you can set a rating for each general action type (*1)
+and adjust the overall evaluation value for that type.
+
+(*1) Classification of skills with similar effects, such as HP damage skills, HP recovery skills, and buffing skills.
+
+Set this using the plugin parameter <Evaluate Models>.
+You can create multiple models and assign them to actors separately. For example, you can assign different skill evaluations to different actors, such as actors who prioritize attacking and actors who prioritize Recoverying.
+
+1. Configuring the <Evaluate Models> Plugin Parameter
+The plugin parameters are in list format, and the list number serves as the evaluation model ID. (This number will be used in the actor Note field, described below.)
+
+Set the model name (name) and action evaluation list (evaluate).
+
+2. Configuring the Action Evaluation List (evaluate)
+In this list, you set specific ratings and conditions for each action type.
+Basically, this works the same as the actions set for Enemies.
+Only skills belonging to the action type set here will be used.
+Set the following parameters for each action.
+
+Action Type (actionType)
+: Select the action type you set from the select box.
+: Note that you can also switch to text input mode and enter a different value directly.
+: (See Setting Action Types for Skills below.)
+Conditions (conditions)
+: Set the conditions for using that action type.
+: Enter the judgment formula using the same syntax as the damage calculation formula.
+: Leaving this field blank will assume that the skill is always available.
+Rating
+: Set the frequency with which this action type is selected.
+: Set a value from 1 to 9, which will be multiplied by the rating value.
+
+! ! Attention! ********************************************
+Please set at least one action type in the list that has a skill that is always available.
+"Always available" here means a skill that has a rating value that does not reach 0 and can be used without consuming a cost.
+Example: Action Type: Normal Attack
+
+********************************************************
+
+3. Setting the Action Type for a Skill
+You can set the action type by setting the following tag in the skill's Note field.
+<ASE_ACTION_TYPE:n>
+Where n matches the number of the action type selected in the Action Rating List.
+
+Note that for skills with the following settings, the action type will be set by the plugin even if you do not use the above tag. However, the tag setting takes priority.
+1: Attack with skill ID 1
+2: Guard with skill ID 2
+11: Damage type is HP damage
+12: Damage type is HP recovery
+13: Damage type is HP absorption
+21: Damage type is MP damage
+22: Damage type is MP recovery
+23: Damage type is MP absorption
+31: Skill with buff effect
+41: Skill with debuff effect
+51: Skill with state removal and debuff removal effect
+
+4. Setting the Actor's Evaluation Model
+You can set the evaluation model by setting the following tag in the actor's Note field.
+<ASE_EVALUATE_MODEL:n>
+n: Sets the evaluation model ID.
+You can set game variables with \v[x].
+0 will enable the MV default auto-battle, while -1 will enable manual Battle.
+
+You can also get the evaluation model name for actor ID n using the following script:
+$gameActors.actor(n).evalModelname()
+
+-----------------------------------------------------------------------------
+About the Strategy Screen
+-----------------------------------------------------------------------------
+You can add a command to display a dedicated screen for changing the behavior evaluation model (simple strategy) you set in-game
+to the menu commands and battle party commands.
+
+Set this using the plugin parameters Menu Command and Party Command.
+
+The list of strategies available to each actor can be set by entering the following tag in the actor's Note field.
+
+<ASE_TACTICS_LIST:n1,n2,...>
+n1,n2,... are the strategy list numbers set using the plugin parameter Evaluate Models. They can be any number from 0 (MV default for automatic battle) to any number.
+
+Example)
+<ASE_TACTICS_LIST:0,1,2>
+
+Note that the actual strategy screen will also display a "Manual Battle" option in addition to these.
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017,2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.2.6 - 2018/12/11: Conflict avoidance and bug fixes.
+1. Avoided conflict with FTKR_AlternatingTurnBattle.
+2. Fixed a bug that prevented the default auto-battle setting from being changed.
+
+v1.2.5 - 2018/10/20: Conflict avoidance.
+1. Fixed the strategy screen layout so that it is not affected by the menu screen display layout.
+
+v1.2.4 - 2018/03/10: Bug Fixes
+1. Fixed an issue where changing tactics on the strategy screen would not update correctly if the actor's trait "Auto Battle" was not enabled.
+2. Fixed an issue where an error would occur if no skills were available during battle.
+
+v1.2.3 - 2018/02/28: Help Additions
+1. Added instructions on how to set tactics to the help section.
+
+v1.2.2 - 2018/02/28: Bug Fixes
+1. Fixed an issue where an error would occur if the initial value of the plugin parameter "Evaluate Models" was blank.
+
+v1.2.1 - 2018/02/28: Help Updates and Added Traits
+1. Fixed a typo in the help section.
+2. Added a script, $gameParty.aseSkill(n), to check whether the previous character selected a specified skill.
+
+v1.2.0 - 2018/01/11: Traits Added
+1. Added a screen for changing party member evaluation models (simple tactics) during gameplay. This can be added to menu commands and party commands in battle.
+2. Added a function to prevent party commands from being skipped, even when all party members are set to auto-battle.
+
+v1.1.0 - 2018/01/08: Traits Added
+1. Added the ability to set evaluation models (simple tactics) for actors.
+
+v1.0.1 - 2018/01/07: Traits Added, Help Added
+1. Added code to reference expected damage to the evaluation value formula.
+2. Added a function to output evaluation values to the console log.
+3. Added a script that returns 0 or 1 depending on whether a state, buff, or debuff is applied.
+
+v1.0.0 - 2018/01/06: First version created
+
+-----------------------------------------------------------------------------
+
+@param Skill Evaluate Log
+@desc Output the evaluation value calculation result to the console log
+@default false
+@type boolean
+@on valid
+@off invalid
+
+@param Evaluate Models
+@desc Create a model of behavioral evaluation (simple strategy). The evaluation model set here can be Reflectioned in the actor.
+@default []
+@type struct<auto>[]
+
+@param Manual Mode Name
+@desc Set the operation name when not using auto-battle.
+@default 手動戦闘
+
+@param Default Tactics Name
+@desc Set the default operation name for automatic battles in MV.
+@default 自動戦闘
+
+@param Skip Party Command
+@desc Whether to skip party commands when all party members are in auto-battle mode
+@default 0
+@type select
+@option Skip (MV default)
+@value 0
+@option Don't skip
+@value 1
+@option Don't skip the first turn
+@value 2
+
+@param Menu Command
+@desc Adding Operation Commands to Menu Commands
+@type struct<command>
+
+@param Party Command
+@desc Will you add strategy commands to party commands during battle?
+@type struct<command>
+
+@param Title Texts
+@desc Set the string to be displayed in the title window of the strategy screen.
+@default {"party":"パーティー","tactics":"作戦リスト"}
+@type struct<title>
 */
 
-(function() {
+
+/*~struct~auto:
+@param name
+@desc The name of this behavioral assessment model
+
+@param evaluate
+@desc Set up a behavioral evaluation list
+@type struct<eval>[]
+*/
+
+/*~struct~eval:
+@param actionType
+@desc Select the action type you want to set from the list
+@type select
+@option Normal Attack
+@value 1
+@option defense
+@value 2
+@option HP Damage Skills
+@value 11
+@option HP recovery skills
+@value 12
+@option MP Damage Skills
+@value 21
+@option Enhanced Skills
+@value 31
+@option Weakness Skills
+@value 41
+@option Status recovery skills
+@value 51
+
+@param conditions
+@desc Set the conditional expression for selecting this action. If left blank, no conditions will be set and the action will always be selectable.
+
+@param rating
+@desc Set a rating for this action
+@default 5
+@type number
+@min 1
+@max 9
+*/
+
+/*~struct~command:
+@param enable
+@desc Add a command
+@default false
+@type boolean
+@on Add
+@off Do not add
+
+@param name
+@desc Sets the display name of the command
+@default 作戦
+
+@param switchId
+@desc Whether to display the command when a specific switch ID is ON or 0 to always display
+@default 0
+@type number
+@min 0
+*/
+
+/*~struct~title:
+@param party
+@desc Party column title string
+@default パーティー
+
+@param tactics
+@desc Operation list column title string
+@default 作戦リスト
+*/
+
+
+/*:ja
+@plugindesc v1.2.6 自動戦闘時に使用するスキルの評価値を変更するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+自動戦闘時に使用するスキルを選択するための評価値計算を個別に設定できます。
+
+また、行動評価のモデル(簡易的な作戦)を作成することができます。
+
+設定した行動評価モデル(簡易的な作戦)をゲーム内で変更する専用画面の表示コマンドを
+メニューコマンドおよびバトルのパーティーコマンドに追加できます。
+プラグインパラメータ Menu Command および Party Command で設定してください。
+
+
+プラグインの使い方は、下のオンラインマニュアルページを見てください。
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_AISkillEvaluate.ja.md
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
+
+   FTKR_AISkillEvaluate.js
+   ↓このプラグインよりも下に登録↓
+   FTKR_ExBattleCommand.js
+
+
+-----------------------------------------------------------------------------
+スキルごとの評価値計算式の設定
+-----------------------------------------------------------------------------
+スキルのメモ欄に以下のタグを追記すると、自動戦闘時に使用するスキルを
+選択する評価値計算を個別に設定することができます。
+
+<ASE_評価値式:***>
+<ASE_EBARUATE:***>
+   ***に計算式を入力
+
+計算式には、ダメージ計算式と同様の記述が可能です。
+ a      : 使用者(a.hp で使用者の現在HP)
+ b      : 対象者(b.hp で対象者の現在HP)
+ item   : 使用するスキル(item.mpCost でスキルの消費MP)
+ number : スキルで対象者に与える予定のダメージ量
+
+上記の評価値式を設定しない場合は、MVデフォルトの評価値計算式(※)を使用します。
+※後述
+
+
+-----------------------------------------------------------------------------
+自動戦闘時の評価値計算式
+-----------------------------------------------------------------------------
+MVのデフォルトでは、自動戦闘時には以下のルールに従い使用可能なスキルを
+選択可能な対象ごとに評価値を計算し、その評価値がもっとも高くなる相手に
+対してスキルを使用します。
+
+1. ダメージタイプが「HPダメージ、HP回復、HP吸収」以外のスキルは評価値0
+2. HPダメージの場合は、与えるダメージと相手の残りHPの比が評価値になる
+3. HP回復の場合は、回復量と相手の最大HPの比が評価値になる
+4. 全体を対象とするスキルは、すべての対象の評価値を合計する
+5. 連続回数が設定されている場合は、算出した評価値に回数の数値をかける
+6. ルール5までで評価値が 0 でなければ、その値にランダムで 0 ～ 1 を加算する
+
+
+上記ルールを見て分かるとおりに、ダメージタイプがMP系や
+ダメージタイプなしで使用効果のみ設定したスキルは、自動戦闘では
+MVのデフォルトでは絶対に使用しないことになります。
+
+
+当プラグインを使い、タグで評価値式をそれらのスキルに設定することで
+自動戦闘でも使用する可能性がでるようになります。
+
+
+-----------------------------------------------------------------------------
+評価値式の記述について
+-----------------------------------------------------------------------------
+基本的に、全体スキルや複数回攻撃スキルを除き、スキルの評価値は 0 ~ 1 の間に
+収まります。全体スキルや複数回攻撃スキルはその数倍です。
+
+そのため、当プラグインで設定する評価値式の結果も、特別な理由がない限りは
+同等の値に収まるように設定する必要があります。
+
+例えば、攻撃力を下げるスキルに評価値式を設定する場合
+ <ASE_評価値式:b.atk>
+としてしまうと、ほぼ確実にそのスキルしか使用しなくなってしまいます。
+また、同じ相手に何度も掛けてしまうことも考えられます。
+
+この場合、自分の防御力と比較させるなどすると、自分の防御力よりも攻撃力が
+低い相手に対しては評価値が下がるため、うまく他のスキルにも分散するように
+なると思います。
+ 例) <ASE_評価値式:b.atk / (a.def * 2)>
+
+
+また、ステートや弱体･強化を掛けた相手に再度掛けないようにする場合は
+相手がステートが掛かっている場合に、評価値を 0 にする計算を加えます。
+ 例) <ASE_評価値式:b.aseState(n) * b.atk / (a.def * 2)>
+
+b.aseState(n) は ステートID n のステートが掛かっていると 0
+掛かっていないと 1 になるスクリプトです。
+
+自身に掛ける場合は、b.ase** の部分を a.ase*** に変えてください。
+
+同様に弱体や強化が掛かっているときに 0、掛かっていないときに 1 になる
+スクリプトは以下の通りです。
+なお、n の値は以下の通りです。
+   0:最大HP、1:最大MP、2:攻撃力、3:防御力
+   4:魔法攻撃、5:魔法防御、6:敏捷性、7:運
+
+1. 弱体が掛かっている
+   b.aseDebuff(n)
+
+2. 弱体が２段階で掛かっている
+   b.aseMaxDebuff(n)
+
+3. 強化が掛かっている
+   b.aseBuff(n)
+
+4. 強化が２段階で掛かっている
+   b.aseMaxBuff(n)
+
+
+また、ステートや弱体は、戦闘のターンが進めば進むほど効果が薄くなります。
+そこで経過ターン数で評価値を変動させるという方法もあります。
+経過ターン数は $gameTroop.turnCount()+1 で取得できます。
+
+ 例)<ASE_評価値式:1 / ($gameTroop.turnCount() + 1)>
+
+この場合、1ターン目で評価値が 1、2ターン目で 0.5、とターンが経過するごとに
+どんどん評価値小さくなります。
+
+※スキル選択時は、まだターンが経過していないため
+ $gameTroop.turnCount()は 0 から始まります。
+
+
+同一ターン内で同じスキルを使わせたくない場合には、自分の前までのキャラが
+指定したスキルを選択したかどうか調べる必要があります。
+
+$gamePary.aseSkill(n) はスキルID n のスキルを
+自分の前までのキャラが選択していた場合に 0、
+だれも選択していない場合は 1 になるスクリプトです。
+
+ 例)<ASE_評価値式:$gamePary.aseSkill(10)>
+
+
+-----------------------------------------------------------------------------
+行動評価のモデル(簡易的な作戦)について
+-----------------------------------------------------------------------------
+評価値式の設定とは別に、大まかな行動タイプ(*1)毎にレーティングを決めて
+そのタイプ全体の評価値を変動させることができます。
+
+(*1)HPダメージ系のスキルや、HP回復系、強化付与系などスキルの効果が近いものの分類
+
+プラグインパラメータ<Evaluate Models>で設定します。
+モデルは複数作成することができ、それらをアクターに別々に設定することができます。
+
+例えば、攻撃を重視するアクターや回復行動を重視するアクターなどを
+同じスキルを覚えていてもスキルの評価をアクター毎に変えることが出来ます。
+
+
+１．プラグインパラメータ<Evaluate Models>の構成
+プラグインパラメータはリスト形式になっており、このリスト番号が評価モデルIDに
+なります。(後述のアクターのメモ欄にはこの番号を使用する)
+
+モデル名(name)と行動評価リスト(evaluate)を設定します。
+
+
+２．行動評価リスト(evaluate)の構成
+この中で、具体的に行動タイプ毎にレーティングや条件を設定します。
+基本的には、敵キャラに設定する行動と同じ仕組みです。
+ここに設定した行動タイプに属するスキルのみ使用します。
+行動毎に以下のパラメータを設定します。
+
+   行動タイプ(actionType)
+       ：セレクトボックスから設定した行動タイプを選択します。
+       ：なお、テキスト入力モードに変更し、直接別の数値を入力しても
+       ：問題ありません。(後述：スキルへの行動タイプ設定）
+   条件(conditions)
+       ：その行動タイプを使用するための条件を設定します。
+       ：ダメージ計算式と同様の記述を使って判定式を入力します。
+       ：空欄にした場合は、常に使用可能と判断します。
+   レーティング(rating)
+       ：その行動タイプを選択する頻度を設定します。
+       ：1～9の値を設定し、この値が評価値に掛けられます。
+
+！！注意！！********************************************
+リストには、常に行動可能なスキルがある行動タイプを最低１つ
+設定してください。
+ここでの常に行動可能なスキルとは、評価値が 0 にならず
+コストを消費せずに使用可能なスキルのことです。
+ 例）行動タイプ：通常攻撃
+
+*******************************************************
+
+３．スキルへの行動タイプの設定
+スキルのメモ欄に以下のタグを設定することで、行動タイプを設定できます。
+ <ASE_行動タイプ:n>
+     n は行動評価リストで選択した行動タイプの数字に合わせてください。
+
+なお、以下の設定のスキルは、上記タグを使用しなくても、プラグイン側で
+行動タイプを設定します。ただし、タグ設定が優先です。
+     1  :スキルID1 の攻撃
+     2  :スキルID2 の防御
+     11 :ダメージのタイプが HPダメージ
+     12 :ダメージのタイプが HP回復
+     13 :ダメージのタイプが HP吸収
+     21 :ダメージのタイプが MPダメージ
+     22 :ダメージのタイプが MP回復
+     23 :ダメージのタイプが MP吸収
+     31 :使用効果に強化を設定したスキル
+     41 :使用効果に弱体を設定したスキル
+     51 :使用効果にステート解除、弱体解除を設定したスキル
+
+
+４．アクターへの評価モデルの設定
+アクターのメモ欄に以下のタグを設定することで、評価モデルを設定できます。
+  <ASE_評価モデル:n>
+       n : 評価モデルIDを設定します。
+           \v[x]でゲーム変数を設定できます。
+           なお、 0 でMVデフォルトの自動戦闘、 -1 で手動戦闘になります。
+
+また、以下のスクリプトでアクターID n の評価モデル名を取得できます。
+   $gameActors.actor(n).evalModelname()
+
+
+-----------------------------------------------------------------------------
+作戦画面について
+-----------------------------------------------------------------------------
+設定した行動評価モデル(簡易的な作戦)をゲーム内で変更する専用画面の表示コマンドを
+メニューコマンドおよびバトルのパーティーコマンドに追加できます。
+
+プラグインパラメータ Menu Command および Party Command で設定してください。
+
+この時、各アクターが選択可能な作戦のリストは、アクターのメモ欄に
+以下のタグを記載することで設定します。
+
+  <ASE_作戦リスト:n1,n2,...>
+       n1,n2,...には、プラグインパラメータEvaluate Modelsで設定した
+       作戦のリスト番号、MVデフォルトの自動戦闘の 0 から任意の数を
+       記載できます。
+
+   例)
+  <ASE_作戦リスト:0,1,2>
+
+なお、実際の作戦画面には、これらに加えて「手動戦闘」を追加して表示します。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+
+Copyright (c) 2017,2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.2.6 - 2018/12/11 : 競合回避、不具合修正。
+   1. FTKR_AlternatingTurnBattleとの競合回避。
+   2. デフォルトの自動戦闘に変更できない不具合を修正。
+
+v1.2.5 - 2018/10/20 : 競合回避
+   1. 作戦画面のレイアウトが、メニュー画面の表示レイアウトに影響されないように
+      修正。
+
+v1.2.4 - 2018/03/10 : 不具合修正
+   1. アクターの特徴で自動戦闘を追加していないと、作戦画面で作戦を変更しても
+      正しく更新されない不具合を修正。
+   2. バトル中に使用可能なスキルが何もない場合にエラーになる不具合を修正。
+
+v1.2.3 - 2018/02/28 : ヘルプ追記
+   1. 作戦の設定方法をヘルプに追記。
+
+v1.2.2 - 2018/02/28 : 不具合修正
+   1. プラグインパラメータEvaluate Modelsの初期値が空欄の場合に
+      エラーになる不具合を修正。
+
+v1.2.1 - 2018/02/28 : ヘルプ修正、機能追加
+   1. ヘルプ内の誤字を修正。
+   2. 自分の前までのキャラが指定したスキルを選択したかどうか
+      調べるスクリプト$gameParty.aseSkill(n)を追加。
+
+v1.2.0 - 2018/01/11 : 機能追加
+   1. ゲーム中にパーティーメンバーの評価モデル(簡易的な作戦)を変更する
+      画面を追加。メニューコマンドとバトルのパーティーコマンドに追加可能。
+   2. パーティー全員が自動戦闘になっていても、パーティーコマンドを
+      スキップしないようにする機能を追加。
+
+v1.1.0 - 2018/01/08 : 機能追加
+   1. 評価モデル(簡易的な作戦)をアクターに設定する機能を追加。
+
+v1.0.1 - 2018/01/07 : 機能追加、ヘルプ追記
+   1. 評価値式に予想ダメージ量を参照するコードを追加
+   2. 評価値をコンソールログに出力する機能を追加
+   3. ステートや強化、弱体が掛かっているかどうかによって 0 か 1 を返す
+      スクリプトを追加
+
+v1.0.0 - 2018/01/06 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Skill Evaluate Log
+@desc 評価値の計算結果をコンソールログに出力する
+@default false
+@type boolean
+@on 有効
+@off 無効
+
+@param Evaluate Models
+@desc 行動評価のモデル(簡易的な作戦)を作成します ここで設定した評価モデルをアクターに反映できます
+@default []
+@type struct<auto>[]
+
+@param Manual Mode Name
+@desc 自動戦闘を使わない場合の作戦名称を設定します。
+@default 手動戦闘
+
+@param Default Tactics Name
+@desc MVデフォルトの自動戦闘時の作戦名称を設定します。
+@default 自動戦闘
+
+@param Skip Party Command
+@desc パーティーメンバー全員が自動戦闘の場合に、パーティーコマンドをスキップするか
+@default 0
+@type select
+@option スキップする(MVデフォルト)
+@value 0
+@option スキップしない
+@value 1
+@option １ターン目だけスキップしない
+@value 2
+
+@param Menu Command
+@desc メニューコマンドに作戦コマンドを追加するか
+@type struct<command>
+
+@param Party Command
+@desc バトル時のパーティーコマンドに作戦コマンドを追加するか
+@type struct<command>
+
+@param Title Texts
+@desc 作戦画面のタイトルウィンドウに表示する文字列を設定する
+@default {"party":"パーティー","tactics":"作戦リスト"}
+@type struct<title>
+*/
+
+
+/*~struct~auto:ja
+@param name
+@desc この行動評価モデルの名前
+
+@param evaluate
+@desc 行動評価リストを設定します
+@type struct<eval>[]
+*/
+
+/*~struct~eval:ja
+@param actionType
+@desc 設定する行動タイプをリストから選択してください
+@type select
+@option 通常攻撃
+@value 1
+@option 防御
+@value 2
+@option HPダメージスキル
+@value 11
+@option HP回復スキル
+@value 12
+@option MPダメージスキル
+@value 21
+@option 強化スキル
+@value 31
+@option 弱体スキル
+@value 41
+@option 状態回復スキル
+@value 51
+
+@param conditions
+@desc この行動を選択するための条件式を設定します 空欄の場合は、条件を設けずに常に選択可能になります
+
+@param rating
+@desc この行動のレーティングを設定します
+@default 5
+@type number
+@min 1
+@max 9
+*/
+
+/*~struct~command:ja
+@param enable
+@desc コマンドを追加するか
+@default false
+@type boolean
+@on 追加する
+@off 追加しない
+
+@param name
+@desc コマンドの表示名を設定します
+@default 作戦
+
+@param switchId
+@desc 特定のスイッチIDがONの時コマンドを表示させるか 0 の場合は常に表示
+@default 0
+@type number
+@min 0
+*/
+
+/*~struct~title:ja
+@param party
+@desc パーティー欄のタイトル文字列
+@default パーティー
+
+@param tactics
+@desc 作戦リスト欄のタイトル文字列
+@default 作戦リスト
+*/
+
+(function () {
 
     var parameters = PluginManager.parameters('FTKR_AISkillEvaluate');
 
-    var paramParse = function(obj) {
+    var paramParse = function (obj) {
         return JSON.parse(JSON.stringify(obj, paramReplace));
     };
 
-    var paramReplace = function(key, value) {
+    var paramReplace = function (key, value) {
         try {
             return JSON.parse(value || null);
         } catch (e) {
@@ -468,7 +859,7 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    var setArrayParamParse = function(param) {
+    var setArrayParamParse = function (param) {
         param = paramParse(parameters[param]);
         return Array.isArray(param) ? param : [];
     };
@@ -478,45 +869,45 @@ FTKR.ASE = FTKR.ASE || {};
     //=============================================================================
 
     FTKR.ASE = {
-        evalLog : Boolean(parameters['Skill Evaluate Log'] || false),
-        models  : setArrayParamParse('Evaluate Models'),
-        skip    : Number(parameters['Skip Party Command'] || 0),
-        command : {
-            menu  : paramParse(parameters['Menu Command']),
-            party : paramParse(parameters['Party Command']),
+        evalLog: Boolean(parameters['Skill Evaluate Log'] || false),
+        models: setArrayParamParse('Evaluate Models'),
+        skip: Number(parameters['Skip Party Command'] || 0),
+        command: {
+            menu: paramParse(parameters['Menu Command']),
+            party: paramParse(parameters['Party Command']),
         },
-        title   : paramParse(parameters['Title Texts']),
-        manual  : (parameters['Manual Mode Name'] || '手動戦闘'),
+        title: paramParse(parameters['Title Texts']),
+        manual: (parameters['Manual Mode Name'] || '手動戦闘'),
     };
 
-    FTKR.ASE.models.unshift({name:(parameters['Default Tactics Name'] || '自動戦闘'),evaluate:[]});
-    FTKR.ASE.models.forEach( function(model, i) {
+    FTKR.ASE.models.unshift({ name: (parameters['Default Tactics Name'] || '自動戦闘'), evaluate: [] });
+    FTKR.ASE.models.forEach(function (model, i) {
         if (model) model.id = i;
     });
 
     //objのメモ欄から <metacode: x> の値を読み取って返す
-    var readObjectMeta = function(obj, metacodes) {
+    var readObjectMeta = function (obj, metacodes) {
         if (!obj) return false;
         var match = {};
-        metacodes.some(function(metacode){
+        metacodes.some(function (metacode) {
             var metaReg = new RegExp('<' + metacode + ':[ ]*(.+)>', 'i');
             match = metaReg.exec(obj.note);
             return match;
-        }); 
+        });
         return match ? match[1] : '';
     };
 
-    var convertEscapeCharacters = function(text) {
+    var convertEscapeCharacters = function (text) {
         if (text == null) text = '';
         var window = SceneManager._scene._windowLayer.children[0];
         return window ? window.convertEscapeCharacters(text) : text;
     };
 
-    var setArgStr = function(arg) {
+    var setArgStr = function (arg) {
         return convertEscapeCharacters(arg);
     };
 
-    var setArgNum = function(arg) {
+    var setArgNum = function (arg) {
         try {
             return Number(eval(setArgStr(arg)));
         } catch (e) {
@@ -524,34 +915,34 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    var skillActionType = function(skill) {
+    var skillActionType = function (skill) {
         if (skill.id === 1) return 1;
         if (skill.id === 2) return 2;
         if (skill.damage) {
             switch (skill.damage.type) {
-            case 1:
-                return 11;
-            case 2:
-                return 12;
-            case 3:
-                return 13;
-            case 4:
-                return 21;
-            case 5:
-                return 22;
-            case 6:
-                return 22;
+                case 1:
+                    return 11;
+                case 2:
+                    return 12;
+                case 3:
+                    return 13;
+                case 4:
+                    return 21;
+                case 5:
+                    return 22;
+                case 6:
+                    return 22;
             }
         }
         if (skill.effects.length) {
             var type = 0;
-            skill.effects.some( function(effect){
+            skill.effects.some(function (effect) {
                 if (effect.code === Game_Action.EFFECT_ADD_BUFF) {
-                    type = 31;return;
+                    type = 31; return;
                 } else if (effect.code === Game_Action.EFFECT_ADD_DEBUFF) {
-                    type = 41;return;
+                    type = 41; return;
                 } else if (effect.code === Game_Action.EFFECT_REMOVE_DEBUFF || effect.code === Game_Action.EFFECT_REMOVE_STATE) {
-                    type = 51;return;
+                    type = 51; return;
                 }
             });
             if (type) return type;
@@ -564,45 +955,45 @@ FTKR.ASE = FTKR.ASE || {};
     //=============================================================================
 
     FTKR.gameData = FTKR.gameData || {
-        user   :null,
-        target :null,
-        item   :null,
-        number :0,
+        user: null,
+        target: null,
+        item: null,
+        number: 0,
     };
 
     if (!FTKR.setGameData) {
-    FTKR.setGameData = function(user, target, item, number) {
-        FTKR.gameData = {
-            user   :user || null,
-            target :target || null,
-            item   :item || null,
-            number :number || 0
+        FTKR.setGameData = function (user, target, item, number) {
+            FTKR.gameData = {
+                user: user || null,
+                target: target || null,
+                item: item || null,
+                number: number || 0
+            };
         };
-    };
     }
 
     if (!FTKR.evalFormula) {
-    FTKR.evalFormula = function(formula) {
-        var datas = FTKR.gameData;
-        try {
-            var s = $gameSwitches._data;
-            var v = $gameVariables._data;
-            var a = datas.user;
-            var b = datas.target;
-            var item   = datas.item;
-            var number = datas.number;
-            if (b) var result = b.result();
-            var value = eval(formula);
-            if (isNaN(value)) value = 0;
-            return value;
-        } catch (e) {
-            console.error(e);
-            return 0;
-        }
-    };
+        FTKR.evalFormula = function (formula) {
+            var datas = FTKR.gameData;
+            try {
+                var s = $gameSwitches._data;
+                var v = $gameVariables._data;
+                var a = datas.user;
+                var b = datas.target;
+                var item = datas.item;
+                var number = datas.number;
+                if (b) var result = b.result();
+                var value = eval(formula);
+                if (isNaN(value)) value = 0;
+                return value;
+            } catch (e) {
+                console.error(e);
+                return 0;
+            }
+        };
     }
 
-    FTKR.isEvalModel = function(modelId) {
+    FTKR.isEvalModel = function (modelId) {
         return modelId && FTKR.ASE.models[modelId] && FTKR.ASE.models[modelId].evaluate.length > 0;
     };
 
@@ -613,7 +1004,7 @@ FTKR.ASE = FTKR.ASE || {};
 
     var _ASE_DatabaseLoaded = false;
     var _ASE_DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-    DataManager.isDatabaseLoaded = function() {
+    DataManager.isDatabaseLoaded = function () {
         if (!_ASE_DataManager_isDatabaseLoaded.call(this)) return false;
         if (!_ASE_DatabaseLoaded) {
             this.itemEvaluateNotetags($dataSkills);
@@ -622,19 +1013,19 @@ FTKR.ASE = FTKR.ASE || {};
         return true;
     };
 
-    DataManager.itemEvaluateNotetags = function(group) {
+    DataManager.itemEvaluateNotetags = function (group) {
         for (var n = 1; n < group.length; n++) {
             var obj = group[n];
             obj.evaluateFormura = readObjectMeta(obj, ['ASE_評価値式', 'ASE_EVALUATE']);
         }
     };
-   
+
     //=============================================================================
     // BattleManager
     //=============================================================================
 
     //書き換え
-    BattleManager.startInput = function() {
+    BattleManager.startInput = function () {
         this._phase = 'input';
         $gameParty.makeActions();
         $gameTroop.makeActions();
@@ -644,53 +1035,53 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    BattleManager.checkCannotInput = function() {
+    BattleManager.checkCannotInput = function () {
         return (this._surprise || !$gameParty.canInput()) && !this.checkCannotSkip();
     };
 
-    BattleManager.checkCannotSkip = function() {
+    BattleManager.checkCannotSkip = function () {
         return FTKR.ASE.skip === 1 || (FTKR.ASE.skip === 2 && !$gameTroop.turnCount());
     };
 
-    BattleManager.isTactics = function() {
+    BattleManager.isTactics = function () {
         return this._tacticsMode;
     };
 
     //=============================================================================
     // Game_BattlerBase
     //=============================================================================
-    
-    Game_BattlerBase.prototype.aseState = function(stateId) {
+
+    Game_BattlerBase.prototype.aseState = function (stateId) {
         return Number(!this.isStateAffected(stateId));
     };
 
-    Game_BattlerBase.prototype.aseBuff = function(paramId) {
+    Game_BattlerBase.prototype.aseBuff = function (paramId) {
         return Number(!this.isBuffAffected(paramId));
     };
 
-    Game_BattlerBase.prototype.aseMaxBuff = function(paramId) {
+    Game_BattlerBase.prototype.aseMaxBuff = function (paramId) {
         return Number(!this.isMaxBuffAffected(paramId));
     };
 
-    Game_BattlerBase.prototype.aseDebuff = function(paramId) {
+    Game_BattlerBase.prototype.aseDebuff = function (paramId) {
         return Number(!this.isDebuffAffected(paramId));
     };
 
-    Game_BattlerBase.prototype.aseMaxDebuff = function(paramId) {
+    Game_BattlerBase.prototype.aseMaxDebuff = function (paramId) {
         return Number(!this.isMaxDebuffAffected(paramId));
     };
 
     var _ASE_Game_BattlerBase_isAutoBattle = Game_BattlerBase.prototype.isAutoBattle;
-    Game_BattlerBase.prototype.isAutoBattle = function() {
+    Game_BattlerBase.prototype.isAutoBattle = function () {
         return this._evalModelId !== undefined ? this._evalModelId >= 0 : _ASE_Game_BattlerBase_isAutoBattle.call(this);
     };
 
     //=============================================================================
     // Game_Battler
     //=============================================================================
-    
-    Game_Battler.prototype.aseSkill = function(skillId) {
-        return Number(!this._actions.some(function(action){
+
+    Game_Battler.prototype.aseSkill = function (skillId) {
+        return Number(!this._actions.some(function (action) {
             return action && action.item() && action.item().id === skillId;
         }));
     };
@@ -698,30 +1089,30 @@ FTKR.ASE = FTKR.ASE || {};
     //=============================================================================
     // Game_Party
     //=============================================================================
-    
-    Game_Party.prototype.aseSkill = function(skillId) {
-        return Number(!this.members().some(function(battler){
+
+    Game_Party.prototype.aseSkill = function (skillId) {
+        return Number(!this.members().some(function (battler) {
             return !battler.aseSkill(skillId);
         }));
     };
-    
+
     //=============================================================================
     // Game_Action
     //=============================================================================
     var _ASE_Game_Action_initialize = Game_Action.prototype.initialize;
-    Game_Action.prototype.initialize = function(subject, forcing) {
+    Game_Action.prototype.initialize = function (subject, forcing) {
         _ASE_Game_Action_initialize.call(this, subject, forcing);
         this._rating = 1;
     };
 
     var _ASE_Game_Action_evaluate = Game_Action.prototype.evaluate;
-    Game_Action.prototype.evaluate = function(target) {
+    Game_Action.prototype.evaluate = function (target) {
         var value = _ASE_Game_Action_evaluate.call(this, target);
         return value * this._rating;
     };
 
     var _ASE_Game_Action_evaluateWithTarget = Game_Action.prototype.evaluateWithTarget;
-    Game_Action.prototype.evaluateWithTarget = function(target) {
+    Game_Action.prototype.evaluateWithTarget = function (target) {
         if (this.item().evaluateFormura) {
             return this.bamEvaluateFormura(target);
         } else {
@@ -729,12 +1120,12 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    Game_Action.prototype.bamEvaluateFormura = function(target) {
+    Game_Action.prototype.bamEvaluateFormura = function (target) {
         FTKR.setGameData(this.subject(), target, this.item(), this.makeDamageValue(target, false));
         return FTKR.evalFormula(this.item().evaluateFormura);
     };
 
-    Game_Action.prototype.checkAseConditions = function(modelId) {
+    Game_Action.prototype.checkAseConditions = function (modelId) {
         var skill = this.item();
         var model = FTKR.ASE.models[modelId];
         if (model && model.evaluate.length > 0) {
@@ -742,7 +1133,7 @@ FTKR.ASE = FTKR.ASE || {};
             if (!atype) atype = skillActionType(skill);
             var formula = '';
             var rating = 0;
-            var check = model.evaluate.some( function(eval){
+            var check = model.evaluate.some(function (eval) {
                 formula = eval.conditions;
                 rating = eval.rating;
                 return eval.actionType === atype;
@@ -760,13 +1151,13 @@ FTKR.ASE = FTKR.ASE || {};
     // Game_Actor
     //=============================================================================
     //書き換え
-    Game_Actor.prototype.makeAutoBattleActions = function() {
+    Game_Actor.prototype.makeAutoBattleActions = function () {
         if (FTKR.ASE.evalLog) {
             console.log('-----------------------------------------');
             console.log(this.name(), 'のスキル評価値');
         }
         for (var i = 0; i < this.numActions(); i++) {
-            if (FTKR.ASE.evalLog && this.numActions() > 1) console.log('行動', i+1);
+            if (FTKR.ASE.evalLog && this.numActions() > 1) console.log('行動', i + 1);
             this.makeAutoBattleAction(i);
             if (FTKR.ASE.evalLog && this.action(i) && this.action(i).item()) {
                 console.log('決定＞＞', this.action(i).item().name);
@@ -779,7 +1170,7 @@ FTKR.ASE = FTKR.ASE || {};
         this.setActionState('waiting');
     };
 
-    Game_Actor.prototype.makeAutoBattleAction = function(index) {
+    Game_Actor.prototype.makeAutoBattleAction = function (index) {
         var list = this.makeActionList();//使用可能なスキルを抽出
         var maxValue = Number.MIN_VALUE;
         for (var j = 0; j < list.length; j++) {
@@ -792,31 +1183,31 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    Game_Actor.prototype.evalModelId = function(){
+    Game_Actor.prototype.evalModelId = function () {
         return this._evalModelId || setArgNum(readObjectMeta(this.actor(), ['ASE_評価モデル', 'ASE_EVALUATE_MODEL']));
     };
 
-    Game_Actor.prototype.setEvalModelId = function(modelId) {
+    Game_Actor.prototype.setEvalModelId = function (modelId) {
         this._evalModelId = modelId;
     };
 
-    Game_Actor.prototype.evalModelName = function() {
-        return this.isAutoBattle() ? 
+    Game_Actor.prototype.evalModelName = function () {
+        return this.isAutoBattle() ?
             this.autoBattleModeName() : FTKR.ASE.manual;
     };
 
-    Game_Actor.prototype.autoBattleModeName = function() {
+    Game_Actor.prototype.autoBattleModeName = function () {
         return FTKR.isEvalModel(this.evalModelId()) ?
             FTKR.ASE.models[this.evalModelId()].name : FTKR.ASE.models[0].name;
     };
 
-    Game_Actor.prototype.tacticsLists = function() {
+    Game_Actor.prototype.tacticsLists = function () {
         var list = readObjectMeta(this.actor(), ['ASE_作戦リスト', 'ASE_TACTICS_LIST']);
         return list ? list.split(',') : '';
     };
 
     var _ASE_Game_Actor_makeActionList = Game_Actor.prototype.makeActionList;
-    Game_Actor.prototype.makeActionList = function() {
+    Game_Actor.prototype.makeActionList = function () {
         var modelId = this.evalModelId();
         if (FTKR.isEvalModel(modelId)) {
             if (FTKR.ASE.evalLog) console.log(this.name(), '評価モデル', modelId);
@@ -827,7 +1218,7 @@ FTKR.ASE = FTKR.ASE || {};
             var action = new Game_Action(this);
             action.setGuard();
             if (action.checkAseConditions(modelId)) list.push(action);
-            this.usableSkills().forEach(function(skill) {
+            this.usableSkills().forEach(function (skill) {
                 action = new Game_Action(this);
                 action.setSkill(skill.id);
                 if (action.checkAseConditions(modelId)) list.push(action);
@@ -846,12 +1237,12 @@ FTKR.ASE = FTKR.ASE || {};
 
     var _ASE_Window_MenuCommand_addOriginalCommands =
         Window_MenuCommand.prototype.addOriginalCommands;
-    Window_MenuCommand.prototype.addOriginalCommands = function() {
+    Window_MenuCommand.prototype.addOriginalCommands = function () {
         _ASE_Window_MenuCommand_addOriginalCommands.call(this);
         this.addNewCommands(FTKR.ASE.command.menu, 'ase');
     };
 
-    Window_Command.prototype.addNewCommands = function(cmd, symbol) {
+    Window_Command.prototype.addNewCommands = function (cmd, symbol) {
         if (cmd && cmd.enable) {
             if (!cmd.switchId) {
                 this.addCommand(cmd.name, symbol, true);
@@ -868,14 +1259,14 @@ FTKR.ASE = FTKR.ASE || {};
 
     var _ASE_Scene_Menu_createCommandWindow =
         Scene_Menu.prototype.createCommandWindow;
-    Scene_Menu.prototype.createCommandWindow = function() {
+    Scene_Menu.prototype.createCommandWindow = function () {
         _ASE_Scene_Menu_createCommandWindow.call(this);
         if (FTKR.ASE.command.menu && FTKR.ASE.command.menu.enable) {
             this._commandWindow.setHandler('ase', this.commandAse.bind(this));
         }
     };
 
-    Scene_Menu.prototype.commandAse = function() {
+    Scene_Menu.prototype.commandAse = function () {
         SceneManager.push(Scene_ASE);
     };
 
@@ -883,24 +1274,24 @@ FTKR.ASE = FTKR.ASE || {};
     // Scene_Base
     //=============================================================================
 
-    Scene_Base.prototype.createpartyTitleWindow = function() {
-        this._partyTitleWindow = new Window_PartyTitle(0,0);
+    Scene_Base.prototype.createpartyTitleWindow = function () {
+        this._partyTitleWindow = new Window_PartyTitle(0, 0);
         this.addWindow(this._partyTitleWindow);
         this._partyTitleWindow.close();
     };
 
-    Scene_Base.prototype.createPartyWindow = function() {
+    Scene_Base.prototype.createPartyWindow = function () {
         var y = this._partyTitleWindow.y + this._partyTitleWindow.height;
         var width = this._partyTitleWindow.width;
         var height = Graphics.boxHeight - y;
         this._partyTacticsWindow = new Window_PartyTactics(0, y, width, height);
-        this._partyTacticsWindow.setHandler('ok',     this.onPartyTacticsOk.bind(this));
-        this._partyTacticsWindow.setHandler('cancel',    this.onPartyTacticsCancel.bind(this));
+        this._partyTacticsWindow.setHandler('ok', this.onPartyTacticsOk.bind(this));
+        this._partyTacticsWindow.setHandler('cancel', this.onPartyTacticsCancel.bind(this));
         this.addWindow(this._partyTacticsWindow);
         this._partyTacticsWindow.close();
     };
 
-    Scene_Base.prototype.createTacticsTitleWindow = function() {
+    Scene_Base.prototype.createTacticsTitleWindow = function () {
         var x = this._partyTacticsWindow.x + this._partyTacticsWindow.width;
         var width = Graphics.boxWidth - x;
         this._tacticsTitleWindow = new Window_TacticsTitle(x, 0, width);
@@ -908,20 +1299,20 @@ FTKR.ASE = FTKR.ASE || {};
         this._tacticsTitleWindow.close();
     };
 
-    Scene_Base.prototype.createTacticsListWindow = function() {
+    Scene_Base.prototype.createTacticsListWindow = function () {
         var x = this._partyTacticsWindow.x + this._partyTacticsWindow.width;
         var y = this._partyTitleWindow.y + this._partyTitleWindow.height;
         var width = this._tacticsTitleWindow.width;
         var height = Graphics.boxHeight - y;
         this._tacticsListWindow = new Window_TacticsList(x, y, width, height);
-        this._tacticsListWindow.setHandler('ok',    this.onTacticsListOk.bind(this));
-        this._tacticsListWindow.setHandler('cancel',    this.onTacticsListCancel.bind(this));
+        this._tacticsListWindow.setHandler('ok', this.onTacticsListOk.bind(this));
+        this._tacticsListWindow.setHandler('cancel', this.onTacticsListCancel.bind(this));
         this._partyTacticsWindow.setTacticsListWindow(this._tacticsListWindow);
         this.addWindow(this._tacticsListWindow);
         this._tacticsListWindow.close();
     };
 
-    Scene_Base.prototype.setupTacticsWindow = function() {
+    Scene_Base.prototype.setupTacticsWindow = function () {
         this._partyTitleWindow.open();
         this._partyTacticsWindow.open();
         this._partyTacticsWindow.select(0);
@@ -930,16 +1321,16 @@ FTKR.ASE = FTKR.ASE || {};
         this._tacticsListWindow.open();
     };
 
-    Scene_Base.prototype.onPartyTacticsOk = function() {
+    Scene_Base.prototype.onPartyTacticsOk = function () {
         this._tacticsListWindow.select(0);
         this._tacticsListWindow.activate();
     };
 
-    Scene_Base.prototype.onPartyTacticsCancel = function() {
+    Scene_Base.prototype.onPartyTacticsCancel = function () {
         this.popScene();
     };
 
-    Scene_Base.prototype.onTacticsListOk = function() {
+    Scene_Base.prototype.onTacticsListOk = function () {
         var item = this._tacticsListWindow.item();
         if (item) this._tacticsListWindow._actor.setEvalModelId(item.id);
         this._tacticsListWindow.deselect();
@@ -947,7 +1338,7 @@ FTKR.ASE = FTKR.ASE || {};
         this._partyTacticsWindow.activate();
     };
 
-    Scene_Base.prototype.onTacticsListCancel = function() {
+    Scene_Base.prototype.onTacticsListCancel = function () {
         this._tacticsListWindow.deselect();
         this._partyTacticsWindow.activate();
     };
@@ -963,11 +1354,11 @@ FTKR.ASE = FTKR.ASE || {};
     Scene_ASE.prototype = Object.create(Scene_MenuBase.prototype);
     Scene_ASE.prototype.constructor = Scene_ASE;
 
-    Scene_ASE.prototype.initialize = function() {
+    Scene_ASE.prototype.initialize = function () {
         Scene_MenuBase.prototype.initialize.call(this);
     };
 
-    Scene_ASE.prototype.create = function() {
+    Scene_ASE.prototype.create = function () {
         Scene_MenuBase.prototype.create.call(this);
         this.createpartyTitleWindow();
         this.createPartyWindow();
@@ -981,8 +1372,8 @@ FTKR.ASE = FTKR.ASE || {};
     //=============================================================================
 
     //書き換え
-    Window_PartyCommand.prototype.makeCommandList = function() {
-        this.addCommand(TextManager.fight,  'fight');
+    Window_PartyCommand.prototype.makeCommandList = function () {
+        this.addCommand(TextManager.fight, 'fight');
         this.addNewCommands(FTKR.ASE.command.party, 'ase');
         this.addCommand(TextManager.escape, 'escape', BattleManager.canEscape());
     };
@@ -992,7 +1383,7 @@ FTKR.ASE = FTKR.ASE || {};
     //=============================================================================
 
     var _ASE_Scene_Battle_createAllWindows = Scene_Battle.prototype.createAllWindows;
-    Scene_Battle.prototype.createAllWindows = function() {
+    Scene_Battle.prototype.createAllWindows = function () {
         _ASE_Scene_Battle_createAllWindows.call(this);
         this.createpartyTitleWindow();
         this.createPartyWindow();
@@ -1001,28 +1392,28 @@ FTKR.ASE = FTKR.ASE || {};
     };
 
     var _Scene_Battle_createPartyCommandWindow = Scene_Battle.prototype.createPartyCommandWindow;
-    Scene_Battle.prototype.createPartyCommandWindow = function() {
+    Scene_Battle.prototype.createPartyCommandWindow = function () {
         _Scene_Battle_createPartyCommandWindow.call(this);
         if (FTKR.ASE.command.party && FTKR.ASE.command.party.enable) {
-            this._partyCommandWindow.setHandler('ase',  this.commandAse.bind(this));
+            this._partyCommandWindow.setHandler('ase', this.commandAse.bind(this));
         }
     };
 
     var _ASE_Scene_Battle_changeInputWindow = Scene_Battle.prototype.changeInputWindow;
-    Scene_Battle.prototype.changeInputWindow = function() {
+    Scene_Battle.prototype.changeInputWindow = function () {
         if (!BattleManager.isTactics()) {
             _ASE_Scene_Battle_changeInputWindow.call(this);
         }
     };
 
-    Scene_Battle.prototype.commandAse = function() {
+    Scene_Battle.prototype.commandAse = function () {
         BattleManager._tacticsMode = true;
         this._partyCommandWindow.deselect();
         this._partyCommandWindow.deactivate();
         this.setupTacticsWindow();
     };
 
-    Scene_Battle.prototype.onPartyTacticsCancel = function() {
+    Scene_Battle.prototype.onPartyTacticsCancel = function () {
         this._partyTitleWindow.close();
         this._partyTacticsWindow.close();
         this._tacticsTitleWindow.close();
@@ -1043,23 +1434,23 @@ FTKR.ASE = FTKR.ASE || {};
     Window_PartyTitle.prototype = Object.create(Window_Base.prototype);
     Window_PartyTitle.prototype.constructor = Window_PartyTitle;
 
-    Window_PartyTitle.prototype.initialize = function(x, y) {
+    Window_PartyTitle.prototype.initialize = function (x, y) {
         var width = this.windowWidth();
         var height = this.fittingHeight(1);
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.refresh();
     };
 
-    Window_PartyTitle.prototype.windowWidth = function() {
+    Window_PartyTitle.prototype.windowWidth = function () {
         return Graphics.boxWidth / 2;
     };
 
-    Window_PartyTitle.prototype.refresh = function() {
+    Window_PartyTitle.prototype.refresh = function () {
         this.contents.clear();
         var text = FTKR.ASE.title.party;
         this.drawTextEx(text, 0, 0);
     };
-    
+
     //=============================================================================
     // Window_PartyTactics
     //=============================================================================
@@ -1071,30 +1462,30 @@ FTKR.ASE = FTKR.ASE || {};
     Window_PartyTactics.prototype = Object.create(Window_Selectable.prototype);
     Window_PartyTactics.prototype.constructor = Window_PartyTactics;
 
-    Window_PartyTactics.prototype.initialize = function(x, y, width, height) {
+    Window_PartyTactics.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this._pendingIndex = -1;
         this.refresh();
     };
 
-    Window_PartyTactics.prototype.setTacticsListWindow = function(window) {
+    Window_PartyTactics.prototype.setTacticsListWindow = function (window) {
         this._tacticsListWindow = window;
     };
 
-    Window_PartyTactics.prototype.maxItems = function() {
+    Window_PartyTactics.prototype.maxItems = function () {
         return $gameParty.size();
     };
 
-    Window_PartyTactics.prototype.itemHeight = function() {
+    Window_PartyTactics.prototype.itemHeight = function () {
         return this.lineHeight();
     };
 
-    Window_PartyTactics.prototype.drawItem = function(index) {
+    Window_PartyTactics.prototype.drawItem = function (index) {
         this.drawItemBackground(index);
         this.drawItemStatus(index);
     };
 
-    Window_PartyTactics.prototype.drawItemBackground = function(index) {
+    Window_PartyTactics.prototype.drawItemBackground = function (index) {
         if (index === this._pendingIndex) {
             var rect = this.itemRect(index);
             var color = this.pendingColor();
@@ -1104,15 +1495,15 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    Window_PartyTactics.prototype.drawItemStatus = function(index) {
+    Window_PartyTactics.prototype.drawItemStatus = function (index) {
         var actor = $gameParty.members()[index];
         var rect = this.itemRect(index);
         var width = rect.width - this.textPadding();
-        this.drawText(actor.name(), rect.x, rect.y, width/2);
-        this.drawText(actor.evalModelName(), rect.x + width/2, rect.y, width/2);
+        this.drawText(actor.name(), rect.x, rect.y, width / 2);
+        this.drawText(actor.evalModelName(), rect.x + width / 2, rect.y, width / 2);
     };
 
-    Window_PartyTactics.prototype.update = function() {
+    Window_PartyTactics.prototype.update = function () {
         Window_Selectable.prototype.update.call(this);
         if (this._tacticsListWindow) {
             var actor = $gameParty.members()[this.index()];
@@ -1120,15 +1511,15 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    Window_PartyTactics.prototype.processOk = function() {
+    Window_PartyTactics.prototype.processOk = function () {
         Window_Selectable.prototype.processOk.call(this);
     };
 
-    Window_PartyTactics.prototype.isCurrentItemEnabled = function() {
+    Window_PartyTactics.prototype.isCurrentItemEnabled = function () {
         return true;
     };
 
-    Window_PartyTactics.prototype.selectLast = function() {
+    Window_PartyTactics.prototype.selectLast = function () {
         this.select($gameParty.menuActor().index() || 0);
     };
 
@@ -1143,18 +1534,18 @@ FTKR.ASE = FTKR.ASE || {};
     Window_TacticsTitle.prototype = Object.create(Window_Base.prototype);
     Window_TacticsTitle.prototype.constructor = Window_TacticsTitle;
 
-    Window_TacticsTitle.prototype.initialize = function(x, y, width) {
+    Window_TacticsTitle.prototype.initialize = function (x, y, width) {
         var height = this.fittingHeight(1);
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.refresh();
     };
 
-    Window_TacticsTitle.prototype.refresh = function() {
+    Window_TacticsTitle.prototype.refresh = function () {
         this.contents.clear();
         var text = FTKR.ASE.title.tactics;
         this.drawTextEx(text, 0, 0);
     };
-    
+
     //=============================================================================
     // Window_TacticsList
     //=============================================================================
@@ -1166,14 +1557,14 @@ FTKR.ASE = FTKR.ASE || {};
     Window_TacticsList.prototype = Object.create(Window_Selectable.prototype);
     Window_TacticsList.prototype.constructor = Window_TacticsList;
 
-    Window_TacticsList.prototype.initialize = function(x, y, width, height) {
+    Window_TacticsList.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this._actor = null;
         this._data = [];
         this.refresh();
     };
 
-    Window_TacticsList.prototype.setActor = function(actor) {
+    Window_TacticsList.prototype.setActor = function (actor) {
         if (this._actor !== actor) {
             this._actor = actor;
             this.refresh();
@@ -1181,20 +1572,20 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    Window_TacticsList.prototype.maxItems = function() {
+    Window_TacticsList.prototype.maxItems = function () {
         return this._data ? this._data.length : 1;
     };
 
-    Window_TacticsList.prototype.item = function() {
+    Window_TacticsList.prototype.item = function () {
         var index = this.index();
         return this._data && index >= 0 ? this._data[index] : null;
     };
 
-    Window_TacticsList.prototype.itemHeight = function() {
+    Window_TacticsList.prototype.itemHeight = function () {
         return this.lineHeight();
     };
 
-    Window_TacticsList.prototype.drawAllItems = function() {
+    Window_TacticsList.prototype.drawAllItems = function () {
         var topIndex = this.topIndex();
         for (var i = 0; i < this.maxPageItems(); i++) {
             var index = topIndex + i;
@@ -1204,12 +1595,12 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    Window_TacticsList.prototype.drawItem = function(index) {
+    Window_TacticsList.prototype.drawItem = function (index) {
         this.drawItemBackground(index);
         this.drawItemStatus(index);
     };
 
-    Window_TacticsList.prototype.drawItemBackground = function(index) {
+    Window_TacticsList.prototype.drawItemBackground = function (index) {
         if (index === this._pendingIndex) {
             var rect = this.itemRect(index);
             var color = this.pendingColor();
@@ -1219,47 +1610,47 @@ FTKR.ASE = FTKR.ASE || {};
         }
     };
 
-    Window_TacticsList.prototype.drawItemStatus = function(index) {
+    Window_TacticsList.prototype.drawItemStatus = function (index) {
         var list = this._data[index];
         var rect = this.itemRect(index);
         var width = rect.width - this.textPadding();
         this.drawText(list.name, rect.x, rect.y, width);
     };
 
-    Window_TacticsList.prototype.makeItemList = function() {
-        this._data = FTKR.ASE.models.filter(function(model, i) {
+    Window_TacticsList.prototype.makeItemList = function () {
+        this._data = FTKR.ASE.models.filter(function (model, i) {
             return this.includes(i);
         }, this);
         console.log(FTKR.ASE.models, this._data);
-        this._data.push({name:FTKR.ASE.manual, id:-1, evaluate:[]});
+        this._data.push({ name: FTKR.ASE.manual, id: -1, evaluate: [] });
         if (this.includes(null)) {
             this._data.push(null);
         }
     };
 
-    Window_TacticsList.prototype.includes = function(index) {
+    Window_TacticsList.prototype.includes = function (index) {
         if (this._actor) {
             var list = this._actor.tacticsLists();
-            return list.length ? list.contains(index+'') : index > 0;
+            return list.length ? list.contains(index + '') : index > 0;
         }
         return false;
     };
 
-    Window_TacticsList.prototype.refresh = function() {
+    Window_TacticsList.prototype.refresh = function () {
         this.makeItemList();
         this.createContents();
         this.drawAllItems();
     };
 
-    Window_TacticsList.prototype.processOk = function() {
+    Window_TacticsList.prototype.processOk = function () {
         Window_Selectable.prototype.processOk.call(this);
     };
 
-    Window_PartyTactics.prototype.isCurrentItemEnabled = function() {
+    Window_PartyTactics.prototype.isCurrentItemEnabled = function () {
         return true;
     };
 
-    Window_PartyTactics.prototype.selectLast = function() {
+    Window_PartyTactics.prototype.selectLast = function () {
         this.select($gameParty.menuActor().index() || 0);
     };
 

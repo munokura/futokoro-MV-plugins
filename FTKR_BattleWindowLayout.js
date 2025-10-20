@@ -16,209 +16,403 @@ FTKR.BWL = FTKR.BWL || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.3.0 戦闘時のウィンドウ配置を変更する
- * @author フトコロ
- *
- * @param Show Actor Face
- * @desc アクターの顔画像を表示する
- * @type boolean
- * @on 有効
- * @off 無効
- * @default true
- * 
- * @param Party
- * @text パーティーコマンドの設定
- * 
- * @param Party Command PositionY
- * @desc パーティーコマンドウィンドウを表示する縦の位置を指定します。
- * @type select
- * @option ステータスウィンドウの上に横に表示
- * @value 0
- * @option 画面中央
- * @value 1
- * @default 0
- * @parent Party
- * 
- * @param Party Command PositionX
- * @desc パーティーコマンドウィンドウを表示する横の位置を指定します。
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * @default 0
- * @parent Party
- * 
- * @param Party Command Window
- * @desc パーティーコマンドウィンドウの表示設定
- * @type struct<window>
- * @default {"width":"","height":"","background":"0"}
- * @parent Party
- * 
- * @param Actor
- * @text アクターコマンドの設定
- * 
- * @param Actor Command Position
- * @desc アクターコマンドウィンドウを表示する場所を指定します。
- * @type select
- * @option ステータスウィンドウのアクターに重ねる
- * @value 0
- * @option ステータスウィンドウの上に横に表示
- * @value 1
- * @option ステータスウィンドウのアクターの上に縦に表示
- * @value 2
- * @default 0
- * @parent Actor
- *
- * @param Actor Command PositionY
- * @desc アクターコマンドウィンドウを表示する縦の位置を指定します。
- * ステータスウィンドウの上表示の場合は無効です。
- * @type select
- * @option 上寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 下寄せ
- * @value 2
- * @default 0
- * @parent Actor
- *
- * @param Actor Command PositionX
- * @desc アクターコマンドウィンドウを表示する横の位置を指定します。
- * @type select
- * @option 右寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 左寄せ
- * @value 2
- * @default 0
- * @parent Actor
- *
- * @param Actor Command Window
- * @desc アクターコマンドウィンドウの表示設定
- * Actor Command Position の設定により一部の設定が無効になる
- * @type struct<window>
- * @default {"width":"","height":"","background":"0"}
- * @parent Actor
- * 
- * @param Status
- * @text ステータスウィンドウの設定
- * 
- * @param Hide When Selecting Actor
- * @parent Status
- * @desc アクター選択時にステータスウィンドウを非表示にする
- * @type boolean
- * @on 有効
- * @off 無効
- * @default true
- * 
- * @param Hide When Selecting Enemy
- * @parent Status
- * @desc エネミー選択時にステータスウィンドウを非表示にする
- * @type boolean
- * @on 有効
- * @off 無効
- * @default true
- * 
- * 
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 戦闘時のウィンドウ配置やサイズを変更します。
- * 
- * １．ステータスウィンドウの幅を画面サイズと同じにします。
- * ２．ステータスウィンドウのアクターを横並びに変更します。(*1)
- * ３．アクターコマンドウィンドウの表示位置を、ステータスウィンドウの
- * 　　選択中のアクターに重ねます。(*2)
- * ４．パーティーコマンドウィンドウをステータスウィンドウの上に表示し
- * 　　コマンドを横並びにします。
- * 
- * 
- * (*1) ステータスウィンドウの表示内容は、顔画像、名前、ステート、HP、MP、TPです。
- *      顔画像は、プラグインパラメータで表示のON/OFFを変えられます。
- *      TPは、「バトル画面でTPを表示」にチェックが入っている場合に表示します。
- * 
- * (*2) プラグインパラメータで、パーティーコマンドウィンドウと同じ表示位置に
- *      変更できます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. FTKR_AlternatingTurnBattle.jsと組み合わせる場合は、このプラグインが
- *    下になるように配置してください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.3.0 - 2020/04/26 : 機能追加
- *    1. アクター選択時とエネミー選択時にステータスウィンドウを非表示にする機能を
- *       プラグインパラメータでON/OFFできるように変更。
- * 
- * v1.2.0 - 2018/08/19 : 機能追加
- *    1. パーティーコマンドとアクターコマンドの設定機能を追加。
- * 
- * v1.1.1 - 2018/08/17 : 不具合修正
- *    1. FTKR_FVActorAnimationと処理が重複していた部分を修正。
- * 
- * v1.1.0 - 2018/04/09 : 機能追加、不具合修正
- *    1. ステータスウィンドウでアクター同士の表示が重なる場合がある不具合を修正。
- *    2. アクターコマンドウィンドウの表示位置を変更する機能を追加。
- *    3. FTKR_AlternatingTurnBattle.jsの v1.1.0 に対応。
- * 
- * v1.0.0 - 2018/04/08 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.3.0 Change the window layout during battle
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+Changes the window layout and size during battle.
+
+1. Makes the status window width the same as the screen size.
+2. Changes the status window actors to be arranged side-by-side. (*1)
+3. Overlays the actor command window display position on the currently selected actor in the status window. (*2)
+4. Displays the party command window above the status window, arranging the commands side-by-side.
+
+(*1) The status window displays the following information: face image, name, status, HP, MP, and TP.
+The face image display can be turned on/off in the plugin parameters.
+TP is displayed when "Show TP on battle screen" is checked.
+
+(*2) You can change the display position to the same as the party command window in the plugin parameters.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. When using with FTKR_AlternatingTurnBattle.js, place this plugin underneath.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.3.0 - 2020/04/26: Added Traits
+1. The function to hide the status window when selecting an actor or enemy can now be turned on/off via plugin parameters.
+
+v1.2.0 - August 19, 2018: Traits Added
+1. Added the ability to set party commands and actor commands.
+
+v1.1.1 - August 17, 2018: Bug Fixes
+1. Fixed an issue where processing overlapped with FTKR_FVActorAnimation.
+
+v1.1.0 - April 9, 2018: Traits Added, Bug Fixes
+1. Fixed an issue where actors could overlap in the status window.
+2. Added the ability to change the display position of the actor command window.
+3. Compatible with v1.1.0 of FTKR_AlternatingTurnBattle.js.
+
+v1.0.0 - April 8, 2018: Initial version created
+
+-----------------------------------------------------------------------------
+
+@param Show Actor Face
+@desc Displaying the actor's face image
+@default true
+@type boolean
+@on valid
+@off invalid
+
+@param Party
+@text Party Command Settings
+
+@param Party Command PositionY
+@desc Specifies the vertical position where the party command window is displayed.
+@default 0
+@type select
+@parent Party
+@option Displayed horizontally above the status window
+@value 0
+@option center of screen
+@value 1
+
+@param Party Command PositionX
+@desc Specifies the horizontal position where the party command window will be displayed.
+@default 0
+@type select
+@parent Party
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Party Command Window
+@desc Party command window display settings
+@default {"width":"","height":"","background":"0"}
+@type struct<window>
+@parent Party
+
+@param Actor
+@text Actor Command Settings
+
+@param Actor Command Position
+@desc Specifies where the Actor Commands window will be displayed.
+@default 0
+@type select
+@parent Actor
+@option Overlaying the actor in the status window
+@value 0
+@option Displayed horizontally above the status window
+@value 1
+@option Displayed vertically above the actor in the status window
+@value 2
+
+@param Actor Command PositionY
+@desc Specifies the vertical position to display the actor command window. This is invalid if it is displayed above the status window.
+@default 0
+@type select
+@parent Actor
+@option Top alignment
+@value 0
+@option center
+@value 1
+@option Lowering
+@value 2
+
+@param Actor Command PositionX
+@desc Specifies the horizontal position where the Actor Commands window is displayed.
+@default 0
+@type select
+@parent Actor
+@option Right-justified
+@value 0
+@option center
+@value 1
+@option Left-justified
+@value 2
+
+@param Actor Command Window
+@desc Actor Command window display settings Some settings are disabled depending on the Actor Command Position setting.
+@default {"width":"","height":"","background":"0"}
+@type struct<window>
+@parent Actor
+
+@param Status
+@text Status window settings
+
+@param Hide When Selecting Actor
+@desc Hide the status window when selecting an actor
+@default true
+@type boolean
+@parent Status
+@on valid
+@off invalid
+
+@param Hide When Selecting Enemy
+@desc Hide the status window when selecting an enemy
+@default true
+@type boolean
+@parent Status
+@on valid
+@off invalid
 */
-//=============================================================================
+
+
 /*~struct~window:
- * @param width
- * @desc ウィンドウの幅をpixel単位で設定します。
- * 空欄：デフォルト設定、-1：画面幅
- * @type number
- * @min -1
- * @default 
- *
- * @param height
- * @desc ウィンドウの高さを行数(lineNumber)で設定します。
- * 空欄：デフォルト設定
- * @type number
- * @default 
- *
- * @param background
- * @desc ウィンドウの背景を設定します。
- * @type select
- * @option ウィンドウ
- * @value 0
- * @option 暗くする
- * @value 1
- * @option 透明
- * @value 2
- * @default 0
- *
+@param width
+@desc Set the window width in pixels. Blank: default setting, -1: screen width
+@type number
+@min -1
+
+@param height
+@desc Set the window height in lines (lineNumber). Blank: Default setting
+@type number
+
+@param background
+@desc Sets the window background.
+@default 0
+@type select
+@option window
+@value 0
+@option Darken
+@value 1
+@option transparent
+@value 2
+*/
+
+
+/*:ja
+@plugindesc v1.3.0 戦闘時のウィンドウ配置を変更する
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+戦闘時のウィンドウ配置やサイズを変更します。
+
+１．ステータスウィンドウの幅を画面サイズと同じにします。
+２．ステータスウィンドウのアクターを横並びに変更します。(*1)
+３．アクターコマンドウィンドウの表示位置を、ステータスウィンドウの
+　　選択中のアクターに重ねます。(*2)
+４．パーティーコマンドウィンドウをステータスウィンドウの上に表示し
+　　コマンドを横並びにします。
+
+
+(*1) ステータスウィンドウの表示内容は、顔画像、名前、ステート、HP、MP、TPです。
+     顔画像は、プラグインパラメータで表示のON/OFFを変えられます。
+     TPは、「バトル画面でTPを表示」にチェックが入っている場合に表示します。
+
+(*2) プラグインパラメータで、パーティーコマンドウィンドウと同じ表示位置に
+     変更できます。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. FTKR_AlternatingTurnBattle.jsと組み合わせる場合は、このプラグインが
+   下になるように配置してください。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.3.0 - 2020/04/26 : 機能追加
+   1. アクター選択時とエネミー選択時にステータスウィンドウを非表示にする機能を
+      プラグインパラメータでON/OFFできるように変更。
+
+v1.2.0 - 2018/08/19 : 機能追加
+   1. パーティーコマンドとアクターコマンドの設定機能を追加。
+
+v1.1.1 - 2018/08/17 : 不具合修正
+   1. FTKR_FVActorAnimationと処理が重複していた部分を修正。
+
+v1.1.0 - 2018/04/09 : 機能追加、不具合修正
+   1. ステータスウィンドウでアクター同士の表示が重なる場合がある不具合を修正。
+   2. アクターコマンドウィンドウの表示位置を変更する機能を追加。
+   3. FTKR_AlternatingTurnBattle.jsの v1.1.0 に対応。
+
+v1.0.0 - 2018/04/08 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Show Actor Face
+@desc アクターの顔画像を表示する
+@default true
+@type boolean
+@on 有効
+@off 無効
+
+@param Party
+@text パーティーコマンドの設定
+
+@param Party Command PositionY
+@desc パーティーコマンドウィンドウを表示する縦の位置を指定します。
+@default 0
+@type select
+@parent Party
+@option ステータスウィンドウの上に横に表示
+@value 0
+@option 画面中央
+@value 1
+
+@param Party Command PositionX
+@desc パーティーコマンドウィンドウを表示する横の位置を指定します。
+@default 0
+@type select
+@parent Party
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Party Command Window
+@desc パーティーコマンドウィンドウの表示設定
+@default {"width":"","height":"","background":"0"}
+@type struct<window>
+@parent Party
+
+@param Actor
+@text アクターコマンドの設定
+
+@param Actor Command Position
+@desc アクターコマンドウィンドウを表示する場所を指定します。
+@default 0
+@type select
+@parent Actor
+@option ステータスウィンドウのアクターに重ねる
+@value 0
+@option ステータスウィンドウの上に横に表示
+@value 1
+@option ステータスウィンドウのアクターの上に縦に表示
+@value 2
+
+@param Actor Command PositionY
+@desc アクターコマンドウィンドウを表示する縦の位置を指定します。 ステータスウィンドウの上表示の場合は無効です。
+@default 0
+@type select
+@parent Actor
+@option 上寄せ
+@value 0
+@option 中央
+@value 1
+@option 下寄せ
+@value 2
+
+@param Actor Command PositionX
+@desc アクターコマンドウィンドウを表示する横の位置を指定します。
+@default 0
+@type select
+@parent Actor
+@option 右寄せ
+@value 0
+@option 中央
+@value 1
+@option 左寄せ
+@value 2
+
+@param Actor Command Window
+@desc アクターコマンドウィンドウの表示設定 Actor Command Position の設定により一部の設定が無効になる
+@default {"width":"","height":"","background":"0"}
+@type struct<window>
+@parent Actor
+
+@param Status
+@text ステータスウィンドウの設定
+
+@param Hide When Selecting Actor
+@desc アクター選択時にステータスウィンドウを非表示にする
+@default true
+@type boolean
+@parent Status
+@on 有効
+@off 無効
+
+@param Hide When Selecting Enemy
+@desc エネミー選択時にステータスウィンドウを非表示にする
+@default true
+@type boolean
+@parent Status
+@on 有効
+@off 無効
+*/
+
+
+/*~struct~window:ja
+@param width
+@desc ウィンドウの幅をpixel単位で設定します。 空欄：デフォルト設定、-1：画面幅
+@type number
+@min -1
+
+@param height
+@desc ウィンドウの高さを行数(lineNumber)で設定します。 空欄：デフォルト設定
+@type number
+
+@param background
+@desc ウィンドウの背景を設定します。
+@default 0
+@type select
+@option ウィンドウ
+@value 0
+@option 暗くする
+@value 1
+@option 透明
+@value 2
 */
 
 (function() {

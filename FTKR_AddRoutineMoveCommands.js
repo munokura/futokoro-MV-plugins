@@ -16,125 +16,250 @@ FTKR.RMC = FTKR.RMC || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.1 移動ルートの設定のスクリプトを使ってIF文などの処理を追加する
- * @author フトコロ
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 移動ルートの設定で、スクリプトを使って以下の処理ができます。
- * 
- * ・IF文     :指定した条件を満たしている間だけ、設定した処理を実行します。
- * ・LOOP文   :指定した回数だけ、設定した処理を繰り返し実行します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. 以下のプラグインと組み合わせる場合は、プラグインの登録順番を以下のように
- *    してください。
- * 
- *    FTKR_AddRoutineMoveCommands.js
- *    FTKR_ConvertEscapeCharactersInScript.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * IF文
- *-----------------------------------------------------------------------------
- *    START_IF : 条件式1
- *      条件1を満たした時の処理
- *    ELSE_IF : 条件式2
- *      条件2を満たした時の処理
- *    ELSE
- *      条件1と条件2を満たさない時の処理
- *    END_IF
- * 
- *    スクリプトで上記のコマンドおよび条件式を入力することで
- *    条件を満たした場合にのみそれぞれの間の処理部を実行します。
- *    処理部には、何個でもコマンドを設定できます。
- *    JavaScript の if文 と同じです。
- *    ELSE_IFおよびその処理部や、ELSEおよびその処理部は必須ではありません。
- *    なお、このIF文内の処理に、別のIF文を入れることはできません。
- * 
- * 例）
- * ◆移動ルートの設定：このイベント (ウェイト)
- * ：　　　　　　　　：◇プレイヤーの方を向く
- * ：　　　　　　　　：◇スクリプト：START_IF : this.distanceEvent(-1) > 2
- * ：　　　　　　　　：◇一歩前進
- * ：　　　　　　　　：◇スクリプト：END_IF
- * ：　　　　　　　　：◇ランダムに方向転換
- * 
- * この例では、このイベントが
- * 1. 「プレイヤーの方を向く」を実行
- * 2. 条件式(this.distanceEvent(-1) > 2)を判定
- * 3. 上記条件満たした場合にのみ「一歩前進」の処理を実行
- * 4. 条件に関係なく「ランダムに方向転換」を実行
- * となります。
- * 
- * 
- *-----------------------------------------------------------------------------
- * LOOP文
- *-----------------------------------------------------------------------------
- *    START_LOOP : 回数
- *      指定した回数だけ繰り返し実行する処理
- *    END_LOOP
- * 
- *    指定した回数だけ、コマンドの間に設定した処理を繰り返し実行します。
- *    回数はスクリプト方式で記述できます。
- *    回数が 0 の場合は実行しません。
- *    処理部には、何個でもコマンドを設定できます。
- * 
- * 例）
- * ◆移動ルートの設定：このイベント (ウェイト)
- * ：　　　　　　　　：◇プレイヤーの方を向く
- * ：　　　　　　　　：◇スクリプト：START_LOOP : 5
- * ：　　　　　　　　：◇一歩前進
- * ：　　　　　　　　：◇スクリプト：END_LOOP
- * ：　　　　　　　　：◇180度回転
- * 
- * この例では、このイベントが
- * 1. 「プレイヤーの方を向く」を実行
- * 2. TART_LOOP ~ END_LOOP 間の処理(「一歩前進」)を 5回 実行
- * 3. その後「180度回転」を実行
- * となります。
- * 
- *-----------------------------------------------------------------------------
- * スクリプト(移動ルート)
- *-----------------------------------------------------------------------------
- * このプラグインを導入することで、以下のスクリプトが移動ルートで使えます。
- * 
- * this.distanceEvent(n)
- *    このイベントと、指定したイベントまたはプレイヤーとの距離を取得します。
- *    プレイヤーの場合は n = -1、イベントの場合は n = イベントID を指定します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.1 - 2018/08/15 : ELSE_IFの処理が正しく行えない不具合を修正
- * v1.0.0 - 2018/08/15 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.1 Add processing such as IF statements using the script for setting the travel route
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+When setting a travel route, you can use scripts to perform the following operations.
+
+- IF statement: Executes a set operation only while a specified condition is met.
+- LOOP statement: Repeats a set operation a specified number of times.
+
+-----------------------------------------------------------------------------
+Setup Method
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. When combining with the following plugins, register the plugins in the following order:
+
+FTKR_AddRoutineMoveCommands.js
+FTKR_ConvertEscapeCharactersInScript.js
+
+-----------------------------------------------------------------------------
+IF Statement
+-----------------------------------------------------------------------------
+START_IF: Condition 1
+Processing when Condition 1 is met
+ELSE_IF: Condition 2
+Processing when Condition 2 is met
+ELSE
+Processing when Conditions 1 and 2 are not met
+END_IF
+
+By entering the above commands and conditional expressions in a script,
+the processing part between them will be executed only if the condition is met.
+You can set any number of commands in the processing part.
+This is the same as a JavaScript if statement.
+ELSE_IF and its processing part, and ELSE and its processing part, are not required.
+Note that you cannot include another IF statement within the processing part of this IF statement.
+
+Example)
+◆ Set Movement Route: This event (wait)
+: ◇ Turn toward the player
+: ◇ Script: START_IF : this.distanceEvent(-1) > 2
+: ◇ Take one step forward
+: ◇ Script: END_IF
+: ◇ Turn direction randomly
+
+In this example, this event:
+1. Executes "Turn toward the player"
+2. Evaluates the condition (this.distanceEvent(-1) > 2)
+3. Executes "Take one step forward" only if the above condition is met
+4. Executes "Turn direction randomly" regardless of the condition.
+
+----------------------------------------------------------------------------
+LOOP Statement
+----------------------------------------------------------------------------
+START_LOOP : Count
+Process to be executed repeatedly the specified number of times
+END_LOOP
+
+The process set between commands is executed the specified number of times.
+The count can be written in script format.
+A count of 0 will not execute the process.
+You can assign any number of commands to the processing section.
+
+Example)
+◆ Set Movement Route: This event (wait)
+: ◇ Turn toward the player
+: ◇ Script: START_LOOP : 5
+: ◇ Take one step forward
+: ◇ Script: END_LOOP
+: ◇ Turn 180 degrees
+
+In this example, this event
+1. Executes "Turn toward the player"
+2. Executes the "Turn one step forward" process between START_LOOP and END_LOOP five times
+3. Then executes "Turn 180 degrees"
+
+-----------------------------------------------------------------------------
+Script (Movement Route)
+-----------------------------------------------------------------------------
+By installing this plugin, the following scripts can be used in the movement route.
+
+this.distanceEvent(n)
+Gets the distance between this event and the specified event or player.
+For players, specify n = -1. For events, specify n = the event ID.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin source
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.1 - 2018/08/15: Fixed an issue where ELSE_IF processing was not performed correctly.
+v1.0.0 - 2018/08/15: First version created.
+
+-----------------------------------------------------------------------------
 */
+
+
+/*:ja
+@plugindesc v1.0.1 移動ルートの設定のスクリプトを使ってIF文などの処理を追加する
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+移動ルートの設定で、スクリプトを使って以下の処理ができます。
+
+・IF文     :指定した条件を満たしている間だけ、設定した処理を実行します。
+・LOOP文   :指定した回数だけ、設定した処理を繰り返し実行します。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. 以下のプラグインと組み合わせる場合は、プラグインの登録順番を以下のように
+   してください。
+
+   FTKR_AddRoutineMoveCommands.js
+   FTKR_ConvertEscapeCharactersInScript.js
+
+
+-----------------------------------------------------------------------------
+IF文
+-----------------------------------------------------------------------------
+   START_IF : 条件式1
+     条件1を満たした時の処理
+   ELSE_IF : 条件式2
+     条件2を満たした時の処理
+   ELSE
+     条件1と条件2を満たさない時の処理
+   END_IF
+
+   スクリプトで上記のコマンドおよび条件式を入力することで
+   条件を満たした場合にのみそれぞれの間の処理部を実行します。
+   処理部には、何個でもコマンドを設定できます。
+   JavaScript の if文 と同じです。
+   ELSE_IFおよびその処理部や、ELSEおよびその処理部は必須ではありません。
+   なお、このIF文内の処理に、別のIF文を入れることはできません。
+
+例）
+◆移動ルートの設定：このイベント (ウェイト)
+：　　　　　　　　：◇プレイヤーの方を向く
+：　　　　　　　　：◇スクリプト：START_IF : this.distanceEvent(-1) > 2
+：　　　　　　　　：◇一歩前進
+：　　　　　　　　：◇スクリプト：END_IF
+：　　　　　　　　：◇ランダムに方向転換
+
+この例では、このイベントが
+1. 「プレイヤーの方を向く」を実行
+2. 条件式(this.distanceEvent(-1) > 2)を判定
+3. 上記条件満たした場合にのみ「一歩前進」の処理を実行
+4. 条件に関係なく「ランダムに方向転換」を実行
+となります。
+
+
+-----------------------------------------------------------------------------
+LOOP文
+-----------------------------------------------------------------------------
+   START_LOOP : 回数
+     指定した回数だけ繰り返し実行する処理
+   END_LOOP
+
+   指定した回数だけ、コマンドの間に設定した処理を繰り返し実行します。
+   回数はスクリプト方式で記述できます。
+   回数が 0 の場合は実行しません。
+   処理部には、何個でもコマンドを設定できます。
+
+例）
+◆移動ルートの設定：このイベント (ウェイト)
+：　　　　　　　　：◇プレイヤーの方を向く
+：　　　　　　　　：◇スクリプト：START_LOOP : 5
+：　　　　　　　　：◇一歩前進
+：　　　　　　　　：◇スクリプト：END_LOOP
+：　　　　　　　　：◇180度回転
+
+この例では、このイベントが
+1. 「プレイヤーの方を向く」を実行
+2. TART_LOOP ~ END_LOOP 間の処理(「一歩前進」)を 5回 実行
+3. その後「180度回転」を実行
+となります。
+
+-----------------------------------------------------------------------------
+スクリプト(移動ルート)
+-----------------------------------------------------------------------------
+このプラグインを導入することで、以下のスクリプトが移動ルートで使えます。
+
+this.distanceEvent(n)
+   このイベントと、指定したイベントまたはプレイヤーとの距離を取得します。
+   プレイヤーの場合は n = -1、イベントの場合は n = イベントID を指定します。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.1 - 2018/08/15 : ELSE_IFの処理が正しく行えない不具合を修正
+v1.0.0 - 2018/08/15 : 初版作成
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
 (function() {

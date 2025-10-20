@@ -26,172 +26,294 @@ FTKR.TMS = FTKR.TMS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v0.2.1 tomoakyさんのシューティングプラグインの機能拡張プラグイン(試作版)
- * @author フトコロ
- *
- * @param Default Break Animation
- * @desc タイル消去時のアニメーションを設定します。
- * @default 
- * @type animation
- * @require 1
- * 
- * @param MapID For Setting Tile
- * @text タイル設定用マップID
- * @desc タイル設定用マップIDを指定します。タイルセットごとに指定してください。
- * @default
- * @type struct<tileset>[]
- *
- * @noteParam shotCollideActor
- * @noteRequire 1
- * @noteType animation
- * @noteData actors
- * 
- * @noteParam shotCollideWeapon
- * @noteRequire 1
- * @noteType animation
- * @noteData weapons
- * 
- * @noteParam shotCollideState
- * @noteRequire 1
- * @noteType animation
- * @noteData states
- * 
- * @noteParam changeAnimeId
- * @noteRequire 1
- * @noteType animation
- * @noteData events
- * 
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * tomoakyさんのシューティングプラグイン(TMShooting.js)の拡張プラグインです。
- * 下記の機能を追加します。
- * このプラグインは(試作版)です。今後大きく仕様が変更する可能性があります。
- * 
- * 
- * 1. 特定のマップタイルにプレイヤーの弾が接触すると、そのタイルを別のタイルに変更する。
- * 
- *    ＜変更できるタイルの設定＞
- *    変更できるタイルは、レイヤーBおよびCのタイルのみです。
- *    １マスタイル(壺など)と、２マスタイル(木など)を設定できます。
- *    プラグインパラメータで、タイルセットとその設定用のマップIDを指定します。
- *    さらに１マスタイルと２マスタイルの設定を行う行を指定します。
- * 
- *    設定用マップでのタイルの設置について
- *      変更前のタイルは0,2,4,...と1列おきに設置します。
- *      変更後のタイルは、変更前の右隣の列に設置します。
- * 
- *    例えば２マスタイルの設定行が 2 の場合
- *      木のタイルの上部を 0列2行目、下部を0列3行目に設置します。
- *      変更後のタイルはその隣の列に設置します。消去の場合は設置しません。
- *      １マスタイルに変更する場合は、1列3行目に設置してください。
- * 
- *    タイルには変更までの接触回数の設定ができます。
- *      変更前のタイルにイベントを設置し、イベントのメモ欄に<tileHp:n>と入力します。
- *      この n の値が接触回数になります。例)<tileHp:5>
- *      ２マスタイルの場合は、上部に設置してください。
- * 
- * 
- *    ＜変更時のアニメーションの設定方法＞
- *    設定方法は、以下があります。
- *      1. プラグインパラメータで共通設定
- *      2. タイルイベントのメモ欄に<changeAnimeId:n>と入力。n がアニメーションID。
- * 
- *    両方で設定している場合は、２のタイルイベント側の設定を使用します。
- *    設定しない場合は、アニメーションは表示しません。
- * 
- * 
- * 
- * 2. プレイヤーの弾が通行不可タイルやイベントに接触し、タイルの変更やイベントの
- *    撃破がない場合に、アクターや装備、ステートで指定したアニメーションを表示する。
- * 
- *    以下のタグをメモ欄に設定すると、そのアニメーションを接触時に表示します。
- *    設定の優先度は、ステート＞武器＞アクターです。
- * 
- *    アクター
- *    <shotCollideActor:n>
- *        n : アニメーションID
- * 
- *    武器
- *    <shotCollideWeapon:n>
- *        n : アニメーションID
- *    
- *    ステート
- *    <shotCollideState:n>
- *        n : アニメーションID
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. このプラグインの動作には、TMShooting.jsプラグインが必要です。
- *    このプラグインは、TMShooting.jsの下に配置してください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v0.2.1 - 2018/05/09 : 不具合修正
- *    1. ディプロイメント時にタイル接触アニメーションが残るように修正。
- *    2. タイル接触アニメーション設定用のタグを変更。
- * 
- * v0.2.0 - 2018/05/09 : 機能追加
- *    1. プレイヤーの弾が通行不可タイルやイベントに接触し、タイルの変更やイベントの
- *       撃破がない場合に、アクターやスキル、武器で指定したアニメーションを表示する
- *       機能を追加。
- *    2. タイルごとに変更時のアニメーションを設定する機能を追加。
- * 
- * v0.1.0 - 2018/05/06 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v0.2.1 Extension plugin for tomoaky's shooting plugin (prototype)
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+This is an extension plugin for tomoaky's shooting plugin (TMShooting.js).
+It adds the following Traits.
+This plugin is a prototype. Its specifications may change significantly in the future.
+
+1. When a player's bullet hits a specific map tile, that tile is replaced with another tile.
+
+<Tile Settings That Can Be Changed>
+Only tiles on layers B and C can be changed.
+One-tile styles (e.g., pots) and two-tile styles (e.g., trees) can be set.
+Specify the tileset and its map ID for settings in the plugin parameters.
+Furthermore, specify the rows for setting the one-tile and two-tile styles.
+
+About Placing Tiles on the Setting Map
+Tiles before change are placed in alternate columns (0, 2, 4, etc.).
+Tiles after change are placed in the column immediately to the right of the previous tiles.
+
+For example, if the setting row for a 2-mask tile is 2,
+Place the top of the wooden tile in column 0, row 2, and the bottom in column 0, row 3.
+Place the new tile in the adjacent column. If erasing, do not place it.
+To change to a 1-mask tile, place it in column 1, row 3.
+
+You can set the number of touches required before a tile changes.
+Place an event on the old tile and enter <tileHp:n> in the event's Note field.
+The value n is the number of touches. Example: <tileHp:5>
+For a 2-mask tile, place it at the top.
+
+<How to Set Animations When Changing>
+There are several ways to set this:
+1. Set common settings in plugin parameters
+2. Enter <changeAnimeId:n> in the tile event's Note field. n is the animation ID.
+
+If both settings are used, the setting from tile event 2 will be used.
+If not set, no animation will be displayed.
+
+2. When a player's shot hits an impassable tile or event without changing the tile or destroying the event, the animation specified for the actor, equipment, or state will be displayed.
+
+Set the following tag in the Note field to display the animation upon contact.
+The priority of the settings is state > weapon > actor.
+
+Actor
+<shotCollideActor:n>
+n: Animation ID
+
+Weapon
+<shotCollideWeapon:n>
+n: Animation ID
+
+State
+<shotCollideState:n>
+n: Animation ID
+
+-----------------------------------------------------------------------------
+Setup Method
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. The TMShooting.js plugin is required for this plugin to function.
+Place this plugin below TMShooting.js.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin source
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v0.2.1 - 2018/05/09: Bug fixes
+1. Fixed so that tile contact animation remains on deployment.
+2. Changed the tag for setting tile contact animation.
+
+v0.2.0 - May 9, 2018: Traits Added
+1. Added a Traits that displays animations specified by actors, skills, and weapons when a player's bullet hits an impassable tile or event without changing the tile or destroying the event.
+2. Added a Traits to set animations for each tile change.
+
+v0.1.0 - May 6, 2018: First version created
+
+-----------------------------------------------------------------------------
+
+@param Default Break Animation
+@desc Sets the animation when erasing tiles.
+@type animation
+@require 1
+
+@param MapID For Setting Tile
+@text Map ID for tile setting
+@desc Specify the map ID for tile settings. Please specify for each tileset.
+@type struct<tileset>[]
 */
-//=============================================================================
+
+
 /*~struct~tileset:
- * @param tileset
- * @text タイルセット
- * @desc タイルセットを指定します。
- * @type tileset
- * @default 
- * 
- * @param mapId
- * @text マップID
- * @desc 指定したタイルセット設定用のマップIDを設定します。
- * @type number
- * @default 
- * 
- * @param _1PartLine
- * @text 1マスタイルの設定行
- * @desc 1マスタイル設定用の行を指定します。複数行指定可能です。
- * @type number[]
- * @min 0
- * @default ["0"]
- * 
- * @param _2VPartsLine
- * @text 縦2マスタイルの設定行
- * @desc 縦2マスタイル設定用の行を指定します。複数行指定可能です。
- * @type number[]
- * @min 0
- * @default ["2"]
- * 
+@param tileset
+@text Tile Set
+@desc Specify the tileset.
+@type tileset
+
+@param mapId
+@text Map ID
+@desc Sets the map ID for the specified tileset configuration.
+@type number
+
+@param _1PartLine
+@text 1. Master Style Setting Line
+@desc Specify one line for the style setting. Multiple lines can be specified.
+@default ["0"]
+@type number[]
+@min 0
+
+@param _2VPartsLine
+@text Vertical 2-math style setting line
+@desc Specify two vertical lines for tile settings. Multiple lines can be specified.
+@default ["2"]
+@type number[]
+@min 0
+*/
+
+
+/*:ja
+@plugindesc v0.2.1 tomoakyさんのシューティングプラグインの機能拡張プラグイン(試作版)
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+tomoakyさんのシューティングプラグイン(TMShooting.js)の拡張プラグインです。
+下記の機能を追加します。
+このプラグインは(試作版)です。今後大きく仕様が変更する可能性があります。
+
+
+1. 特定のマップタイルにプレイヤーの弾が接触すると、そのタイルを別のタイルに変更する。
+
+   ＜変更できるタイルの設定＞
+   変更できるタイルは、レイヤーBおよびCのタイルのみです。
+   １マスタイル(壺など)と、２マスタイル(木など)を設定できます。
+   プラグインパラメータで、タイルセットとその設定用のマップIDを指定します。
+   さらに１マスタイルと２マスタイルの設定を行う行を指定します。
+
+   設定用マップでのタイルの設置について
+     変更前のタイルは0,2,4,...と1列おきに設置します。
+     変更後のタイルは、変更前の右隣の列に設置します。
+
+   例えば２マスタイルの設定行が 2 の場合
+     木のタイルの上部を 0列2行目、下部を0列3行目に設置します。
+     変更後のタイルはその隣の列に設置します。消去の場合は設置しません。
+     １マスタイルに変更する場合は、1列3行目に設置してください。
+
+   タイルには変更までの接触回数の設定ができます。
+     変更前のタイルにイベントを設置し、イベントのメモ欄に<tileHp:n>と入力します。
+     この n の値が接触回数になります。例)<tileHp:5>
+     ２マスタイルの場合は、上部に設置してください。
+
+
+   ＜変更時のアニメーションの設定方法＞
+   設定方法は、以下があります。
+     1. プラグインパラメータで共通設定
+     2. タイルイベントのメモ欄に<changeAnimeId:n>と入力。n がアニメーションID。
+
+   両方で設定している場合は、２のタイルイベント側の設定を使用します。
+   設定しない場合は、アニメーションは表示しません。
+
+
+
+2. プレイヤーの弾が通行不可タイルやイベントに接触し、タイルの変更やイベントの
+   撃破がない場合に、アクターや装備、ステートで指定したアニメーションを表示する。
+
+   以下のタグをメモ欄に設定すると、そのアニメーションを接触時に表示します。
+   設定の優先度は、ステート＞武器＞アクターです。
+
+   アクター
+   <shotCollideActor:n>
+       n : アニメーションID
+
+   武器
+   <shotCollideWeapon:n>
+       n : アニメーションID
+
+   ステート
+   <shotCollideState:n>
+       n : アニメーションID
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. このプラグインの動作には、TMShooting.jsプラグインが必要です。
+   このプラグインは、TMShooting.jsの下に配置してください。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v0.2.1 - 2018/05/09 : 不具合修正
+   1. ディプロイメント時にタイル接触アニメーションが残るように修正。
+   2. タイル接触アニメーション設定用のタグを変更。
+
+v0.2.0 - 2018/05/09 : 機能追加
+   1. プレイヤーの弾が通行不可タイルやイベントに接触し、タイルの変更やイベントの
+      撃破がない場合に、アクターやスキル、武器で指定したアニメーションを表示する
+      機能を追加。
+   2. タイルごとに変更時のアニメーションを設定する機能を追加。
+
+v0.1.0 - 2018/05/06 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Default Break Animation
+@desc タイル消去時のアニメーションを設定します。
+@type animation
+@require 1
+
+@param MapID For Setting Tile
+@text タイル設定用マップID
+@desc タイル設定用マップIDを指定します。タイルセットごとに指定してください。
+@type struct<tileset>[]
+*/
+
+
+/*~struct~tileset:ja
+@param tileset
+@text タイルセット
+@desc タイルセットを指定します。
+@type tileset
+
+@param mapId
+@text マップID
+@desc 指定したタイルセット設定用のマップIDを設定します。
+@type number
+
+@param _1PartLine
+@text 1マスタイルの設定行
+@desc 1マスタイル設定用の行を指定します。複数行指定可能です。
+@default ["0"]
+@type number[]
+@min 0
+
+@param _2VPartsLine
+@text 縦2マスタイルの設定行
+@desc 縦2マスタイル設定用の行を指定します。複数行指定可能です。
+@default ["2"]
+@type number[]
+@min 0
 */
 
 $tileSettingDatas = [];

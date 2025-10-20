@@ -16,220 +16,435 @@ FTKR.BAT = FTKR.BAT || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.2 戦闘中の行動回数を表示・操作するプラグイン
- * @author フトコロ
- *
- * @param Default Max AT
- * @desc 行動回数に最大値を設定します。
- * 0 の場合は最大値なし
- * @default 0
- * @type number
- * @min 0
- *
- * @param --- 行動回数の表示 ---
- * 
- * @param Show AT
- * @desc アクターの残り行動回数を表示する
- * @type boolean
- * @on 有効
- * @off 無効
- * @default false
- * 
- * @param AT Draw Type
- * @desc 行動回数の表示方法を選択します。
- * @type select
- * @option 数値
- * @value 0
- * @option アイコン(現在値のみ)
- * @value 1
- * @option アイコン(現在値と最大値)
- * @value 2
- * @default 0
- * 
- * @param acvalue
- * @text 数値で表示
- * 
- * @param Display AT Format
- * @desc 行動回数の表示内容を設定します。
- * %1 - 行動回数, %2 - 最大値
- * @default [%1]
- * @parent acvalue
- * 
- * @param AT Color
- * @desc 行動回数の表示色を設定します。
- * @default 0
- * @type number
- * @min 0
- * @max 31
- * @parent acvalue
- *
- * @param Display AT Width
- * @desc 行動回数の表示幅を設定します。(半角文字数)
- * @default 3
- * @type number
- * @parent acvalue
- *
- * @param atgauge
- * @text ゲージで表示
- * 
- * @param Display AT Gauge
- * @desc 行動回数のゲージを表示します。
- * @type boolean
- * @on 表示する
- * @off 表示しない
- * @default false
- * @parent atgauge
- * 
- * @param AT Gauge Color1
- * @desc 行動回数のゲージ色1を設定します。
- * @default 13
- * @type number
- * @min 0
- * @max 31
- * @parent atgauge
- *
- * @param AT Gauge Color2
- * @desc 行動回数のゲージ色2を設定します。
- * @default 5
- * @type number
- * @min 0
- * @max 31
- * @parent atgauge
- * 
- * @param acicon
- * @text アイコンで表示
- * 
- * @param AT Icon Index
- * @desc 行動回数の現在値を表すアイコンを設定します。
- * @default 163
- * @type number
- * @min 0
- * @parent acicon
- *
- * @param AT Empty Icon Index
- * @desc 行動回数の空部分を表すアイコンを設定します。
- * 行動回数の最大値を設定した場合のみ有効です。
- * @default 160
- * @type number
- * @min 0
- * @parent acicon
- *
- * @param --- ステータスウィンドウ ---
- * 
- * @param Activated Actor Sign
- * @desc ステータスウィンドウに対して行動済みのアクターの表し方を指定します。
- * @type select
- * @option 特になし
- * @value 0
- * @option 名前をグレー表示にする
- * @value 1
- * @option 名前＋顔画像をグレー表示
- * @value 2
- * @default 0
- *
- * @param --- 戦闘行動の強制 ---
- * 
- * @param Enabled Force Action AT
- * @desc 戦闘行動の強制でスキルを使用したアクターの行動回数消費を有効にする。
- * @type boolean
- * @on 有効
- * @off 無効
- * @default false
- *
- * @param atcode
- * @text --- 特徴および使用効果コードID ---
- * 
- * @param TRAIT_ACTION_MINUS
- * @desc 他のプラグインと競合を起こす場合以外は変更しないでください。
- * @default 161
- * @type number
- * @min 0
- * @parent atcode
- * 
- * @param TRAIT_ACTION_MAX
- * @desc 他のプラグインと競合を起こす場合以外は変更しないでください。
- * @default 162
- * @type number
- * @min 0
- * @parent atcode
- * 
- * @param EFFECT_ACTION_PLUS
- * @desc 他のプラグインと競合を起こす場合以外は変更しないでください。
- * @default 160
- * @type number
- * @min 0
- * @parent atcode
- * 
- * 
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * このプラグインを導入すると、以下の機能を追加します。
- * 
- * 戦闘シーンでパーティーメンバーの行動回数を表示
- * 特徴によって増加する行動回数に最大値を設定
- * アクター、職業、武器、防具、ステート、敵キャラに行動回数を減らす特徴の設定
- * スキル・アイテムに、行動回数の一時増減させる効果の設定
- * スキル・アイテム使用時の行動回数を消費しない効果の設定
- * 
- * 
- * プラグインの使い方は、下のオンラインマニュアルページを見てください。
- * https://github.com/futokoro/RPGMaker/blob/master/FTKR_BattleActionTimes.ja.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、このプラグインを追加して
- *    ください。
- * 
- * 2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
- * 
- *    FTKR_CustomSimpleActorStatus.js (ステータス表示を変更)
- *    FTKR_FVActorAnimation.js        (フロントビューでアクター画像にアニメーション)
- *    FTKR_AlternatingTurnBattle.js
- *    ↑このプラグインよりも上に登録↑
- *    FTKR_BattleActionTimes.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * このプラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * このプラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.2 - 2018/12/19 : 不具合修正
- *    1. 戦闘行動の強制を実行するとエラーになる不具合を修正。
- * 
- * v1.0.1 - 2018/12/03 : 不具合修正
- *    1. プラグインコマンドの誤記修正。
- * 
- * v1.0.0 - 2018/12/02 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.2 A plugin that displays and controls the number of actions during battle
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+This plugin adds the following Traits:
+
+Displays party member action counts during battle scenes
+
+Sets a maximum value for the number of actions increased by traits
+Sets traits that reduce the number of actions for actors, jobs, weapons, armor, states, and Enemies
+Sets skills and items to temporarily increase or decrease the number of actions
+Sets skills and items to not consume actions when used
+
+For instructions on how to use the plugin, see the online manual page below.
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_BattleActionTimes.ja.md
+
+-----------------------------------------------------------------------------
+Setup Instructions
+---------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. When combining with the following plugins, be sure to pay attention to the order of plugin management.
+
+FTKR_CustomSimpleActorStatus.js (Changes the status display)
+FTKR_FVActorAnimation.js (Animates the actor image in front view)
+FTKR_AlternatingTurnBattle.js
+↑Register above this plugin↑
+FTKR_BattleActionTimes.js
+
+-----------------------------------------------------------------------------
+About the license of this plugin (License)
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.2 - 2018/12/19: Bug Fixes
+1. Fixed a bug that caused an error when forcing Battle actions.
+
+v1.0.1 - 2018/12/03: Bug Fixes
+1. Fixed a typo in the plugin command.
+
+v1.0.0 - 2018/12/02: First version created
+
+----------------------------------------------------------------------------
+
+@param Default Max AT
+@desc Set the maximum number of actions. If 0, there is no maximum.
+@default 0
+@type number
+@min 0
+
+@param --- 行動回数の表示 ---
+@text --- Displaying the number of actions ---
+
+@param Show AT
+@desc Shows the actor's remaining number of actions
+@default false
+@type boolean
+@on valid
+@off invalid
+
+@param AT Draw Type
+@desc Select how to display the number of actions.
+@default 0
+@type select
+@option Number
+@value 0
+@option Icon (current value only)
+@value 1
+@option Icons (current and maximum values)
+@value 2
+
+@param acvalue
+@text Display as a number
+
+@param Display AT Format
+@desc Set the display content of the number of actions. %1 - number of actions, %2 - maximum value
+@default [%1]
+@parent acvalue
+
+@param AT Color
+@desc Set the display color for the number of actions.
+@default 0
+@type number
+@min 0
+@max 31
+@parent acvalue
+
+@param Display AT Width
+@desc Set the display width of the number of actions (number of characters).
+@default 3
+@type number
+@parent acvalue
+
+@param atgauge
+@text Displayed as a gauge
+
+@param Display AT Gauge
+@desc Displays the gauge of the number of actions.
+@default false
+@type boolean
+@parent atgauge
+@on Show
+@off Do not display
+
+@param AT Gauge Color1
+@desc Sets the gauge color 1 for the number of actions.
+@default 13
+@type number
+@min 0
+@max 31
+@parent atgauge
+
+@param AT Gauge Color2
+@desc Sets the gauge color 2 for the number of actions.
+@default 5
+@type number
+@min 0
+@max 31
+@parent atgauge
+
+@param acicon
+@text Display as icon
+
+@param AT Icon Index
+@desc Set the icon that represents the current number of actions.
+@default 163
+@type number
+@min 0
+@parent acicon
+
+@param AT Empty Icon Index
+@desc Sets the icon that represents the empty part of the number of actions. This is only valid when the maximum number of actions is set.
+@default 160
+@type number
+@min 0
+@parent acicon
+
+@param --- ステータスウィンドウ ---
+@text --- Status Window ---
+
+@param Activated Actor Sign
+@desc Specifies how to represent actors who have performed an action in the status window.
+@default 0
+@type select
+@option Nothing in particular
+@value 0
+@option Gray out the name
+@value 1
+@option Name + face image displayed in gray
+@value 2
+
+@param --- 戦闘行動の強制 ---
+@text --- Battle Mandate ---
+
+@param Enabled Force Action AT
+@desc Enables the consumption of actions by actors who use skills when forcing Battle actions.
+@default false
+@type boolean
+@on valid
+@off invalid
+
+@param atcode
+@text --- Traits and Usage Effects Code ID ---
+
+@param TRAIT_ACTION_MINUS
+@desc Do not change this unless it causes a conflict with another plugin.
+@default 161
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_ACTION_MAX
+@desc Do not change this unless it causes a conflict with another plugin.
+@default 162
+@type number
+@min 0
+@parent atcode
+
+@param EFFECT_ACTION_PLUS
+@desc Do not change this unless it causes a conflict with another plugin.
+@default 160
+@type number
+@min 0
+@parent atcode
 */
+
+
+/*:ja
+@plugindesc v1.0.2 戦闘中の行動回数を表示・操作するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+このプラグインを導入すると、以下の機能を追加します。
+
+戦闘シーンでパーティーメンバーの行動回数を表示
+特徴によって増加する行動回数に最大値を設定
+アクター、職業、武器、防具、ステート、敵キャラに行動回数を減らす特徴の設定
+スキル・アイテムに、行動回数の一時増減させる効果の設定
+スキル・アイテム使用時の行動回数を消費しない効果の設定
+
+
+プラグインの使い方は、下のオンラインマニュアルページを見てください。
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_BattleActionTimes.ja.md
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、このプラグインを追加して
+   ください。
+
+2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
+
+   FTKR_CustomSimpleActorStatus.js (ステータス表示を変更)
+   FTKR_FVActorAnimation.js        (フロントビューでアクター画像にアニメーション)
+   FTKR_AlternatingTurnBattle.js
+   ↑このプラグインよりも上に登録↑
+   FTKR_BattleActionTimes.js
+
+
+-----------------------------------------------------------------------------
+このプラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+このプラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.2 - 2018/12/19 : 不具合修正
+   1. 戦闘行動の強制を実行するとエラーになる不具合を修正。
+
+v1.0.1 - 2018/12/03 : 不具合修正
+   1. プラグインコマンドの誤記修正。
+
+v1.0.0 - 2018/12/02 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Default Max AT
+@desc 行動回数に最大値を設定します。 0 の場合は最大値なし
+@default 0
+@type number
+@min 0
+
+@param --- 行動回数の表示 ---
+@text --- 行動回数の表示 ---
+
+@param Show AT
+@desc アクターの残り行動回数を表示する
+@default false
+@type boolean
+@on 有効
+@off 無効
+
+@param AT Draw Type
+@desc 行動回数の表示方法を選択します。
+@default 0
+@type select
+@option 数値
+@value 0
+@option アイコン(現在値のみ)
+@value 1
+@option アイコン(現在値と最大値)
+@value 2
+
+@param acvalue
+@text 数値で表示
+
+@param Display AT Format
+@desc 行動回数の表示内容を設定します。 %1 - 行動回数, %2 - 最大値
+@default [%1]
+@parent acvalue
+
+@param AT Color
+@desc 行動回数の表示色を設定します。
+@default 0
+@type number
+@min 0
+@max 31
+@parent acvalue
+
+@param Display AT Width
+@desc 行動回数の表示幅を設定します。(半角文字数)
+@default 3
+@type number
+@parent acvalue
+
+@param atgauge
+@text ゲージで表示
+
+@param Display AT Gauge
+@desc 行動回数のゲージを表示します。
+@default false
+@type boolean
+@parent atgauge
+@on 表示する
+@off 表示しない
+
+@param AT Gauge Color1
+@desc 行動回数のゲージ色1を設定します。
+@default 13
+@type number
+@min 0
+@max 31
+@parent atgauge
+
+@param AT Gauge Color2
+@desc 行動回数のゲージ色2を設定します。
+@default 5
+@type number
+@min 0
+@max 31
+@parent atgauge
+
+@param acicon
+@text アイコンで表示
+
+@param AT Icon Index
+@desc 行動回数の現在値を表すアイコンを設定します。
+@default 163
+@type number
+@min 0
+@parent acicon
+
+@param AT Empty Icon Index
+@desc 行動回数の空部分を表すアイコンを設定します。 行動回数の最大値を設定した場合のみ有効です。
+@default 160
+@type number
+@min 0
+@parent acicon
+
+@param --- ステータスウィンドウ ---
+@text --- ステータスウィンドウ ---
+
+@param Activated Actor Sign
+@desc ステータスウィンドウに対して行動済みのアクターの表し方を指定します。
+@default 0
+@type select
+@option 特になし
+@value 0
+@option 名前をグレー表示にする
+@value 1
+@option 名前＋顔画像をグレー表示
+@value 2
+
+@param --- 戦闘行動の強制 ---
+@text --- 戦闘行動の強制 ---
+
+@param Enabled Force Action AT
+@desc 戦闘行動の強制でスキルを使用したアクターの行動回数消費を有効にする。
+@default false
+@type boolean
+@on 有効
+@off 無効
+
+@param atcode
+@text --- 特徴および使用効果コードID ---
+
+@param TRAIT_ACTION_MINUS
+@desc 他のプラグインと競合を起こす場合以外は変更しないでください。
+@default 161
+@type number
+@min 0
+@parent atcode
+
+@param TRAIT_ACTION_MAX
+@desc 他のプラグインと競合を起こす場合以外は変更しないでください。
+@default 162
+@type number
+@min 0
+@parent atcode
+
+@param EFFECT_ACTION_PLUS
+@desc 他のプラグインと競合を起こす場合以外は変更しないでください。
+@default 160
+@type number
+@min 0
+@parent atcode
+*/
+
 //=============================================================================
 
-(function() {
+(function () {
 
-    var paramParse = function(obj) {
+    var paramParse = function (obj) {
         return JSON.parse(JSON.stringify(obj, paramReplace));
     };
 
-    var paramReplace = function(key, value) {
+    var paramReplace = function (key, value) {
         try {
             return JSON.parse(value || null);
         } catch (e) {
@@ -238,49 +453,49 @@ FTKR.BAT = FTKR.BAT || {};
     };
 
     //objのメモ欄から <metacode> があるか真偽を返す
-    var testObjectMeta = function(obj, metacodes) {
+    var testObjectMeta = function (obj, metacodes) {
         if (!obj) return false;
-        return metacodes.some(function(metacode){
+        return metacodes.some(function (metacode) {
             var metaReg = new RegExp('<' + metacode + '>', 'i');
             return metaReg.test(obj.note);
-        }); 
+        });
     };
 
     //objのメモ欄から <metacode: x> の値を読み取って返す
-    var readObjectMeta = function(obj, metacodes) {
+    var readObjectMeta = function (obj, metacodes) {
         if (!obj) return false;
         var match = {};
-        metacodes.some(function(metacode){
+        metacodes.some(function (metacode) {
             var metaReg = new RegExp('<' + metacode + '[ ]*:[ ]*(.+)>', 'i');
             match = metaReg.exec(obj.note);
             return match;
-        }); 
+        });
         return match ? match[1] : '';
     };
 
     //objのメモ欄から <metacode x: y> の値を読み取って返す
-    var readObjectMetaEx = function(obj, metacodes) {
+    var readObjectMetaEx = function (obj, metacodes) {
         if (!obj) return false;
         var match = {};
-        metacodes.some(function(metacode){
+        metacodes.some(function (metacode) {
             var metaReg = new RegExp('<' + metacode + '[ ]*(.+)[ ]*:[ ]*(.+)>', 'i');
             match = metaReg.exec(obj.note);
             return match;
-        }); 
+        });
         return match ? match : '';
     };
-    
-    var convertEscapeCharacters = function(text) {
+
+    var convertEscapeCharacters = function (text) {
         if (text == null) text = '';
         var window = SceneManager._scene._windowLayer.children[0];
         return window ? window.convertEscapeCharacters(text) : text;
     };
 
-    var setArgStr = function(arg) {
+    var setArgStr = function (arg) {
         return convertEscapeCharacters(arg);
     };
 
-    var setArgNum = function(arg) {
+    var setArgNum = function (arg) {
         try {
             return Number(eval(setArgStr(arg)));
         } catch (e) {
@@ -288,11 +503,11 @@ FTKR.BAT = FTKR.BAT || {};
         }
     };
 
-    var setArgBool = function(arg) {
-        switch((setArgStr(arg)).toUpperCase()) {
+    var setArgBool = function (arg) {
+        switch ((setArgStr(arg)).toUpperCase()) {
             case 'TRUE':
                 return true;
-            default :
+            default:
                 return false;
         }
     }
@@ -303,23 +518,23 @@ FTKR.BAT = FTKR.BAT || {};
     var parameters = PluginManager.parameters('FTKR_BattleActionTimes');
 
     FTKR.BAT = {
-        defaultMaxAT    : (paramParse(parameters['Default Max AT']) || 0),
-        showAT          : (paramParse(parameters['Show AT']) || false),
-        atDrawType      : (paramParse(parameters['AT Draw Type']) || 0),
-        dispATFormat    : (paramParse(parameters['Display AT Format']) || '[%1]'),
-        atColor         : (paramParse(parameters['AT Color']) || 0),
-        dispAtWidth     : (paramParse(parameters['Display AT Width']) || 3),
-        dispATGauge     : (paramParse(parameters['Display AT Gauge']) || false),
-        atGaugeColor1   : (paramParse(parameters['AT Gauge Color1']) || 0),
-        atGaugeColor2   : (paramParse(parameters['AT Gauge Color2']) || 0),
-        atIcon          : (paramParse(parameters['AT Icon Index']) || 163),
-        atEmptyIcon     : (paramParse(parameters['AT Empty Icon Index']) || 160),
-        activated       : +(paramParse(parameters['Activated Actor Sign']) || 0),
-        enabledForceActionAT : (paramParse(parameters['Enabled Force Action AT']) || false),
+        defaultMaxAT: (paramParse(parameters['Default Max AT']) || 0),
+        showAT: (paramParse(parameters['Show AT']) || false),
+        atDrawType: (paramParse(parameters['AT Draw Type']) || 0),
+        dispATFormat: (paramParse(parameters['Display AT Format']) || '[%1]'),
+        atColor: (paramParse(parameters['AT Color']) || 0),
+        dispAtWidth: (paramParse(parameters['Display AT Width']) || 3),
+        dispATGauge: (paramParse(parameters['Display AT Gauge']) || false),
+        atGaugeColor1: (paramParse(parameters['AT Gauge Color1']) || 0),
+        atGaugeColor2: (paramParse(parameters['AT Gauge Color2']) || 0),
+        atIcon: (paramParse(parameters['AT Icon Index']) || 163),
+        atEmptyIcon: (paramParse(parameters['AT Empty Icon Index']) || 160),
+        activated: +(paramParse(parameters['Activated Actor Sign']) || 0),
+        enabledForceActionAT: (paramParse(parameters['Enabled Force Action AT']) || false),
     };
 
     Game_BattlerBase.TRAIT_ACTION_MINUS = +(paramParse(parameters['TRAIT_ACTION_MINUS']));
-    Game_BattlerBase.TRAIT_ACTION_MAX   = +(paramParse(parameters['TRAIT_ACTION_MAX']));
+    Game_BattlerBase.TRAIT_ACTION_MAX = +(paramParse(parameters['TRAIT_ACTION_MAX']));
     Game_Action.EFFECT_ADD_ACTION_TIMES = +(paramParse(parameters['EFFECT_ADD_ACTION_TIMES']));
 
 
@@ -329,7 +544,7 @@ FTKR.BAT = FTKR.BAT || {};
 
     var _DatabaseLoaded = false;
     var _DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-    DataManager.isDatabaseLoaded = function() {
+    DataManager.isDatabaseLoaded = function () {
         if (!_DataManager_isDatabaseLoaded.call(this)) return false;
         if (!_DatabaseLoaded) {
             this.BATTraitNoteTags($dataActors);
@@ -345,30 +560,30 @@ FTKR.BAT = FTKR.BAT || {};
         return true;
     };
 
-    DataManager.BATTraitNoteTags = function(group) {
+    DataManager.BATTraitNoteTags = function (group) {
         for (var n = 1; n < group.length; n++) {
             var obj = group[n];
             var times = readObjectMetaEx(obj, ['FTKR_ACTION_MINUS']);
             if (times) {
                 obj.traits.push({
-                    code   : Game_BattlerBase.TRAIT_ACTION_MINUS,
-                    value1 : Number(times[1]), //確率
-                    value2 : Number(times[2]), //減少数
+                    code: Game_BattlerBase.TRAIT_ACTION_MINUS,
+                    value1: Number(times[1]), //確率
+                    value2: Number(times[2]), //減少数
                 });
             }
         }
     };
 
-    DataManager.BATEffectNoteTags = function(group) {
+    DataManager.BATEffectNoteTags = function (group) {
         for (var n = 1; n < group.length; n++) {
             var obj = group[n];
             obj.noAC = Boolean(testObjectMeta(obj, ['FTKR_NOAT', 'ALTTB_NOAC']) || false);
             var times = readObjectMetaEx(obj, ['FTKR_ADD_ACTION_TIMES']);
             if (times) {
                 obj.effects.push({
-                    code   : Game_Action.EFFECT_ACTION_PLUS,
-                    value1 : Number(times[1]), //確率　
-                    value2 : Number(times[2]), //増加数
+                    code: Game_Action.EFFECT_ACTION_PLUS,
+                    value1: Number(times[1]), //確率　
+                    value2: Number(times[2]), //増加数
                 });
             }
         }
@@ -378,7 +593,7 @@ FTKR.BAT = FTKR.BAT || {};
     // Game_BattlerBase
     //=============================================================================
 
-    Game_BattlerBase.prototype.actionMinusSet = function() {
+    Game_BattlerBase.prototype.actionMinusSet = function () {
         return this.traits(Game_BattlerBase.TRAIT_ACTION_MINUS);
     };
 
@@ -386,52 +601,52 @@ FTKR.BAT = FTKR.BAT || {};
     // Game_Battler
     //=============================================================================
 
-    Game_Battler.prototype.baseActionTimes = function() {
+    Game_Battler.prototype.baseActionTimes = function () {
         return this.actionTimePlus() - this.actionTimeMinus();
     };
 
-    Game_Battler.prototype.actionTimePlus = function() {
-        return this.actionPlusSet().reduce(function(r, p) {
+    Game_Battler.prototype.actionTimePlus = function () {
+        return this.actionPlusSet().reduce(function (r, p) {
             return Math.random() < p ? r + 1 : r;
         }, 1);
     }
 
-    Game_Battler.prototype.actionTimeMinus = function() {
-        return this.actionMinusSet().reduce(function(r, p) {
+    Game_Battler.prototype.actionTimeMinus = function () {
+        return this.actionMinusSet().reduce(function (r, p) {
             return Math.random() * 100 < p.value1 ? r + p.value2 : r;
         }, 0);
     };
 
-    Game_Battler.prototype.actionTimeOffset = function() {
+    Game_Battler.prototype.actionTimeOffset = function () {
         return this._actionTimeOffset || 0;
     }
 
-    Game_Battler.prototype.actionTimes = function() {
+    Game_Battler.prototype.actionTimes = function () {
         return $gameParty.inBattle() ? this.numActions() : this.makeActionTimes();
     }
 
-    Game_Battler.prototype.maxActionTimes = function() {
+    Game_Battler.prototype.maxActionTimes = function () {
         return FTKR.BAT.defaultMaxAT;
     };
 
-    Game_Battler.prototype.atRate = function() {
+    Game_Battler.prototype.atRate = function () {
         return this.maxActionTimes() ? this.actionTimes() / this.maxActionTimes() : 0;
     };
 
-    Game_Battler.prototype.clearActionTimeOffset = function() {
+    Game_Battler.prototype.clearActionTimeOffset = function () {
         this._actionTimeOffset = 0;
     }
 
-    Game_Battler.prototype.setActionTimeOffset = function(times) {
+    Game_Battler.prototype.setActionTimeOffset = function (times) {
         this._actionTimeOffset = times;
     }
 
-    Game_Battler.prototype.addActionTimeOffset = function(times) {
+    Game_Battler.prototype.addActionTimeOffset = function (times) {
         this.setActionTimeOffset(times + this.actionTimeOffset());
     }
 
     //書き換え
-    Game_Battler.prototype.makeActionTimes = function() {
+    Game_Battler.prototype.makeActionTimes = function () {
         var times = this.baseActionTimes();
         times += this.actionTimeOffset();
         if (this.maxActionTimes() > 0) times = Math.min(this.maxActionTimes(), times);
@@ -439,7 +654,7 @@ FTKR.BAT = FTKR.BAT || {};
         return times;
     };
 
-    Game_Battler.prototype.addActionTimes = function(times) {
+    Game_Battler.prototype.addActionTimes = function (times) {
         this.addActionTimeOffset(times);
         if (times > 0) {
             this.addActions(times);
@@ -448,48 +663,48 @@ FTKR.BAT = FTKR.BAT || {};
         }
     };
 
-    Game_Battler.prototype.addActions = function(times) {
+    Game_Battler.prototype.addActions = function (times) {
         for (var i = 0; i < times; i++) {
             if (this.maxActionTimes() > 0 && this.numActions() >= this.maxActionTimes()) return;
             this._actions.push(new Game_Action(this));
         }
     };
 
-    Game_Battler.prototype.reduceActions = function(times) {
+    Game_Battler.prototype.reduceActions = function (times) {
         for (var i = 0; i < -times; i++) {
             if (this.numActions() <= 0) return;
             this._actions.shift();
         }
     };
 
-    Game_Battler.prototype.catResetActions = function() {
+    Game_Battler.prototype.catResetActions = function () {
     };
 
-    Game_Battler.prototype.canPayActionTimes = function(item) {
+    Game_Battler.prototype.canPayActionTimes = function (item) {
         return !this.numActions() && item.noAC || this.numActions();
     };
 
     var _Game_Battler_removeCurrentAction = Game_Battler.prototype.removeCurrentAction;
-    Game_Battler.prototype.removeCurrentAction = function() {
+    Game_Battler.prototype.removeCurrentAction = function () {
         var action = this.currentAction();
         if (!action || action.item() && action.item().noAC || !FTKR.BAT.enabledForceActionAT && this.currentAction()._forcing) return;
         _Game_Battler_removeCurrentAction.call(this);
     };
 
     var _Game_Battler_forceAction = Game_Battler.prototype.forceAction;
-    Game_Battler.prototype.forceAction = function(skillId, targetIndex) {
+    Game_Battler.prototype.forceAction = function (skillId, targetIndex) {
         if (FTKR.BAT.enabledForceActionAT && !$dataSkills[skillId].noAC && !this.numActions()) return;
         _Game_Battler_forceAction.call(this, skillId, targetIndex);
     };
-    
+
     var _Game_Battler_onBattleStart = Game_Battler.prototype.onBattleStart;
-    Game_Battler.prototype.onBattleStart = function() {
+    Game_Battler.prototype.onBattleStart = function () {
         this.clearActionTimeOffset();
         _Game_Battler_onBattleStart.call(this);
     };
 
     var _Game_Battler_onTurnEnd = Game_Battler.prototype.onTurnEnd;
-    Game_Battler.prototype.onTurnEnd = function() {
+    Game_Battler.prototype.onTurnEnd = function () {
         _Game_Battler_onTurnEnd.call(this);
         this.clearActionTimeOffset();
     };
@@ -498,22 +713,22 @@ FTKR.BAT = FTKR.BAT || {};
     // Game_Actor
     //=============================================================================
 
-    Game_Actor.prototype.maxActionTimes = function() {
-        return +readObjectMeta(this.actor(), ['FTKR_MAX_AT','ALTTB_MAX_AC']) || Game_Battler.prototype.maxActionTimes.call(this);
+    Game_Actor.prototype.maxActionTimes = function () {
+        return +readObjectMeta(this.actor(), ['FTKR_MAX_AT', 'ALTTB_MAX_AC']) || Game_Battler.prototype.maxActionTimes.call(this);
     };
 
     //=============================================================================
     // Game_Enemy
     //=============================================================================
 
-    Game_Enemy.prototype.maxActionTimes = function() {
-        return +readObjectMeta(this.enemy(), ['FTKR_MAX_AT','ALTTB_MAX_AC']) || Game_Battler.prototype.maxActionTimes.call(this);
+    Game_Enemy.prototype.maxActionTimes = function () {
+        return +readObjectMeta(this.enemy(), ['FTKR_MAX_AT', 'ALTTB_MAX_AC']) || Game_Battler.prototype.maxActionTimes.call(this);
     };
 
-    Game_Enemy.prototype.catResetActions = function() {
+    Game_Enemy.prototype.catResetActions = function () {
         Game_Battler.prototype.catResetActions.call(this);
         if (this.numActions() > 0) {
-            var actionList = this.enemy().actions.filter(function(a) {
+            var actionList = this.enemy().actions.filter(function (a) {
                 return this.isActionValid(a);
             }, this);
             if (actionList.length > 0) {
@@ -528,28 +743,28 @@ FTKR.BAT = FTKR.BAT || {};
     //=============================================================================
 
     var _Game_Action_testItemEffect = Game_Action.prototype.testItemEffect;
-    Game_Action.prototype.testItemEffect = function(target, effect) {
+    Game_Action.prototype.testItemEffect = function (target, effect) {
         switch (effect.code) {
-        case Game_Action.EFFECT_ADD_ACTION_TIMES:
-            return true;
-        default:
-            return _Game_Action_testItemEffect.call(this, target, effect);
-        }
-    };
-    
-    var _Game_Action_applyItemEffect = Game_Action.prototype.applyItemEffect;
-    Game_Action.prototype.applyItemEffect = function(target, effect) {
-        switch (effect.code) {
-        case Game_Action.EFFECT_ADD_ACTION_TIMES:
-            this.itemEffectAddActionTimes(target, effect);
-            break;
-        default:
-            _Game_Action_applyItemEffect.call(this, target, effect);
-            break;
+            case Game_Action.EFFECT_ADD_ACTION_TIMES:
+                return true;
+            default:
+                return _Game_Action_testItemEffect.call(this, target, effect);
         }
     };
 
-    Game_Action.prototype.itemEffectAddActionTimes = function(target, effect) {
+    var _Game_Action_applyItemEffect = Game_Action.prototype.applyItemEffect;
+    Game_Action.prototype.applyItemEffect = function (target, effect) {
+        switch (effect.code) {
+            case Game_Action.EFFECT_ADD_ACTION_TIMES:
+                this.itemEffectAddActionTimes(target, effect);
+                break;
+            default:
+                _Game_Action_applyItemEffect.call(this, target, effect);
+                break;
+        }
+    };
+
+    Game_Action.prototype.itemEffectAddActionTimes = function (target, effect) {
         var times = effect.value2;
         if (Math.random() * 100 < effect.value1 && target.isAlive()) {
             target.addActionTimes(times);
@@ -562,7 +777,7 @@ FTKR.BAT = FTKR.BAT || {};
     //=============================================================================
 
     var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-    Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    Game_Interpreter.prototype.pluginCommand = function (command, args) {
         switch (command.toUpperCase()) {
             case 'FTKR_行動回数増加':
             case 'AltTB_行動回数増加':
@@ -580,10 +795,10 @@ FTKR.BAT = FTKR.BAT || {};
         }
     };
 
-    Game_Interpreter.prototype.addActionTimes = function(args) {
+    Game_Interpreter.prototype.addActionTimes = function (args) {
         var target = null;
         var targetId = setArgNum(args[1]);
-        switch(args[0].toUpperCase()) {
+        switch (args[0].toUpperCase()) {
             case 'アクター':
             case 'ACTOR':
                 target = $gameActors.actor(targetId);
@@ -605,10 +820,10 @@ FTKR.BAT = FTKR.BAT || {};
         }
     };
 
-    Game_Interpreter.prototype.catResetActions = function(args) {
+    Game_Interpreter.prototype.catResetActions = function (args) {
         var target = null;
         var targetId = setArgNum(args[1]);
-        switch(args[0].toUpperCase()) {
+        switch (args[0].toUpperCase()) {
             case 'アクター':
             case 'ACTOR':
                 target = $gameActors.actor(targetId);
@@ -633,12 +848,12 @@ FTKR.BAT = FTKR.BAT || {};
     // Window_Base
     //=============================================================================
 
-    Window_Base.prototype.drawActorActionTimes = function(actor, x, y, width) {
+    Window_Base.prototype.drawActorActionTimes = function (actor, x, y, width) {
         var ac = actor.actionTimes();
         var mac = actor.maxActionTimes();
         var icon1 = FTKR.BAT.atIcon;
         var icon2 = FTKR.BAT.atEmptyIcon;
-        this.drawATGauge(actor,x, y, width);
+        this.drawATGauge(actor, x, y, width);
         switch (+FTKR.BAT.atDrawType) {
             case 1:
                 this.drawCssIconValue(x, y, width, ac, icon1);
@@ -655,14 +870,14 @@ FTKR.BAT = FTKR.BAT || {};
         return 1;
     };
 
-    Window_Base.prototype.drawCssNumberValue = function(x, y, width, value, max) {
+    Window_Base.prototype.drawCssNumberValue = function (x, y, width, value, max) {
         var text = FTKR.BAT.dispATFormat.format(value, max);
         this.changeTextColor(this.textColor(FTKR.BAT.atColor));
         this.drawText(text, x, y, width, 'right');
         this.resetTextColor();
     };
 
-    Window_Base.prototype.drawCssIconValue = function(x, y, width, value, icon) {
+    Window_Base.prototype.drawCssIconValue = function (x, y, width, value, icon) {
         var space = 0;
         var iw = Window_Base._iconWidth;
         if (value > 1) {
@@ -677,7 +892,7 @@ FTKR.BAT = FTKR.BAT || {};
         }
     };
 
-    Window_Base.prototype.drawIconGauge = function(x, y, width, current, max, icon1, icon2) {
+    Window_Base.prototype.drawIconGauge = function (x, y, width, current, max, icon1, icon2) {
         var space = 0;
         var iw = Window_Base._iconWidth;
         if (max > 1) {
@@ -692,8 +907,8 @@ FTKR.BAT = FTKR.BAT || {};
             this.drawIcon(icon, x + space * i, y + 2);
         }
     };
-    
-    Window_Base.prototype.drawATGauge = function(actor, x, y, width) {
+
+    Window_Base.prototype.drawATGauge = function (actor, x, y, width) {
         if (FTKR.BAT.dispATGauge && !FTKR.BAT.atDrawType && actor.maxActionTimes() > 0) {
             var color1 = this.atGaugeColor1();
             var color2 = this.atGaugeColor2();
@@ -701,11 +916,11 @@ FTKR.BAT = FTKR.BAT || {};
         }
     };
 
-    Window_Base.prototype.atGaugeColor1 = function() {
+    Window_Base.prototype.atGaugeColor1 = function () {
         return this.textColor(FTKR.BAT.atGaugeColor1);
     };
 
-    Window_Base.prototype.atGaugeColor2 = function() {
+    Window_Base.prototype.atGaugeColor2 = function () {
         return this.textColor(FTKR.BAT.atGaugeColor2);
     };
 
@@ -714,7 +929,7 @@ FTKR.BAT = FTKR.BAT || {};
     //=============================================================================
 
     var _BAT_Window_BattleStatus_drawActorName = Window_BattleStatus.prototype.drawActorName;
-    Window_BattleStatus.prototype.drawActorName = function(actor, x, y, width) {
+    Window_BattleStatus.prototype.drawActorName = function (actor, x, y, width) {
         if (FTKR.BAT.activated) this.changePaintOpacity(actor.canAction());
         if (FTKR.BAT.showAT) {
             this.drawActorActionTimes(actor, x, y, width);
@@ -724,7 +939,7 @@ FTKR.BAT = FTKR.BAT || {};
     };
 
     var _BAT_Window_BattleStatus_drawActorFace = Window_BattleStatus.prototype.drawActorFace;
-    Window_BattleStatus.prototype.drawActorFace = function(actor, x, y, width, height) {
+    Window_BattleStatus.prototype.drawActorFace = function (actor, x, y, width, height) {
         if (FTKR.BAT.activated === 2) this.changePaintOpacity(actor.canAction());
         _BAT_Window_BattleStatus_drawActorFace.call(this, actor, x, y, width, height);
         this.changePaintOpacity(true);
@@ -735,7 +950,7 @@ FTKR.BAT = FTKR.BAT || {};
     //=============================================================================
 
     var _BAT_Window_BattleStatus_drawCssActorName = Window_BattleStatus.prototype.drawCssActorName;
-    Window_BattleStatus.prototype.drawCssActorName = function(actor, x, y, width) {
+    Window_BattleStatus.prototype.drawCssActorName = function (actor, x, y, width) {
         if (FTKR.BAT.activated) this.changePaintOpacity(actor.canAction());
         var line = _BAT_Window_BattleStatus_drawCssActorName.call(this, actor, x, y, width);
         this.changePaintOpacity(true);
@@ -743,16 +958,16 @@ FTKR.BAT = FTKR.BAT || {};
     };
 
     var _BAT_Window_BattleStatus_drawCssFace = Window_BattleStatus.prototype.drawCssFace;
-    Window_BattleStatus.prototype.drawCssFace = function(actor, dx, dy, width, height) {
+    Window_BattleStatus.prototype.drawCssFace = function (actor, dx, dy, width, height) {
         _BAT_Window_BattleStatus_drawCssFace.call(this, actor, dx, dy, width, height);
-        if (Imported.FTKR_FAA &&!(!$gameParty.inBattle() || FTKR.FAA.destination !== 1)) {
+        if (Imported.FTKR_FAA && !(!$gameParty.inBattle() || FTKR.FAA.destination !== 1)) {
             var index = actor.index() % this.showActorNum();
             this._faceSprite[index].opacity = this.isEnabledChangePaintOpacity(actor) ?
                 255 : this.translucentOpacity();
         }
     };
 
-    Window_BattleStatus.prototype.isEnabledChangePaintOpacity = function(actor) {
+    Window_BattleStatus.prototype.isEnabledChangePaintOpacity = function (actor) {
         var result = FTKR.BAT.activated === 2 && actor && actor.canAction() || FTKR.BAT.activated !== 2;
         if (Imported.FTKR_CSS) {
             result = Window_Base.prototype.isEnabledChangePaintOpacity.call(this, actor) && result;
@@ -762,15 +977,15 @@ FTKR.BAT = FTKR.BAT || {};
 
     if (Imported.FTKR_CSS) {
 
-    var _BAT_Window_Base_drawCssActorStatusBase_B = Window_Base.prototype.drawCssActorStatusBase_B;
-    Window_Base.prototype.drawCssActorStatusBase_B = function(index, actor, x, y, width, status, lss, css) {
-        switch (status.toUpperCase()) {
-            case 'ACTC':
-                return this.drawActorActionTimes(actor, x, y, width);
-            default:
-                return _BAT_Window_Base_drawCssActorStatusBase_B.apply(this, arguments);
-        }
-    };
+        var _BAT_Window_Base_drawCssActorStatusBase_B = Window_Base.prototype.drawCssActorStatusBase_B;
+        Window_Base.prototype.drawCssActorStatusBase_B = function (index, actor, x, y, width, status, lss, css) {
+            switch (status.toUpperCase()) {
+                case 'ACTC':
+                    return this.drawActorActionTimes(actor, x, y, width);
+                default:
+                    return _BAT_Window_Base_drawCssActorStatusBase_B.apply(this, arguments);
+            }
+        };
 
     }//FTKR_CustomSimpleActorStatus.js
 
