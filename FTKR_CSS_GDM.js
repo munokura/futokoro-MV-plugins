@@ -22,115 +22,230 @@ FTKR.CSS.GDM = FTKR.CSS.GDM || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.1.0 GDMを使ってFTKR_CSSステータス表示を変更するプラグイン
- * @author フトコロ
- *
- * @help
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * トリアコンタンさん製作のGraphicalDesignMode.jsを使って
- * FTKR_CSSプラグインのステータス表示のレイアウトをゲーム画面上で変更できます。
- * 
- * デザインモードにて、ウィンドウ内にマウスカーソルを合わせて
- * 英字キーを押下すると、各プロパティを変更できます。
- * 
- * ※英字とプロパティの対応
- *
- * R. Text1部に表示するステータス
- * F. Text2部に表示するステータス
- * V. Text3部に表示するステータス
- * T. 各Textの間隔
- * G. Text内で複数表示する場合の間隔
- * B. Text1~Text3の表示幅の比率
- * 
- * 以下のキー操作はメニュー画面、バトル画面、戦績画面のみ有効
- * Y. アクターを横に並べる数
- * H. アクター１人分の表示高さ
- * N. 縦のカーソル間隔
- * 
- * 
- * 設定可能なステータスウィンドウ
- * ・メニュー画面
- * ・スキル画面
- * ・装備画面
- * ・ステータス画面(*1)
- * ・バトル画面
- * ・戦績画面(FTKR_CSS_CustomizeBattleResults.jsが必要)
- * ・ショップ画面(FTKR_CSS_ShopStatus.jsが必要)
- * 
- * (*1)ステータス画面の設定は、FTKR_CSS_DetailedStatus.jsと異なります。
- *     ステータス画面を縦に４分割した表示エリアごとに個別に設定します。
- *     設定する際には、マウスカーソル位置を各表示エリアに合わせてください。
- *  
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. 本プラグインを動作させるためには、以下のプラグインが必要です。
- *    本プラグインは、これらのプラグインよりも下の位置に配置してください。
- * 
- *    GraphicalDesignMode.js
- *    FTKR_CustomSimpleActorStatus.js
- * 
- * 3. 以下のプラグインと組み合わせる場合は、本プラグインはこれらよりも
- *    下に配置してください。
- * 
- *    FTKR_CSS_MenuStatus.js
- *    FTKR_CSS_SkillStatus.js
- *    FTKR_CSS_DetailedStatus.js
- *    FTKR_CSS_EquipStatus.js
- *    FTKR_CSS_BattleStatus.js(*1)
- *    FTKR_CSS_CustomizeBattleResults.js
- *    FTKR_CSS_ShopStatus.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * 補足情報
- *-----------------------------------------------------------------------------
- * 1．Text1～Text3の表示を消したい場合。
- * 
- *    半角スペースだけを入力することで、無表示になります。
- *    何も入力しない(空欄)の場合は、デフォルトの表示になります。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.1.0 - 2017/11/18 : 仕様変更
- *    1. FTKR_CustomSimpleActorStatus.jsの v2.6.0 に対応。
- * 
- * v1.0.2 - 2017/11/10 : 機能追加
- *    1. FTKR_CSS_MenuStatus.jsとFTKR_CSS_BattleStatus.jsの
- *       ウィンドウ設定をデフォルトとして読み込む機能を追加。
- * 
- * v1.0.1 - 2017/11/10 : 不具合修正、機能追加、ヘルプ修正
- *    1. FTKR_FacialImageDifference.jsと組み合わた場合、顔画像の表示を
- *       削除しても表示が残ってしまう不具合を修正。
- *    2. FTKR_CSS系の拡張プラグインの設定を読み込む機能を追加。
- *    3. ヘルプに、ステータス画面の設定に関する注意を追記。
- * 
- * v1.0.0 - 2017/11/08 : 初版作成
- * 
- *-----------------------------------------------------------------------------
- */
+@plugindesc v1.1.0 Plugin to change FTKR_CSS status display using GDM
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+Using GraphicalDesignMode.js created by Triacontan,
+you can change the layout of the FTKR_CSS plugin's status display on the game screen.
+
+In design mode, move the mouse cursor within the window and press the alphabetic keys to change each property.
+
+*Correspondence between alphabetic characters and properties
+
+R. Status displayed in Text1
+F. Status displayed in Text2
+V. Status displayed in Text3
+T. Spacing between each text
+G. Spacing when displaying multiple items within a text
+B. Display width ratio for Text1-Text3
+
+The following key operations are only valid for the menu screen, battle screen, and results screen.
+Y. Number of actors displayed horizontally
+H. Display height per actor
+N. Vertical cursor spacing
+
+Configurable status windows
+- Menu screen
+- Skill screen
+- Equipment screen
+- Status screen (*1)
+- Battle screen
+- Results screen (requires FTKR_CSS_CustomizeBattleResults.js)
+- Shop screen (requires FTKR_CSS_ShopStatus.js)
+
+(*1) Status screen settings differ from FTKR_CSS_DetailedStatus.js.
+The status screen is divided vertically into four display areas, and settings are made individually.
+When configuring settings, position the mouse cursor over each display area.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the Plugin Manager.
+
+2. The following plugins are required for this plugin to function.
+Place this plugin below these plugins.
+
+GraphicalDesignMode.js
+FTKR_CustomSimpleActorStatus.js
+
+3. If using the following plugins, place this plugin below them.
+
+FTKR_CSS_MenuStatus.js
+FTKR_CSS_SkillStatus.js
+FTKR_CSS_DetailedStatus.js
+FTKR_CSS_EquipStatus.js
+FTKR_CSS_BattleStatus.js(*1)
+FTKR_CSS_CustomizeBattleResults.js
+FTKR_CSS_ShopStatus.js
+
+-----------------------------------------------------------------------------
+Additional Information
+-----------------------------------------------------------------------------
+1. To hide Text1 through Text3.
+
+Entering only a space will hide them.
+Leaving them blank will use the default display.
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.1.0 - 2017/11/18: Specification Changes
+1. Compatible with v2.6.0 of FTKR_CustomSimpleActorStatus.js.
+
+v1.0.2 - November 10, 2017: Traits Additions
+1. Added the ability to load the window settings of FTKR_CSS_MenuStatus.js and FTKR_CSS_BattleStatus.js as defaults.
+
+v1.0.1 - November 10, 2017: Bug fixes, Traits additions, and help revisions
+1. Fixed an issue where facial images would remain displayed even after being deleted when combined with FTKR_FacialImageDifference.js.
+2. Added the ability to load settings from FTKR_CSS extension plugins.
+3. Added a note regarding status screen settings to the help.
+
+v1.0.0 - November 8, 2017: First version created
+
+-----------------------------------------------------------------------------
+*/
+
+
+/*:ja
+@plugindesc v1.1.0 GDMを使ってFTKR_CSSステータス表示を変更するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+トリアコンタンさん製作のGraphicalDesignMode.jsを使って
+FTKR_CSSプラグインのステータス表示のレイアウトをゲーム画面上で変更できます。
+
+デザインモードにて、ウィンドウ内にマウスカーソルを合わせて
+英字キーを押下すると、各プロパティを変更できます。
+
+※英字とプロパティの対応
+
+R. Text1部に表示するステータス
+F. Text2部に表示するステータス
+V. Text3部に表示するステータス
+T. 各Textの間隔
+G. Text内で複数表示する場合の間隔
+B. Text1~Text3の表示幅の比率
+
+以下のキー操作はメニュー画面、バトル画面、戦績画面のみ有効
+Y. アクターを横に並べる数
+H. アクター１人分の表示高さ
+N. 縦のカーソル間隔
+
+
+設定可能なステータスウィンドウ
+・メニュー画面
+・スキル画面
+・装備画面
+・ステータス画面(*1)
+・バトル画面
+・戦績画面(FTKR_CSS_CustomizeBattleResults.jsが必要)
+・ショップ画面(FTKR_CSS_ShopStatus.jsが必要)
+
+(*1)ステータス画面の設定は、FTKR_CSS_DetailedStatus.jsと異なります。
+    ステータス画面を縦に４分割した表示エリアごとに個別に設定します。
+    設定する際には、マウスカーソル位置を各表示エリアに合わせてください。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. 本プラグインを動作させるためには、以下のプラグインが必要です。
+   本プラグインは、これらのプラグインよりも下の位置に配置してください。
+
+   GraphicalDesignMode.js
+   FTKR_CustomSimpleActorStatus.js
+
+3. 以下のプラグインと組み合わせる場合は、本プラグインはこれらよりも
+   下に配置してください。
+
+   FTKR_CSS_MenuStatus.js
+   FTKR_CSS_SkillStatus.js
+   FTKR_CSS_DetailedStatus.js
+   FTKR_CSS_EquipStatus.js
+   FTKR_CSS_BattleStatus.js(*1)
+   FTKR_CSS_CustomizeBattleResults.js
+   FTKR_CSS_ShopStatus.js
+
+
+-----------------------------------------------------------------------------
+補足情報
+-----------------------------------------------------------------------------
+1．Text1～Text3の表示を消したい場合。
+
+   半角スペースだけを入力することで、無表示になります。
+   何も入力しない(空欄)の場合は、デフォルトの表示になります。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.1.0 - 2017/11/18 : 仕様変更
+   1. FTKR_CustomSimpleActorStatus.jsの v2.6.0 に対応。
+
+v1.0.2 - 2017/11/10 : 機能追加
+   1. FTKR_CSS_MenuStatus.jsとFTKR_CSS_BattleStatus.jsの
+      ウィンドウ設定をデフォルトとして読み込む機能を追加。
+
+v1.0.1 - 2017/11/10 : 不具合修正、機能追加、ヘルプ修正
+   1. FTKR_FacialImageDifference.jsと組み合わた場合、顔画像の表示を
+      削除しても表示が残ってしまう不具合を修正。
+   2. FTKR_CSS系の拡張プラグインの設定を読み込む機能を追加。
+   3. ヘルプに、ステータス画面の設定に関する注意を追記。
+
+v1.0.0 - 2017/11/08 : 初版作成
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
 (function() {
