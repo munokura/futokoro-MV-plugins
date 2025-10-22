@@ -16,501 +16,960 @@ FTKR.DCF = FTKR.DCF || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.2.2 コマンドに枠を付けるプラグイン
- * @author フトコロ
- *
- * @param --Basic Setting--
- * @default
- * 
- * @param Display Frame Type
- * @desc 表示するコマンド枠のタイプを設定します
- * @type select
- * @option 非表示
- * @value 0
- * @option 単線
- * @value 1
- * @option 複線
- * @value 2
- * @option 画像
- * @value 3
- * @option 単線＋画像
- * @value 4
- * @option 複線＋画像
- * @value 5
- * @option 単線＋塗潰し
- * @value 6
- * @option 複線＋塗潰し
- * @value 7
- * @default 1
- * 
- * @param When To Display Frame
- * @desc コマンド枠を表示するタイミング
- * @type select
- * @option 常時
- * @value 0
- * @option カーソルと重なる時
- * @value 1
- * @option カーソルと重ならない時
- * @value 2
- * @default 1
- * 
- * @param Change Frame On Cursor
- * @desc カーソルと重なった時に枠を変更する機能
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- * 
- * @param Hide Cursor
- * @desc コマンドカーソルを非表示にする機能
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 0
- * 
- * @param --Frame Line Setting--
- * @default
- * 
- * @param Default Line Color
- * @desc 標準で枠線に使用する色番号
- * @default 0
- * 
- * @param Line Color On Cursor
- * @desc カーソルと重なった時に使用する色番号
- * @default 17
- * 
- * @param Line Thick
- * @desc 枠線の太さ
- * @default 2
- * 
- * @param Sub Line Color
- * @desc 複線時に使用する枠線の色番号
- * @default 15
- * 
- * @param Sub Line Thick
- * @desc 複線時に使用する枠線の太さ
- * @default 1
- * 
- * @param --Rect Frame Setting--
- * @default
- * 
- * @param Default Rect Color
- * @desc 標準で枠内塗潰しに使用する色番号
- * @default 11
- * 
- * @param Default Rect Color2
- * @desc 標準で枠内塗潰しに使用する色番号
- * (グラデーション表示用の2色目の色番号)
- * @default 
- * 
- * @param Rect Color On Cursor
- * @desc カーソルと重なった時に使用する色番号
- * @default 3
- * 
- * @param Rect Color On Cursor2
- * @desc カーソルと重なった時に使用する色番号
- * (グラデーション表示用の2色目の色番号)
- * @default 
- * 
- * @param Rect Color Opacity
- * @desc 枠内塗潰し色の透明度
- * 0 - 透明, 255 - 不透明
- * @default 255
- * 
- * @param --Image Frame Setting--
- * @default
- * 
- * @param Image Name
- * @desc 使用する画像名
- * ファイルは /img/system/ に保存してください
- * @default 
- * @require 1
- * @dir img/system/
- * @type file
- * 
- * @param Image Width
- * @desc 枠画像の幅
- * 注意：画像ファイルの幅ではありません
- * @default 
- * 
- * @param Image Height
- * @desc 枠画像の高さ
- * 注意：画像ファイルの高さではありません
- * @default 
- * 
- * @param Enabled Change Scale
- * @desc 枠画像とカーソルサイズが異なる時の自動サイズ調整機能
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- * 
- * @param Image Offset X
- * @desc カーソル枠に対する枠画像のX方向のズレ
- * @default 0
- * 
- * @param Image Offset Y
- * @desc カーソル枠に対する枠画像のY方向のズレ
- * @default 0
- * 
- * @param Image Offset Width
- * @desc カーソル枠に対する枠画像の幅の差
- * @default 0
- * 
- * @param Image Offset Height
- * @desc カーソル枠に対する枠画像の高さの差
- * @default 0
- * 
- * @param Default Image Index
- * @desc 標準で表示する画像の番号
- * @default 0
- * 
- * @param Image Index On Cursor
- * @desc カーソルと重なった時に表示する画像の番号
- * @default 1
- *
- * @param --Enabled Command--
- * @default
- * 
- * @param Enabled Title Command
- * @desc タイトルコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Menu Command
- * @desc メニューコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Item Command
- * @desc アイテムコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Skill Command
- * @desc スキルコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Equip Command
- * @desc 装備コマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Option Command
- * @desc オプションコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Shop Command
- * @desc ショップコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Choice Command
- * @desc ショップコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Battle Command
- * @desc 戦闘コマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled GameEnd Command
- * @desc ショップコマンドに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 1
- *
- * @param Enabled Menu Skill List
- * @desc メニュー画面のスキルリストに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 0
- *
- * @param Enabled Battle Skill List
- * @desc バトル画面のスキルリストに枠を付けるか
- * @type select
- * @option 無効
- * @value 0
- * @option 有効
- * @value 1
- * @default 0
- *
- * @help
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインを実装することで、メニュー等のコマンド(*1)やリスト(*2)に
- * 枠を付けることができます。
- * 
- * 枠は、単線や複線、画像などから選ぶことが出来ます。
- * また、どのタイミングで枠を付けるかも選ぶことが出来ます。
- * 
- * (*1)本プラグインにおけるコマンドとは、Window_Commandオブジェクトを使って
- *     生成しているウィンドウのコマンドを指します。
- *     MV標準では、以下のウィンドウが相当します。
- *      1.タイトルコマンド
- *      2.メニュー
- *      3.アイテム選択後のアイテムタイプリスト
- *      4.装備選択後の装備変更、最強装備、等のリスト
- *      5.スキル選択後のスキルタイプリスト
- *      6.オプション
- *      7.ショップメニュー
- *      8.選択肢コマンド
- *      9.戦闘コマンド
- *      10.ゲームエンドコマンド
- *    それぞれに対して、プラグインパラメータで個別に機能のON/OFFを設定可能。
- * 
- * 
- * (*2)本プラグインにおけるリストとは、以下のウィンドウが相当します。
- *      1.メニュー画面のスキルリスト
- *      2.バトル画面のスキルリスト
- *    それぞれに対して、プラグインパラメータで個別に機能のON/OFFを設定可能。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. FTKR_ExBattleCommand.jsと組み合わせる場合は、本プラグインが下になるように
- *    配置してください。
- * 
- *    FTKR_ExBattleCommand.js
- *    FTKR_DisplayCommandFrame.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * 基本設定
- *-----------------------------------------------------------------------------
- * 枠のタイプや表示タイミングなどの基本設定は、以下のプラグインパラメータで
- * 変更できます。
- * 
- * <Display Frame Type>
- *    :表示する枠のタイプを設定します
- *    :0 - 非表示, 1 - 単線, 2 - 複線, 3 - 画像
- *    :4 - 単線 + 画像, 5 - 複線 + 画像
- *    :6 - 単線 + 塗潰し, 7 - 複線 + 塗潰し
- * 
- * <When To Display Frame>
- *    :枠を表示するタイミングを設定します
- *    :0 - 常時, 1 - カーソルと重なる時, 2 - カーソルと重ならない時
- * 
- * <Change Frame On Cursor>
- *    :カーソルと重なった時に枠を変更する機能を設定します
- *    :0 - 無効, 1 - 有効
- * 
- * <Hide Cursor>
- *    :カーソルを非表示にする機能を設定します
- *    :0 - 無効, 1 - 有効
- * 
- * 
- *-----------------------------------------------------------------------------
- * 単線、複線の設定
- *-----------------------------------------------------------------------------
- * 枠のタイプを単線または複線にした場合の表示設定は、
- * 以下のプラグインパラメータで変更できます。
- * 
- * <Default Line Color>
- *    :標準で枠線に使用する色番号
- * 
- * <Line Color On Cursor>
- *    :カーソルと重なった時に使用する色番号
- * 
- * <Line Thick>
- *    :枠線の太さ
- * 
- * <Sub Line Color>
- *    :複線時に使用する枠線の色番号
- *    :複線専用の線色は、カーソルと重なっても変わりません
- * 
- * <Sub Line Thick>
- *    :複線時に使用する枠線の太さ
- * 
- * 
- *-----------------------------------------------------------------------------
- * 枠内塗潰しの設定
- *-----------------------------------------------------------------------------
- * 枠のタイプを枠内塗潰し有にした場合の表示設定は、
- * 以下のプラグインパラメータで変更できます。
- * 
- * <Default Fill Color>
- *    :標準で枠内塗潰しに使用する色番号
- * 
- * <Fill Color On Cursor>
- *    :カーソルと重なった時に使用する色番号
- * 
- * <Fill Color Opacity>
- *    :枠内塗潰し色の透明度
- * 
- * 
- *-----------------------------------------------------------------------------
- * 画像の設定
- *-----------------------------------------------------------------------------
- * 枠のタイプを画像にした場合のや表示設定は、以下のプラグインパラメータで
- * 変更できます。
- * 
- * <Image Name>
- *    :使用する画像名を設定します。
- *    :画像は、プロジェクトフォルダ内の/img/system/に保存してください。(*1)
- * 
- * <Image Width>
- *    :枠画像の幅を設定します。(*1)
- * 
- * <Image Height>
- *    :枠画像の高さを設定します。(*1)
- * 
- * <Enabled Change Scale>
- *    :枠画像とカーソルサイズが異なる時の自動サイズ調整機能(*2)を設定します。
- *    :0 - 無効, 1 - 有効
- * 
- * <Image Offset X>
- *    :カーソル枠に対して枠画像の表示位置をX方向にずらしたい場合に設定します。
- *    :単位はpixelで、正の値の場合に画面右側にずれます。
- * 
- * <Image Offset Y>
- *    :カーソル枠に対して枠画像の表示位置をY方向にずらしたい場合に設定します。
- *    :単位はpixelで、正の値の場合に画面下側にずれます。
- * 
- * <Image Offset Width>
- *    :カーソル枠の幅に対して枠画像の幅を変える場合に設定します。(*3)
- *    :単位はpixelで、正の値の場合に幅が大きくなります。
- * 
- * <Image Offset Height>
- *    :カーソル枠の高さに対して枠画像の高さを変える場合に設定します。(*3)
- *    :単位はpixelで、正の値の場合に高さが大きくなります。
- * 
- * <Default Image Index>
- *    :標準で表示する画像の番号を設定します。(*4)
- * 
- * <Image Index On Cursor>
- *    :カーソルと重なった時に表示する画像の番号を設定します。(*4)
- * 
- * 
- * (*1)複数の枠画像を使用する場合は、画像ファイル内に複数の枠画像を
- *     並べてください。横に並べる数は4つまでです。
- *     このとき、それぞれの枠画像のサイズは同じにしてください。
- *     そのサイズを、<Flame Image Width><Flame Image Height>に
- *     設定してください。
- * (*2)自動サイズ調整機能は、枠画像の四隅6*6の部分を固定として、
- *     それ以外の部分を拡大縮小するものです。そのため、本機能を
- *     有効にするためには、枠画像は最低でも13*13のサイズが必要です。
- * (*3)自動サイズ調整機能を有効にする必要があります。
- * (*4)画像ファイル内に並べた枠画像の内、左上にある画像が0番になります。
- *     そこから右に1番、2番、...と数えます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.2.2 - 2020/05/17 : 不具合修正
- *    1. 枠画像が初回時に表示されないことがある不具合を修正。(by emptybraces氏)
- * 
- * v1.2.1 - 2017/11/24 : 不具合修正
- *    1. FTKR_ExBattleCommand.jsとの競合回避。
- * 
- * v1.2.0 - 2017/11/20 : 機能追加
- *    1. スキルリストに枠を表示する機能を追加。
- *    2. プラグインパラメータの入力方式を見直し。
- * 
- * v1.1.1 - 2017/04/21 : 枠画像ディプロイメント対応
- * 
- * v1.1.0 - 2017/03/31 : 仕様変更
- *    1. 枠線の表示仕様を変更。
- *    2. 枠内塗りつぶしに透明度の設定を追加。
- * 
- * v1.0.5 - 2017/03/15 : 機能追加
- *    1. 枠内を指定の色で塗潰す機能を追加。
- * 
- * v1.0.4 - 2017/03/10 : 機能追加
- *    1. 枠の表示タイプに、枠線と枠画像を両方表示する項目を追加。
- * 
- * v1.0.3 - 2017/03/09 : 機能追加
- *    1. コマンド毎に有効無効にできる機能を追加。
- *    2. 選択肢コマンドにも枠が付けられるように修正。
- * 
- * v1.0.2 - 2017/03/09 : 機能追加
- *    1. 枠画像のサイズ調整機能を追加。
- * 
- * v1.0.1 - 2017/03/08 : 不具合修正、一部処理を見直し
- *    1. FTKR.DCF.frame.image.offsetXとFTKR.DCF.frame.image.offsetYの
- *       プラグインパラメータに対する記述ミスを修正。
- *    2. 単線タイプの枠線の太さに対して、プラグインパラメータ<Line Thick>の値が
- *       適用されていない不具合を修正。
- *    3. 一部処理を見直し。
- * 
- * v1.0.0 - 2017/03/08 : 初版作成
- * 
- *-----------------------------------------------------------------------------
- */
+@plugindesc v1.2.2 Command frame plugin
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+By implementing this plugin, you can add borders to commands (*1) and lists (*2) in menus, etc.
+
+You can choose from single-line, double-line, and image borders.
+
+You can also choose when to add the border.
+
+(*1) In this plugin, "commands" refer to the commands for windows created using the Window_Command object.
+
+In the standard MV, these correspond to the following windows:
+1. Title Command
+2. Menu
+3. Item Type List after Item Selection
+4. Lists for Equipment Changes, Optimize, etc. after Equipment Selection
+5. Skill Type List after Skill Selection
+6. Options
+7. Shop Menu
+8. Selection Command
+9. Battle Command
+10. Game End Command
+Each function can be individually enabled/disabled using the plugin parameters.
+
+(*2) In this plugin, "lists" refer to the following windows:
+1. Menu Screen Skill List
+2. Battle Screen Skill List
+You can individually enable/disable the function for each using the plugin parameters.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. When using it in conjunction with FTKR_ExBattleCommand.js, place this plugin at the bottom.
+
+FTKR_ExBattleCommand.js
+FTKR_DisplayCommandFrame.js
+
+-----------------------------------------------------------------------------
+Basic Settings
+-----------------------------------------------------------------------------
+Basic settings such as frame type and display timing can be changed using the following plugin parameters.
+
+<Display Frame Type>
+: Sets the frame type to display.
+: 0 - Hidden, 1 - Single Line, 2 - Double Line, 3 - Image
+: 4 - Single Line + Image, 5 - Double Line + Image
+: 6 - Single Line + Fill, 7 - Double Line + Fill
+
+<When To Display Frame>
+: Sets when the frame is displayed.
+: 0 - Always, 1 - When the cursor overlaps, 2 - When the cursor does not overlap.
+
+<Change Frame On Cursor>
+: Sets whether the frame changes when the cursor overlaps.
+: 0 - Disabled, 1 - Enabled
+
+<Hide Cursor>
+: Sets whether the cursor is hidden.
+: 0 - Disabled, 1 - Enabled
+
+-----------------------------------------------------------------------------
+Single Line/Double Line Settings
+----------------------------------------------------------------------------
+When the frame type is set to single line or double line, the display settings can be changed using the following plugin parameters.
+
+<Default Line Color>
+: The default color number for the border line.
+
+<Line Color On Cursor>
+: The color number used when the cursor is over the border.
+
+<Line Thick>
+: The thickness of the border line.
+
+<Sub Line Color>
+: The color number for the border line when using multiple lines.
+: The line color for multiple lines remains the same even when the cursor is over the line.
+
+<Sub Line Thick>
+: The thickness of the border line when using multiple lines.
+
+-----------------------------------------------------------------------------
+Frame Fill Settings
+-----------------------------------------------------------------------------
+When the frame type is set to "filled," the display settings can be changed using the following plugin parameters.
+
+<Default Fill Color>
+: The default color number used to fill the frame.
+
+<Fill Color On Cursor>
+: The color number used when the cursor is over the frame.
+
+<Fill Color Opacity>
+: The transparency of the fill color.
+
+-----------------------------------------------------------------------------
+Image Settings
+-----------------------------------------------------------------------------
+When the frame type is set to image, the display settings can be changed using the following plugin parameters.
+
+<Image Name>
+: Sets the image name to use.
+: Save images in /img/system/ in your project folder. (*1)
+
+<Image Width>
+: Sets the width of the frame image. (*1)
+
+<Image Height>
+: Sets the height of the frame image. (*1)
+
+<Enabled Change Scale>
+: Sets the automatic resizing function (*2) when the frame image and cursor sizes differ.
+: 0 - Disabled, 1 - Enabled
+
+<Image Offset X>
+: Set this to shift the frame image display position in the X direction relative to the cursor frame.
+: The unit is pixels. Positive values shift the image to the right.
+
+<Image Offset Y>
+: Set this to shift the border image display position relative to the cursor frame in the Y direction.
+: The unit is pixels. Positive values shift the image toward the bottom.
+
+<Image Offset Width>
+: Set this to change the border image width relative to the width of the cursor frame. (*3)
+: The unit is pixels. Positive values increase the width.
+
+<Image Offset Height>
+: Set this to change the border image height relative to the height of the cursor frame. (*3)
+: The unit is pixels. Positive values increase the height.
+
+<Default Image Index>
+: Set the default image index. (*4)
+
+<Image Index On Cursor>
+: Set the image index to display when the cursor is over it. (*4)
+
+(*1) To use multiple border images, arrange multiple border images in the image file.
+Up to four images can be arranged horizontally.
+In this case, each border image must be the same size. Set the size in <Flame Image Width> and <Flame Image Height>.
+
+(*2) The auto-sizing function fixes the 6x6 corners of the frame image and scales the rest.
+
+Therefore, to enable this function, the frame image must be at least 13x13 in size.
+(*3) The auto-sizing function must be enabled.
+(*4) The frame images in the image file are numbered 0, with the top-left image being number 0.
+
+Numbers are counted to the right from there, 1, 2, etc.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.2.2 - 2020/05/17: Bug Fixes
+1. Fixed an issue where the frame image would sometimes not display the first time. (by emptybraces)
+
+v1.2.1 - 2017/11/24: Bug Fixes
+1. Avoided a conflict with FTKR_ExBattleCommand.js.
+
+v1.2.0 - 2017/11/20: Traits Additions
+1. Added the ability to display frames in the skill list.
+2. Revised the plugin parameter input method.
+
+v1.1.1 - April 21, 2017: Added support for border image deployment.
+
+v1.1.0 - March 31, 2017: Specification Changes
+1. Changed border display specifications.
+2. Added transparency settings for border fill.
+
+v1.0.5 - March 15, 2017: Traits Additions
+1. Added the ability to fill the border with a specified color.
+
+v1.0.4 - March 10, 2017: Traits Additions
+1. Added the option to display both border lines and border images to the border display type.
+
+v1.0.3 - March 9, 2017: Traits Additions
+1. Added the ability to enable or disable borders for each command.
+2. Modified so that borders can also be added to selection commands.
+
+v1.0.2 - March 9, 2017: Traits additions
+1. Added frame image resizing functionality.
+
+v1.0.1 - March 8, 2017: Bug fixes and some processing revisions.
+1. Fixed a mis-description of the FTKR.DCF.frame.image.offsetX and FTKR.DCF.frame.image.offsetY plugin parameters.
+2. Fixed an issue where the <Line Thick> plugin parameter was not being applied to the single-line frame thickness.
+3. Some processing revisions.
+
+v1.0.0 - March 8, 2017: First version created.
+
+-----------------------------------------------------------------------------
+
+@param --Basic Setting--
+
+@param Display Frame Type
+@desc Sets the type of command pane to display
+@default 1
+@type select
+@option hidden
+@value 0
+@option Single track
+@value 1
+@option double track
+@value 2
+@option image
+@value 3
+@option Single track + image
+@value 4
+@option Double track + image
+@value 5
+@option Single line + fill
+@value 6
+@option Double line + fill
+@value 7
+
+@param When To Display Frame
+@desc Timing for displaying the command pane
+@default 1
+@type select
+@option Always
+@value 0
+@option When overlapping with the cursor
+@value 1
+@option When not overlapping with the cursor
+@value 2
+
+@param Change Frame On Cursor
+@desc Param to change frame when cursor overlaps
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Hide Cursor
+@desc Param to hide command cursor
+@default 0
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param --Frame Line Setting--
+
+@param Default Line Color
+@desc Default color number for borders
+@default 0
+
+@param Line Color On Cursor
+@desc Color number to use when hovering over the cursor
+@default 17
+
+@param Line Thick
+@desc Border Thickness
+@default 2
+
+@param Sub Line Color
+@desc Color number of the frame line used when multiple lines are used
+@default 15
+
+@param Sub Line Thick
+@desc The thickness of the frame line used when drawing multiple lines
+@default 1
+
+@param --Rect Frame Setting--
+
+@param Default Rect Color
+@desc Standard color number used to fill the frame
+@default 11
+
+@param Default Rect Color2
+@desc The default color number used to fill the frame (the second color number for gradation display)
+
+@param Rect Color On Cursor
+@desc Color number to use when hovering over the cursor
+@default 3
+
+@param Rect Color On Cursor2
+@desc Color number to use when the cursor is over it (second color number for gradation display)
+
+@param Rect Color Opacity
+@desc Transparency of the frame fill color: 0 - transparent, 255 - opaque
+@default 255
+
+@param --Image Frame Setting--
+
+@param Image Name
+@desc Image name to use. File should be saved in /img/system/
+@type file
+@require 1
+@dir img/system/
+
+@param Image Width
+@desc Border image width Note: This is not the width of the image file.
+
+@param Image Height
+@desc Frame image height Note: This is not the height of the image file
+
+@param Enabled Change Scale
+@desc Automatic size adjustment function when the frame image and cursor size are different
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Image Offset X
+@desc X-axis offset of the frame image relative to the cursor frame
+@default 0
+
+@param Image Offset Y
+@desc Y-axis deviation of the frame image relative to the cursor frame
+@default 0
+
+@param Image Offset Width
+@desc Difference in width of the frame image relative to the cursor frame
+@default 0
+
+@param Image Offset Height
+@desc Height difference of the frame image relative to the cursor frame
+@default 0
+
+@param Default Image Index
+@desc Default image number
+@default 0
+
+@param Image Index On Cursor
+@desc Image number to display when cursor is over it
+@default 1
+
+@param --Enabled Command--
+
+@param Enabled Title Command
+@desc Add a border to the title command
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Menu Command
+@desc Whether to frame menu commands
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Item Command
+@desc Add a border to item commands
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Skill Command
+@desc Should skill commands have a frame?
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Equip Command
+@desc Add a frame to the equip command
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Option Command
+@desc Whether to frame option commands
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Shop Command
+@desc Do you want to add a border to shop commands?
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Choice Command
+@desc Do you want to add a border to shop commands?
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Battle Command
+@desc Should battle commands be framed?
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled GameEnd Command
+@desc Do you want to add a border to shop commands?
+@default 1
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Menu Skill List
+@desc Whether to add a frame to the skill list on the menu screen
+@default 0
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+
+@param Enabled Battle Skill List
+@desc Should I add a border to the skill list on the battle screen?
+@default 0
+@type select
+@option invalid
+@value 0
+@option valid
+@value 1
+*/
+
+
+/*:ja
+@plugindesc v1.2.2 コマンドに枠を付けるプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインを実装することで、メニュー等のコマンド(*1)やリスト(*2)に
+枠を付けることができます。
+
+枠は、単線や複線、画像などから選ぶことが出来ます。
+また、どのタイミングで枠を付けるかも選ぶことが出来ます。
+
+(*1)本プラグインにおけるコマンドとは、Window_Commandオブジェクトを使って
+    生成しているウィンドウのコマンドを指します。
+    MV標準では、以下のウィンドウが相当します。
+     1.タイトルコマンド
+     2.メニュー
+     3.アイテム選択後のアイテムタイプリスト
+     4.装備選択後の装備変更、最強装備、等のリスト
+     5.スキル選択後のスキルタイプリスト
+     6.オプション
+     7.ショップメニュー
+     8.選択肢コマンド
+     9.戦闘コマンド
+     10.ゲームエンドコマンド
+   それぞれに対して、プラグインパラメータで個別に機能のON/OFFを設定可能。
+
+
+(*2)本プラグインにおけるリストとは、以下のウィンドウが相当します。
+     1.メニュー画面のスキルリスト
+     2.バトル画面のスキルリスト
+   それぞれに対して、プラグインパラメータで個別に機能のON/OFFを設定可能。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. FTKR_ExBattleCommand.jsと組み合わせる場合は、本プラグインが下になるように
+   配置してください。
+
+   FTKR_ExBattleCommand.js
+   FTKR_DisplayCommandFrame.js
+
+
+-----------------------------------------------------------------------------
+基本設定
+-----------------------------------------------------------------------------
+枠のタイプや表示タイミングなどの基本設定は、以下のプラグインパラメータで
+変更できます。
+
+<Display Frame Type>
+   :表示する枠のタイプを設定します
+   :0 - 非表示, 1 - 単線, 2 - 複線, 3 - 画像
+   :4 - 単線 + 画像, 5 - 複線 + 画像
+   :6 - 単線 + 塗潰し, 7 - 複線 + 塗潰し
+
+<When To Display Frame>
+   :枠を表示するタイミングを設定します
+   :0 - 常時, 1 - カーソルと重なる時, 2 - カーソルと重ならない時
+
+<Change Frame On Cursor>
+   :カーソルと重なった時に枠を変更する機能を設定します
+   :0 - 無効, 1 - 有効
+
+<Hide Cursor>
+   :カーソルを非表示にする機能を設定します
+   :0 - 無効, 1 - 有効
+
+
+-----------------------------------------------------------------------------
+単線、複線の設定
+-----------------------------------------------------------------------------
+枠のタイプを単線または複線にした場合の表示設定は、
+以下のプラグインパラメータで変更できます。
+
+<Default Line Color>
+   :標準で枠線に使用する色番号
+
+<Line Color On Cursor>
+   :カーソルと重なった時に使用する色番号
+
+<Line Thick>
+   :枠線の太さ
+
+<Sub Line Color>
+   :複線時に使用する枠線の色番号
+   :複線専用の線色は、カーソルと重なっても変わりません
+
+<Sub Line Thick>
+   :複線時に使用する枠線の太さ
+
+
+-----------------------------------------------------------------------------
+枠内塗潰しの設定
+-----------------------------------------------------------------------------
+枠のタイプを枠内塗潰し有にした場合の表示設定は、
+以下のプラグインパラメータで変更できます。
+
+<Default Fill Color>
+   :標準で枠内塗潰しに使用する色番号
+
+<Fill Color On Cursor>
+   :カーソルと重なった時に使用する色番号
+
+<Fill Color Opacity>
+   :枠内塗潰し色の透明度
+
+
+-----------------------------------------------------------------------------
+画像の設定
+-----------------------------------------------------------------------------
+枠のタイプを画像にした場合のや表示設定は、以下のプラグインパラメータで
+変更できます。
+
+<Image Name>
+   :使用する画像名を設定します。
+   :画像は、プロジェクトフォルダ内の/img/system/に保存してください。(*1)
+
+<Image Width>
+   :枠画像の幅を設定します。(*1)
+
+<Image Height>
+   :枠画像の高さを設定します。(*1)
+
+<Enabled Change Scale>
+   :枠画像とカーソルサイズが異なる時の自動サイズ調整機能(*2)を設定します。
+   :0 - 無効, 1 - 有効
+
+<Image Offset X>
+   :カーソル枠に対して枠画像の表示位置をX方向にずらしたい場合に設定します。
+   :単位はpixelで、正の値の場合に画面右側にずれます。
+
+<Image Offset Y>
+   :カーソル枠に対して枠画像の表示位置をY方向にずらしたい場合に設定します。
+   :単位はpixelで、正の値の場合に画面下側にずれます。
+
+<Image Offset Width>
+   :カーソル枠の幅に対して枠画像の幅を変える場合に設定します。(*3)
+   :単位はpixelで、正の値の場合に幅が大きくなります。
+
+<Image Offset Height>
+   :カーソル枠の高さに対して枠画像の高さを変える場合に設定します。(*3)
+   :単位はpixelで、正の値の場合に高さが大きくなります。
+
+<Default Image Index>
+   :標準で表示する画像の番号を設定します。(*4)
+
+<Image Index On Cursor>
+   :カーソルと重なった時に表示する画像の番号を設定します。(*4)
+
+
+(*1)複数の枠画像を使用する場合は、画像ファイル内に複数の枠画像を
+    並べてください。横に並べる数は4つまでです。
+    このとき、それぞれの枠画像のサイズは同じにしてください。
+    そのサイズを、<Flame Image Width><Flame Image Height>に
+    設定してください。
+(*2)自動サイズ調整機能は、枠画像の四隅6*6の部分を固定として、
+    それ以外の部分を拡大縮小するものです。そのため、本機能を
+    有効にするためには、枠画像は最低でも13*13のサイズが必要です。
+(*3)自動サイズ調整機能を有効にする必要があります。
+(*4)画像ファイル内に並べた枠画像の内、左上にある画像が0番になります。
+    そこから右に1番、2番、...と数えます。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.2.2 - 2020/05/17 : 不具合修正
+   1. 枠画像が初回時に表示されないことがある不具合を修正。(by emptybraces氏)
+
+v1.2.1 - 2017/11/24 : 不具合修正
+   1. FTKR_ExBattleCommand.jsとの競合回避。
+
+v1.2.0 - 2017/11/20 : 機能追加
+   1. スキルリストに枠を表示する機能を追加。
+   2. プラグインパラメータの入力方式を見直し。
+
+v1.1.1 - 2017/04/21 : 枠画像ディプロイメント対応
+
+v1.1.0 - 2017/03/31 : 仕様変更
+   1. 枠線の表示仕様を変更。
+   2. 枠内塗りつぶしに透明度の設定を追加。
+
+v1.0.5 - 2017/03/15 : 機能追加
+   1. 枠内を指定の色で塗潰す機能を追加。
+
+v1.0.4 - 2017/03/10 : 機能追加
+   1. 枠の表示タイプに、枠線と枠画像を両方表示する項目を追加。
+
+v1.0.3 - 2017/03/09 : 機能追加
+   1. コマンド毎に有効無効にできる機能を追加。
+   2. 選択肢コマンドにも枠が付けられるように修正。
+
+v1.0.2 - 2017/03/09 : 機能追加
+   1. 枠画像のサイズ調整機能を追加。
+
+v1.0.1 - 2017/03/08 : 不具合修正、一部処理を見直し
+   1. FTKR.DCF.frame.image.offsetXとFTKR.DCF.frame.image.offsetYの
+      プラグインパラメータに対する記述ミスを修正。
+   2. 単線タイプの枠線の太さに対して、プラグインパラメータ<Line Thick>の値が
+      適用されていない不具合を修正。
+   3. 一部処理を見直し。
+
+v1.0.0 - 2017/03/08 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param --Basic Setting--
+
+@param Display Frame Type
+@desc 表示するコマンド枠のタイプを設定します
+@default 1
+@type select
+@option 非表示
+@value 0
+@option 単線
+@value 1
+@option 複線
+@value 2
+@option 画像
+@value 3
+@option 単線＋画像
+@value 4
+@option 複線＋画像
+@value 5
+@option 単線＋塗潰し
+@value 6
+@option 複線＋塗潰し
+@value 7
+
+@param When To Display Frame
+@desc コマンド枠を表示するタイミング
+@default 1
+@type select
+@option 常時
+@value 0
+@option カーソルと重なる時
+@value 1
+@option カーソルと重ならない時
+@value 2
+
+@param Change Frame On Cursor
+@desc カーソルと重なった時に枠を変更する機能
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Hide Cursor
+@desc コマンドカーソルを非表示にする機能
+@default 0
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param --Frame Line Setting--
+
+@param Default Line Color
+@desc 標準で枠線に使用する色番号
+@default 0
+
+@param Line Color On Cursor
+@desc カーソルと重なった時に使用する色番号
+@default 17
+
+@param Line Thick
+@desc 枠線の太さ
+@default 2
+
+@param Sub Line Color
+@desc 複線時に使用する枠線の色番号
+@default 15
+
+@param Sub Line Thick
+@desc 複線時に使用する枠線の太さ
+@default 1
+
+@param --Rect Frame Setting--
+
+@param Default Rect Color
+@desc 標準で枠内塗潰しに使用する色番号
+@default 11
+
+@param Default Rect Color2
+@desc 標準で枠内塗潰しに使用する色番号 (グラデーション表示用の2色目の色番号)
+
+@param Rect Color On Cursor
+@desc カーソルと重なった時に使用する色番号
+@default 3
+
+@param Rect Color On Cursor2
+@desc カーソルと重なった時に使用する色番号 (グラデーション表示用の2色目の色番号)
+
+@param Rect Color Opacity
+@desc 枠内塗潰し色の透明度 0 - 透明, 255 - 不透明
+@default 255
+
+@param --Image Frame Setting--
+
+@param Image Name
+@desc 使用する画像名 ファイルは /img/system/ に保存してください
+@type file
+@require 1
+@dir img/system/
+
+@param Image Width
+@desc 枠画像の幅 注意：画像ファイルの幅ではありません
+
+@param Image Height
+@desc 枠画像の高さ 注意：画像ファイルの高さではありません
+
+@param Enabled Change Scale
+@desc 枠画像とカーソルサイズが異なる時の自動サイズ調整機能
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Image Offset X
+@desc カーソル枠に対する枠画像のX方向のズレ
+@default 0
+
+@param Image Offset Y
+@desc カーソル枠に対する枠画像のY方向のズレ
+@default 0
+
+@param Image Offset Width
+@desc カーソル枠に対する枠画像の幅の差
+@default 0
+
+@param Image Offset Height
+@desc カーソル枠に対する枠画像の高さの差
+@default 0
+
+@param Default Image Index
+@desc 標準で表示する画像の番号
+@default 0
+
+@param Image Index On Cursor
+@desc カーソルと重なった時に表示する画像の番号
+@default 1
+
+@param --Enabled Command--
+
+@param Enabled Title Command
+@desc タイトルコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Menu Command
+@desc メニューコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Item Command
+@desc アイテムコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Skill Command
+@desc スキルコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Equip Command
+@desc 装備コマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Option Command
+@desc オプションコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Shop Command
+@desc ショップコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Choice Command
+@desc ショップコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Battle Command
+@desc 戦闘コマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled GameEnd Command
+@desc ショップコマンドに枠を付けるか
+@default 1
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Menu Skill List
+@desc メニュー画面のスキルリストに枠を付けるか
+@default 0
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+
+@param Enabled Battle Skill List
+@desc バトル画面のスキルリストに枠を付けるか
+@default 0
+@type select
+@option 無効
+@value 0
+@option 有効
+@value 1
+*/
+
 //=============================================================================
 
-(function() {
+(function () {
 
     //=============================================================================
     // プラグイン パラメータ
@@ -520,56 +979,56 @@ FTKR.DCF = FTKR.DCF || {};
     //フレームオブジェクト
     FTKR.DCF.frame = {
         //基本設定
-        type          :Number(parameters['Display Frame Type'] || 0),
-        whenToDisplay :Number(parameters['When To Display Frame'] || 0),
-        changeOnCursor:Number(parameters['Change Frame On Cursor'] || 0),
-        hideCursor    :Number(parameters['Hide Cursor'] || 0),
+        type: Number(parameters['Display Frame Type'] || 0),
+        whenToDisplay: Number(parameters['When To Display Frame'] || 0),
+        changeOnCursor: Number(parameters['Change Frame On Cursor'] || 0),
+        hideCursor: Number(parameters['Hide Cursor'] || 0),
         //枠線の設定
-        line:{
-            defColor  :Number(parameters['Default Line Color'] || 0),
-            csrColor  :Number(parameters['Line Color On Cursor'] || 0),
-            thick     :Number(parameters['Line Thick'] || 0),
-            subColor  :Number(parameters['Sub Line Color'] || 0),
-            subThick  :Number(parameters['Sub Line Thick'] || 0),
+        line: {
+            defColor: Number(parameters['Default Line Color'] || 0),
+            csrColor: Number(parameters['Line Color On Cursor'] || 0),
+            thick: Number(parameters['Line Thick'] || 0),
+            subColor: Number(parameters['Sub Line Color'] || 0),
+            subThick: Number(parameters['Sub Line Thick'] || 0),
         },
         //枠内塗りつぶしの設定
-        fill:{
-            defColor  :Number(parameters['Default Rect Color'] || 0),
-            csrColor  :Number(parameters['Rect Color On Cursor'] || 0),
-            defColor2 :Number(parameters['Default Rect Color2'] || 0),
-            csrColor2 :Number(parameters['Rect Color On Cursor2'] || 0),
-            opacity   :Number(parameters['Rect Color Opacity'] || 0),
+        fill: {
+            defColor: Number(parameters['Default Rect Color'] || 0),
+            csrColor: Number(parameters['Rect Color On Cursor'] || 0),
+            defColor2: Number(parameters['Default Rect Color2'] || 0),
+            csrColor2: Number(parameters['Rect Color On Cursor2'] || 0),
+            opacity: Number(parameters['Rect Color Opacity'] || 0),
         },
         //枠画像の設定
-        image:{
-            name      :String(parameters['Image Name'] || ''),
-            width     :Number(parameters['Image Width'] || 0),
-            height    :Number(parameters['Image Height'] || 0),
-            offsetX   :Number(parameters['Image Offset X'] || 0),
-            offsetY   :Number(parameters['Image Offset Y'] || 0),
-            offsetW   :Number(parameters['Image Offset Width'] || 0),
-            offsetH   :Number(parameters['Image Offset Height'] || 0),
-            enabledScale:Number(parameters['Enabled Change Scale'] || 0),
-            defIndex  :Number(parameters['Default Image Index'] || 0),
-            csrIndex  :Number(parameters['Image Index On Cursor'] || 0),
+        image: {
+            name: String(parameters['Image Name'] || ''),
+            width: Number(parameters['Image Width'] || 0),
+            height: Number(parameters['Image Height'] || 0),
+            offsetX: Number(parameters['Image Offset X'] || 0),
+            offsetY: Number(parameters['Image Offset Y'] || 0),
+            offsetW: Number(parameters['Image Offset Width'] || 0),
+            offsetH: Number(parameters['Image Offset Height'] || 0),
+            enabledScale: Number(parameters['Enabled Change Scale'] || 0),
+            defIndex: Number(parameters['Default Image Index'] || 0),
+            csrIndex: Number(parameters['Image Index On Cursor'] || 0),
         },
     };
 
     //コマンド別の有効設定
     FTKR.DCF.enabled = {
-        title   :Number(parameters['Enabled Title Command'] || 0),
-        menu    :Number(parameters['Enabled Menu Command'] || 0),
-        item    :Number(parameters['Enabled Item Command'] || 0),
-        skill   :Number(parameters['Enabled Skill Command'] || 0),
-        equip   :Number(parameters['Enabled Equip Command'] || 0),
-        option  :Number(parameters['Enabled Option Command'] || 0),
-        shop    :Number(parameters['Enabled Shop Command'] || 0),
-        choice  :Number(parameters['Enabled Choice Command'] || 0),
-        battle  :Number(parameters['Enabled Battle Command'] || 0),
-        gameEnd :Number(parameters['Enabled GameEnd Command'] || 0),
-        list : {
-            menuSkill   : Number(parameters['Enabled Menu Skill List'] || 0),
-            battleSkill : Number(parameters['Enabled Battle Skill List'] || 0),
+        title: Number(parameters['Enabled Title Command'] || 0),
+        menu: Number(parameters['Enabled Menu Command'] || 0),
+        item: Number(parameters['Enabled Item Command'] || 0),
+        skill: Number(parameters['Enabled Skill Command'] || 0),
+        equip: Number(parameters['Enabled Equip Command'] || 0),
+        option: Number(parameters['Enabled Option Command'] || 0),
+        shop: Number(parameters['Enabled Shop Command'] || 0),
+        choice: Number(parameters['Enabled Choice Command'] || 0),
+        battle: Number(parameters['Enabled Battle Command'] || 0),
+        gameEnd: Number(parameters['Enabled GameEnd Command'] || 0),
+        list: {
+            menuSkill: Number(parameters['Enabled Menu Skill List'] || 0),
+            battleSkill: Number(parameters['Enabled Battle Skill List'] || 0),
         },
     };
 
@@ -584,11 +1043,11 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     //枠線を描く
-    Bitmap.prototype.drawDcfFrame = function(x, y, width, height, thick, color) {
+    Bitmap.prototype.drawDcfFrame = function (x, y, width, height, thick, color) {
         var context = this._context;
         context.strokeStyle = color;
         context.lineWidth = thick;
-        context.strokeRect(x + thick/2, y + thick/2, width - thick, height - thick);
+        context.strokeRect(x + thick / 2, y + thick / 2, width - thick, height - thick);
         this._setDirty();
     };
 
@@ -598,7 +1057,7 @@ FTKR.DCF = FTKR.DCF || {};
 
     //枠画像ファイルの事前ロード
     var _Scene_Boot_loadSystemImages = Scene_Boot.loadSystemImages;
-    Scene_Boot.loadSystemImages = function() {
+    Scene_Boot.loadSystemImages = function () {
         _Scene_Boot_loadSystemImages.call(this);
         ImageManager.reserveSystem(FTKR.DCF.frame.image.name);
     };
@@ -615,7 +1074,7 @@ FTKR.DCF = FTKR.DCF || {};
     item    :アイテムオブジェクト、表示項目毎に枠を変えたい場合に入れる
     type    :枠タイプ(Number)、プラグインパラメータの設定を使うなら false
     -------------------------------------------------------------*/
-    Window_Base.prototype.drawDcfFrameBase = function(frame, rect, onCursor, item, type) {
+    Window_Base.prototype.drawDcfFrameBase = function (frame, rect, onCursor, item, type) {
         switch (type || frame.type) {
             case 1:
                 return this.drawLineFrame(false, frame, rect, onCursor, item);
@@ -647,12 +1106,12 @@ FTKR.DCF = FTKR.DCF || {};
     画像の6*6の四つ角はそのまま使い、それ以外の部分を拡大縮小してサイズ調整する。
     ただし、画像が12*12より大きくない場合は、そのまま拡大縮小する。
     -------------------------------------------------------------*/
-    Window_Base.prototype.drawImageFrame = function(frame, rect, onCursor, item) {
+    Window_Base.prototype.drawImageFrame = function (frame, rect, onCursor, item) {
         if (!frame) return;
         var image = frame.image;
         if (image && image.name) {
             var iic = Window_Base.IMAGE_INDEX_COLS;
-            var ifs = Window_Base.IMAGE_FIXED_SIZE; 
+            var ifs = Window_Base.IMAGE_FIXED_SIZE;
 
             var bitmap = ImageManager.loadSystem(image.name);
             var rx = rect.x + image.offsetX;
@@ -675,15 +1134,15 @@ FTKR.DCF = FTKR.DCF || {};
             if (iw > ifs * 2 && ih > ifs * 2) {
                 //上側
                 this.contents.blt(bitmap, ix, iy, ifs, ifs, dx, dy, ifs, ifs);
-                this.contents.blt(bitmap, ix + ifs, iy, iw - ifs*2, ifs, dx + ifs, dy, dw - ifs*2, ifs);
+                this.contents.blt(bitmap, ix + ifs, iy, iw - ifs * 2, ifs, dx + ifs, dy, dw - ifs * 2, ifs);
                 this.contents.blt(bitmap, ix + iw - ifs, iy, ifs, ifs, dx + dw - ifs, dy, ifs, ifs);
                 //中央
-                this.contents.blt(bitmap, ix, iy + ifs, ifs, ih - ifs*2, dx, dy + ifs, ifs, dh - ifs*2);
-                this.contents.blt(bitmap, ix + ifs, iy + ifs, iw - ifs*2, ih - ifs*2, dx + ifs, dy + ifs, dw - ifs*2, dh - ifs*2);
-                this.contents.blt(bitmap, ix + iw - ifs, iy + ifs, ifs, ih - ifs*2, dx + dw - ifs, dy + ifs, ifs, dh - ifs*2);
+                this.contents.blt(bitmap, ix, iy + ifs, ifs, ih - ifs * 2, dx, dy + ifs, ifs, dh - ifs * 2);
+                this.contents.blt(bitmap, ix + ifs, iy + ifs, iw - ifs * 2, ih - ifs * 2, dx + ifs, dy + ifs, dw - ifs * 2, dh - ifs * 2);
+                this.contents.blt(bitmap, ix + iw - ifs, iy + ifs, ifs, ih - ifs * 2, dx + dw - ifs, dy + ifs, ifs, dh - ifs * 2);
                 //下側
                 this.contents.blt(bitmap, ix, iy + ih - ifs, ifs, ifs, dx, dy + dh - ifs, ifs, ifs);
-                this.contents.blt(bitmap, ix + ifs, iy + ih - ifs, iw - ifs*2, ifs, dx + ifs, dy + dh - ifs, dw - ifs*2, ifs);
+                this.contents.blt(bitmap, ix + ifs, iy + ih - ifs, iw - ifs * 2, ifs, dx + ifs, dy + dh - ifs, dw - ifs * 2, ifs);
                 this.contents.blt(bitmap, ix + iw - ifs, iy + ih - ifs, ifs, ifs, dx + dw - ifs, dy + dh - ifs, ifs, ifs);
             } else {
                 this.contents.blt(bitmap, ix, iy, iw, iw, dx, dy, dw, dh);
@@ -699,7 +1158,7 @@ FTKR.DCF = FTKR.DCF || {};
     onCursor:カーソルと重なっているか(boolean)
     item    :アイテムオブジェクト、枠を表示する項目別に枠線色を変えたい場合に入れる
     -------------------------------------------------------------*/
-    Window_Base.prototype.drawLineFrame = function(double, frame, rect, onCursor, item) {
+    Window_Base.prototype.drawLineFrame = function (double, frame, rect, onCursor, item) {
         if (!frame) return;
         var line = frame.line;
         if (line && line.thick) {
@@ -724,7 +1183,7 @@ FTKR.DCF = FTKR.DCF || {};
     onCursor:カーソルと重なっているか(boolean)
     item    :アイテムオブジェクト、枠を表示する項目別に枠内色を変えたい場合に入れる
     -------------------------------------------------------------*/
-    Window_Base.prototype.drawInFrame = function(frame, rect, onCursor, item) {
+    Window_Base.prototype.drawInFrame = function (frame, rect, onCursor, item) {
         if (!frame) return;
         var fill = frame.fill;
         if (fill) {
@@ -743,7 +1202,7 @@ FTKR.DCF = FTKR.DCF || {};
     };
 
     //カーソルサイズに枠線を描画
-    Window_Base.prototype.drawLineFrameBase = function(rect, offset, color, thick) {
+    Window_Base.prototype.drawLineFrameBase = function (rect, offset, color, thick) {
         var sx = rect.x + offset;
         var sy = rect.y + offset;
         var sw = rect.width - offset * 2;
@@ -752,14 +1211,14 @@ FTKR.DCF = FTKR.DCF || {};
     };
 
     //枠線を描画
-    Window_Base.prototype.drawDcfFrameLine = function(x, y, width, height, colorNum, thick) {
-      if (colorNum < 0) return false;
-      var color = this.textColor(colorNum);
-      this.contents.drawDcfFrame(x, y, width, height, thick, color);
+    Window_Base.prototype.drawDcfFrameLine = function (x, y, width, height, colorNum, thick) {
+        if (colorNum < 0) return false;
+        var color = this.textColor(colorNum);
+        this.contents.drawDcfFrame(x, y, width, height, thick, color);
     };
 
     //矩形を描画
-    Window_Base.prototype.drawRect = function(x, y, width, thick, color1, color2, opacity) {
+    Window_Base.prototype.drawRect = function (x, y, width, thick, color1, color2, opacity) {
         color2 = color2 || color1;
         this.contents.paintOpacity = opacity || 255;
         this.contents.gradientFillRect(x, y, width, thick, color1, color2);
@@ -778,7 +1237,7 @@ FTKR.DCF = FTKR.DCF || {};
     item    :アイテムオブジェクト、表示項目毎に枠を変えたい場合に入れる
     表示項目毎に枠を表示する関数。基本的に、drawItem関数内の最初に追加する。
     -------------------------------------------------------------*/
-    Window_Selectable.prototype.drawDcfFrame = function(index, frame, type, item) {
+    Window_Selectable.prototype.drawDcfFrame = function (index, frame, type, item) {
         frame = frame || FTKR.DCF.frame;
         var onCursor = index === this.index();
         var rect = this.itemRect(index);
@@ -797,7 +1256,7 @@ FTKR.DCF = FTKR.DCF || {};
     カーソルに連動して枠の表示を変える関数。
     基本的に、select関数内の最後に追加する。
     -------------------------------------------------------------*/
-    Window_Selectable.prototype.updateDcfFrame = function(index, frame, hide) {
+    Window_Selectable.prototype.updateDcfFrame = function (index, frame, hide) {
         frame = frame || FTKR.DCF.frame;
         if (hide || frame.hideCursor) {
             this.setCursorRect(0, 0, 0, 0);
@@ -822,19 +1281,19 @@ FTKR.DCF = FTKR.DCF || {};
         FTKR.DCF.Window_Command_drawItem.call(this, index);
     };
     */
-    
+
     //コマンド枠の更新処理を追加
-    Window_Command.prototype.select = function(index) {
+    Window_Command.prototype.select = function (index) {
         Window_Selectable.prototype.select.call(this, index);
         this.updateDcfFrame(index);
     };
-    
+
     //=============================================================================
     // Window_TitleCommand
     //=============================================================================
 
     var _DCF_Window_TitleCommand_drawItem = Window_TitleCommand.prototype.drawItem;
-    Window_TitleCommand.prototype.drawItem = function(index) {
+    Window_TitleCommand.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.title) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -847,12 +1306,12 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_MenuCommand_drawItem = Window_MenuCommand.prototype.drawItem;
-    Window_MenuCommand.prototype.drawItem = function(index) {
+    Window_MenuCommand.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.menu) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
         }
-        _DCF_Window_MenuCommand_drawItem.call(this ,index);
+        _DCF_Window_MenuCommand_drawItem.call(this, index);
     };
 
     //=============================================================================
@@ -860,7 +1319,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_ItemCategory_drawItem = Window_ItemCategory.prototype.drawItem;
-    Window_ItemCategory.prototype.drawItem = function(index) {
+    Window_ItemCategory.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.item) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -873,7 +1332,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_SkillType_drawItem = Window_SkillType.prototype.drawItem;
-    Window_SkillType.prototype.drawItem = function(index) {
+    Window_SkillType.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.skill) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -886,7 +1345,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_EquipCommand_drawItem = Window_EquipCommand.prototype.drawItem;
-    Window_EquipCommand.prototype.drawItem = function(index) {
+    Window_EquipCommand.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.equip) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -899,7 +1358,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_Options_drawItem = Window_Options.prototype.drawItem;
-    Window_Options.prototype.drawItem = function(index) {
+    Window_Options.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.option) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -912,7 +1371,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_ShopCommand_drawItem = Window_ShopCommand.prototype.drawItem;
-    Window_ShopCommand.prototype.drawItem = function(index) {
+    Window_ShopCommand.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.shop) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -925,7 +1384,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_ChoiceList_drawItem = Window_ChoiceList.prototype.drawItem;
-    Window_ChoiceList.prototype.drawItem = function(index) {
+    Window_ChoiceList.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.choice) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -938,7 +1397,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_PartyCommand_drawItem = Window_PartyCommand.prototype.drawItem;
-    Window_PartyCommand.prototype.drawItem = function(index) {
+    Window_PartyCommand.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.battle) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -951,7 +1410,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_ActorCommand_drawItem = Window_ActorCommand.prototype.drawItem;
-    Window_ActorCommand.prototype.drawItem = function(index) {
+    Window_ActorCommand.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.battle) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -964,7 +1423,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_GameEnd_drawItem = Window_GameEnd.prototype.drawItem;
-    Window_GameEnd.prototype.drawItem = function(index) {
+    Window_GameEnd.prototype.drawItem = function (index) {
         if (FTKR.DCF.enabled.gameEnd) {
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.drawDcfFrame(index);
@@ -977,7 +1436,7 @@ FTKR.DCF = FTKR.DCF || {};
     //=============================================================================
 
     var _DCF_Window_SkillList_drawItem = Window_SkillList.prototype.drawItem;
-    Window_SkillList.prototype.drawItem = function(index) {
+    Window_SkillList.prototype.drawItem = function (index) {
         var skill = this._data[index];
         if (skill) {
             if (this.checkEnableDcf()) {
@@ -988,13 +1447,13 @@ FTKR.DCF = FTKR.DCF || {};
         }
     };
 
-    Window_SkillList.prototype.checkEnableDcf = function() {
-        return $gameParty.inBattle() ? 
+    Window_SkillList.prototype.checkEnableDcf = function () {
+        return $gameParty.inBattle() ?
             FTKR.DCF.enabled.list.battleSkill :
             FTKR.DCF.enabled.list.menuSkill;
     };
 
-    Window_SkillList.prototype.select = function(index) {
+    Window_SkillList.prototype.select = function (index) {
         Window_Selectable.prototype.select.call(this, index);
         this.updateDcfFrame(index);
     };

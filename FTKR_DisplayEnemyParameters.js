@@ -16,153 +16,301 @@ FTKR.DEP = FTKR.DEP || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.1.1 戦闘画面にエネミーのパラメータを表示するプラグイン
- * @author フトコロ
- *
- * @param Display Enemy Name
- * @desc エネミーの名前を表示する
- * @type boolean
- * @on 有効
- * @off 無効
- * @default true
- *
- * @param Display Enemy HP
- * @desc エネミーのHPを表示する
- * 空欄の場合は無効になります
- * @type struct<gauge>
- * @default {"label":"true","value":"true","gauge":"true"}
- *
- * @param Display Enemy MP
- * @desc エネミーのMPを表示する
- * 空欄の場合は無効になります
- * @type struct<gauge>
- * @default {"label":"true","value":"true","gauge":"true"}
- *
- * @param Display Enemy TP
- * @desc エネミーのTPを表示する
- * 空欄の場合は無効になります
- * @type struct<gauge>
- * @default {"label":"true","value":"true","gauge":"true"}
- *
- * @param Display Width
- * @desc ステータスの表示幅を指定する
- * @type number
- * @default 144
- *
- * @param Display Line Height
- * @desc ステータスの１行の表示高さを指定する
- * @type number
- * @default 36
- *
- * @param Display Font Size
- * @desc ステータスのフォントサイズを指定する
- * @type number
- * @default 28
- *
- * @param Display Offset X
- * @desc ステータスとエネミー画像の表示位置のX座標の差（負の値で左にずれる）
- * @type number
- * @min -9999
- * @max 9999
- * @default 0
- *
- * @param Display Offset Y
- * @desc ステータスとエネミー画像の表示位置のY座標の差（負の値で上にずれる）
- * @type number
- * @min -9999
- * @max 9999
- * @default -40
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 戦闘画面で、エネミーの頭上に以下のパラメータを表示します。
- * ・名前
- * ・HP
- * ・MP
- * ・TP
- * 
- * これらのパラメータは、プラグインパラメータで表示のON/OFFを切り替えられます。
- * また、表示位置やサイズなども変更可能です。
- * 
- * 
- * 表示位置とサイズは、エネミーのメモ欄で個別に設定可能です。
- * 
- *  <FTKR_STATUS_POS_X: x>
- *      x : 表示位置のX座標の差（負の値で左にずれる）
- * 
- *  <FTKR_STATUS_POS_Y: y>
- *      y : 表示位置のY座標の差（負の値で上にずれる）
- * 
- *  <FTKR_STATUS_WIDTH: w>
- *      w : ステータスの表示幅
- * 
- * 
- * なお、これらのパラメータはエネミー画像の表示位置に合わせているため、
- * エネミーが動くと、それに合わせてパラメータの表示位置も変わります。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.1.1 - 2018/12/20 : 不具合修正
- *    1. プラグインパラメータ Display Width が正しく反映されない不具合を修正。
- * 
- * v1.1.0 - 2018/12/19 : 機能追加
- *    1. エネミーごとにステータスの表示位置と表示幅を設定する機能を追加。
- *    2. パラメータのラベル、数値、ゲージの表示ON/OFF機能追加。
- * 
- * v1.0.0 - 2018/04/17 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.1.1 A plugin that displays enemy parameters on the battle screen
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+The following parameters are displayed above enemy heads on the battle screen.
+- Name
+- HP
+- MP
+- TP
+
+These parameters can be turned on/off using the plugin parameters.
+You can also change the display position and size.
+
+The display position and size can be set individually in the enemy's Note field.
+
+<FTKR_STATUS_POS_X: x>
+x: The difference in the X coordinate of the display position (negative values shift it to the left)
+
+<FTKR_STATUS_POS_Y: y>
+y: The difference in the Y coordinate of the display position (negative values shift it up)
+
+<FTKR_STATUS_WIDTH: w>
+w: The width of the status display
+
+Note that these parameters are based on the display position of the enemy image,
+so the display position of the parameters will change accordingly as the enemy moves.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.1.1 - 2018/12/20: Bug Fixes
+1. Fixed an issue where the plugin parameter Display Width was not correctly Reflectioned.
+
+v1.1.0 - December 19, 2018: Traits Added
+1. Added the ability to set the display position and width of status for each enemy.
+2. Added the ability to turn on/off the display of parameter labels, values, and gauges.
+
+v1.0.0 - April 17, 2018: First version created
+
+-----------------------------------------------------------------------------
+
+@param Display Enemy Name
+@desc Show enemy names
+@default true
+@type boolean
+@on valid
+@off invalid
+
+@param Display Enemy HP
+@desc Displays enemy HP. If left blank, it will be disabled.
+@default {"label":"true","value":"true","gauge":"true"}
+@type struct<gauge>
+
+@param Display Enemy MP
+@desc Displays enemy MP. If left blank, it will be disabled.
+@default {"label":"true","value":"true","gauge":"true"}
+@type struct<gauge>
+
+@param Display Enemy TP
+@desc Displays enemy TP. If left blank, it will be disabled.
+@default {"label":"true","value":"true","gauge":"true"}
+@type struct<gauge>
+
+@param Display Width
+@desc Specify the status display width
+@default 144
+@type number
+
+@param Display Line Height
+@desc Specify the display height of one status line
+@default 36
+@type number
+
+@param Display Font Size
+@desc Specify the status font size
+@default 28
+@type number
+
+@param Display Offset X
+@desc The difference in the X coordinate of the display position of the status and enemy images (negative values shift it to the left)
+@default 0
+@type number
+@min -9999
+@max 9999
+
+@param Display Offset Y
+@desc The difference in Y coordinate between the status and enemy image display positions (negative values shift upwards)
+@default -40
+@type number
+@min -9999
+@max 9999
 */
-//=============================================================================
+
+
 /*~struct~gauge:
- * 
- * @param label
- * @desc パラメータの数値を表示します。
- * @type boolean
- * @on 有効
- * @off 無効
- * @default true
- *
- * @param value
- * @desc パラメータの数値を表示します。
- * @type boolean
- * @on 有効
- * @off 無効
- * @default true
- *
- * @param gauge
- * @desc パラメータのゲージを表示します。
- * @type boolean
- * @on 有効
- * @off 無効
- * @default true
- *
+@param label
+@desc Displays the parameter value.
+@default true
+@type boolean
+@on valid
+@off invalid
+
+@param value
+@desc Displays the parameter value.
+@default true
+@type boolean
+@on valid
+@off invalid
+
+@param gauge
+@desc Displays the parameter gauge.
+@default true
+@type boolean
+@on valid
+@off invalid
+*/
+
+
+/*:ja
+@plugindesc v1.1.1 戦闘画面にエネミーのパラメータを表示するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+戦闘画面で、エネミーの頭上に以下のパラメータを表示します。
+・名前
+・HP
+・MP
+・TP
+
+これらのパラメータは、プラグインパラメータで表示のON/OFFを切り替えられます。
+また、表示位置やサイズなども変更可能です。
+
+
+表示位置とサイズは、エネミーのメモ欄で個別に設定可能です。
+
+ <FTKR_STATUS_POS_X: x>
+     x : 表示位置のX座標の差（負の値で左にずれる）
+
+ <FTKR_STATUS_POS_Y: y>
+     y : 表示位置のY座標の差（負の値で上にずれる）
+
+ <FTKR_STATUS_WIDTH: w>
+     w : ステータスの表示幅
+
+
+なお、これらのパラメータはエネミー画像の表示位置に合わせているため、
+エネミーが動くと、それに合わせてパラメータの表示位置も変わります。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.1.1 - 2018/12/20 : 不具合修正
+   1. プラグインパラメータ Display Width が正しく反映されない不具合を修正。
+
+v1.1.0 - 2018/12/19 : 機能追加
+   1. エネミーごとにステータスの表示位置と表示幅を設定する機能を追加。
+   2. パラメータのラベル、数値、ゲージの表示ON/OFF機能追加。
+
+v1.0.0 - 2018/04/17 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Display Enemy Name
+@desc エネミーの名前を表示する
+@default true
+@type boolean
+@on 有効
+@off 無効
+
+@param Display Enemy HP
+@desc エネミーのHPを表示する 空欄の場合は無効になります
+@default {"label":"true","value":"true","gauge":"true"}
+@type struct<gauge>
+
+@param Display Enemy MP
+@desc エネミーのMPを表示する 空欄の場合は無効になります
+@default {"label":"true","value":"true","gauge":"true"}
+@type struct<gauge>
+
+@param Display Enemy TP
+@desc エネミーのTPを表示する 空欄の場合は無効になります
+@default {"label":"true","value":"true","gauge":"true"}
+@type struct<gauge>
+
+@param Display Width
+@desc ステータスの表示幅を指定する
+@default 144
+@type number
+
+@param Display Line Height
+@desc ステータスの１行の表示高さを指定する
+@default 36
+@type number
+
+@param Display Font Size
+@desc ステータスのフォントサイズを指定する
+@default 28
+@type number
+
+@param Display Offset X
+@desc ステータスとエネミー画像の表示位置のX座標の差（負の値で左にずれる）
+@default 0
+@type number
+@min -9999
+@max 9999
+
+@param Display Offset Y
+@desc ステータスとエネミー画像の表示位置のY座標の差（負の値で上にずれる）
+@default -40
+@type number
+@min -9999
+@max 9999
+*/
+
+
+/*~struct~gauge:ja
+@param label
+@desc パラメータの数値を表示します。
+@default true
+@type boolean
+@on 有効
+@off 無効
+
+@param value
+@desc パラメータの数値を表示します。
+@default true
+@type boolean
+@on 有効
+@off 無効
+
+@param gauge
+@desc パラメータのゲージを表示します。
+@default true
+@type boolean
+@on 有効
+@off 無効
 */
 
 (function() {
