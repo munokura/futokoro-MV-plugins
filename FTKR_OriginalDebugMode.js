@@ -16,73 +16,143 @@ FTKR.ODM = FTKR.ODM || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.0 オリジナルのデバッグモードを追加するプラグイン
- * @author フトコロ
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * オリジナルのデバッグモードを実装します。
- * この機能は、テストプレイ中のみ使用可能です。
- * 
- * 
- * デバッグモード呼び出し：F10キー
- * 
- * デバッグモード中の操作
- *    ↑↓キー                ：カーソル移動
- *    →←キー または 決定キー ：ON/OFF切替
- * 
- * 
- * デバッグモードで操作可能な項目
- *    ・先制攻撃確定(*1)
- *    ・不意打ち確定(*1)
- *    ・逃走確定
- *    ・戦闘開始時TP最大
- *    ・クリティカル確定
- *    ・アイテム入手率1000倍
- *    ・戦闘後全回復
- *    ・エンカウント無効
- * 
- * (*1)先制攻撃と不意打ちをどちらも ON にした場合は、先制攻撃になります。
- * 
- * 
- * なお、デバッグモードの設定内容は記録されません。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- *    なお、出来る限り一番下に追加してください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.0 - 2018/04/02 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.0 Plugin that adds original debug mode
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+Implements an original debug mode.
+
+This Traits is only available during test play.
+
+Activate debug mode: F10
+
+Debug mode controls
+↑↓ keys: Move the cursor
+→← key or Enter key: Toggle ON/OFF
+
+Controls available in debug mode
+- Confirm preemptive attack (*1)
+- Confirm surprise attack (*1)
+- Confirm escape
+- Maximum TP at the start of battle
+- Confirm critical hit
+- 1000x item acquisition rate
+- Full recovery after battle
+- Encounter disabled
+
+(*1) If both preemptive attack and surprise attack are enabled, a preemptive attack will be used.
+
+Please note that debug mode settings are not recorded.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager".
+Please add it to the bottom, if possible.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin source
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.0 - April 2, 2018: First version created
+
+-----------------------------------------------------------------------------
 */
+
+/*:ja
+@plugindesc v1.0.0 オリジナルのデバッグモードを追加するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+オリジナルのデバッグモードを実装します。
+この機能は、テストプレイ中のみ使用可能です。
+
+
+デバッグモード呼び出し：F10キー
+
+デバッグモード中の操作
+   ↑↓キー                ：カーソル移動
+   →←キー または 決定キー ：ON/OFF切替
+
+
+デバッグモードで操作可能な項目
+   ・先制攻撃確定(*1)
+   ・不意打ち確定(*1)
+   ・逃走確定
+   ・戦闘開始時TP最大
+   ・クリティカル確定
+   ・アイテム入手率1000倍
+   ・戦闘後全回復
+   ・エンカウント無効
+
+(*1)先制攻撃と不意打ちをどちらも ON にした場合は、先制攻撃になります。
+
+なお、デバッグモードの設定内容は記録されません。
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+   なお、出来る限り一番下に追加してください。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.0 - 2018/04/02 : 初版作成
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
-(function() {
+(function () {
 
     //=============================================================================
     // プラグイン パラメータ
@@ -90,14 +160,14 @@ FTKR.ODM = FTKR.ODM || {};
     var parameters = PluginManager.parameters('FTKR_OriginalDebugMode');
 
     FTKR.ODM = {
-        preemptiveBool  : {text : '先制攻撃確定', value : false},
-        surpriseBool    : {text : '不意打ち確定', value : false},
-        escapeBool      : {text : '逃走確定', value : false},
-        criticalBool    : {text : 'クリティカル確定', value : false},
-        dropItemBool    : {text : 'アイテム入手率1000倍', value : false},
-        encountBool     : {text : 'エンカウント無効', value : false},
-        fullRecoveryBool: {text : '戦闘後全回復', value : false},
-        tpMaxBool       : {text : '戦闘開始時TP最大', value : false},
+        preemptiveBool: { text: '先制攻撃確定', value: false },
+        surpriseBool: { text: '不意打ち確定', value: false },
+        escapeBool: { text: '逃走確定', value: false },
+        criticalBool: { text: 'クリティカル確定', value: false },
+        dropItemBool: { text: 'アイテム入手率1000倍', value: false },
+        encountBool: { text: 'エンカウント無効', value: false },
+        fullRecoveryBool: { text: '戦闘後全回復', value: false },
+        tpMaxBool: { text: '戦闘開始時TP最大', value: false },
     };
 
     Input.keyMapper[121] = 'FtDebug';
@@ -107,7 +177,7 @@ FTKR.ODM = FTKR.ODM || {};
     //=============================================================================
 
     var _ODM_BattleManager_startBattle = BattleManager.startBattle;
-    BattleManager.startBattle = function() {
+    BattleManager.startBattle = function () {
         if (FTKR.ODM.preemptiveBool.value) this._preemptive = true;
         if (FTKR.ODM.surpriseBool.value && !this._preemptive) this._surprise = true;
         if (FTKR.ODM.escapeBool.value) this._escapeRatio = 1;
@@ -115,34 +185,34 @@ FTKR.ODM = FTKR.ODM || {};
     };
 
     var _ODM_BattleManager_updateBattleEnd = BattleManager.updateBattleEnd;
-    BattleManager.updateBattleEnd = function() {
+    BattleManager.updateBattleEnd = function () {
         if (FTKR.ODM.fullRecoveryBool.value) $gameParty.recoverAll();
         _ODM_BattleManager_updateBattleEnd.call(this);
     };
 
     var _ODM_Game_Action_itemCri = Game_Action.prototype.itemCri;
-    Game_Action.prototype.itemCri = function(target) {
+    Game_Action.prototype.itemCri = function (target) {
         return FTKR.ODM.criticalBool.value ? true : _ODM_Game_Action_itemCri.call(this, target);
     };
 
     var _ODM_Game_Enemy_dropItemRate = Game_Enemy.prototype.dropItemRate;
-    Game_Enemy.prototype.dropItemRate = function() {
+    Game_Enemy.prototype.dropItemRate = function () {
         return FTKR.ODM.dropItemBool.value ? 1000 : _ODM_Game_Enemy_dropItemRate.call(this);
     };
 
     var _ODM_Game_Party_hasEncounterNone = Game_Party.prototype.hasEncounterNone;
-    Game_Party.prototype.hasEncounterNone = function() {
+    Game_Party.prototype.hasEncounterNone = function () {
         return FTKR.ODM.encountBool.value ? true : _ODM_Game_Party_hasEncounterNone.call(this);
     };
 
-    Game_Party.prototype.recoverAll = function() {
-        this.allMembers().forEach(function(actor){
+    Game_Party.prototype.recoverAll = function () {
+        this.allMembers().forEach(function (actor) {
             actor.recoverAll();
         });
     };
 
     var _ODM_Game_Actor_onBattleStart = Game_Actor.prototype.onBattleStart;
-    Game_Actor.prototype.onBattleStart = function() {
+    Game_Actor.prototype.onBattleStart = function () {
         _ODM_Game_Actor_onBattleStart.call(this);
         if (FTKR.ODM.tpMaxBool.value) this.setTp(this.maxTp());
     };
@@ -152,20 +222,20 @@ FTKR.ODM = FTKR.ODM || {};
     //=============================================================================
 
     var _ODM_Scene_Map_updateScene = Scene_Map.prototype.updateScene;
-    Scene_Map.prototype.updateScene = function() {
+    Scene_Map.prototype.updateScene = function () {
         _ODM_Scene_Map_updateScene.call(this);
         if (!SceneManager.isSceneChanging()) {
             this.updateCallFtDebug();
         }
     };
 
-    Scene_Map.prototype.updateCallFtDebug = function() {
+    Scene_Map.prototype.updateCallFtDebug = function () {
         if (this.isFtDebugCalled()) {
             SceneManager.push(Scene_FtDebug);
         }
     };
 
-    Scene_Map.prototype.isFtDebugCalled = function() {
+    Scene_Map.prototype.isFtDebugCalled = function () {
         return Input.isTriggered('FtDebug') && $gameTemp.isPlaytest();
     };
 
@@ -180,16 +250,16 @@ FTKR.ODM = FTKR.ODM || {};
     Scene_FtDebug.prototype = Object.create(Scene_MenuBase.prototype);
     Scene_FtDebug.prototype.constructor = Scene_FtDebug;
 
-    Scene_FtDebug.prototype.initialize = function() {
+    Scene_FtDebug.prototype.initialize = function () {
         Scene_MenuBase.prototype.initialize.call(this);
     };
 
-    Scene_FtDebug.prototype.create = function() {
+    Scene_FtDebug.prototype.create = function () {
         Scene_MenuBase.prototype.create.call(this);
         this.createFtDebugCommandWindow();
     };
 
-    Scene_FtDebug.prototype.createFtDebugCommandWindow = function() {
+    Scene_FtDebug.prototype.createFtDebugCommandWindow = function () {
         this._debugWindow = new Window_FtDebugCommand(0, 0);
         this._debugWindow.setHandler('cancel', this.popScene.bind(this));
         this.addWindow(this._debugWindow);
@@ -206,34 +276,34 @@ FTKR.ODM = FTKR.ODM || {};
     Window_FtDebugCommand.prototype = Object.create(Window_Command.prototype);
     Window_FtDebugCommand.prototype.constructor = Window_FtDebugCommand;
 
-    Window_FtDebugCommand.prototype.initialize = function(x, y) {
+    Window_FtDebugCommand.prototype.initialize = function (x, y) {
         Window_Command.prototype.initialize.call(this, x, y);
     };
 
-    Window_FtDebugCommand.prototype.windowWidth = function() {
+    Window_FtDebugCommand.prototype.windowWidth = function () {
         return 480;
     };
 
-    Window_FtDebugCommand.prototype.windowHeight = function() {
+    Window_FtDebugCommand.prototype.windowHeight = function () {
         return this.fittingHeight(Math.min(this.numVisibleRows(), 12));
     };
 
-    Window_FtDebugCommand.prototype.makeCommandList = function() {
+    Window_FtDebugCommand.prototype.makeCommandList = function () {
         this.addGeneralOptions();
     };
 
-    Window_FtDebugCommand.prototype.addGeneralOptions = function() {
+    Window_FtDebugCommand.prototype.addGeneralOptions = function () {
         this.addCommand(FTKR.ODM.preemptiveBool.text, 'preemptiveBool');
-        this.addCommand(FTKR.ODM.surpriseBool.text,   'surpriseBool');
-        this.addCommand(FTKR.ODM.escapeBool.text,     'escapeBool');
-        this.addCommand(FTKR.ODM.tpMaxBool.text,       'tpMaxBool');
-        this.addCommand(FTKR.ODM.criticalBool.text,   'criticalBool');
-        this.addCommand(FTKR.ODM.dropItemBool.text,   'dropItemBool');
+        this.addCommand(FTKR.ODM.surpriseBool.text, 'surpriseBool');
+        this.addCommand(FTKR.ODM.escapeBool.text, 'escapeBool');
+        this.addCommand(FTKR.ODM.tpMaxBool.text, 'tpMaxBool');
+        this.addCommand(FTKR.ODM.criticalBool.text, 'criticalBool');
+        this.addCommand(FTKR.ODM.dropItemBool.text, 'dropItemBool');
         this.addCommand(FTKR.ODM.fullRecoveryBool.text, 'fullRecoveryBool');
-        this.addCommand(FTKR.ODM.encountBool.text,    'encountBool');
+        this.addCommand(FTKR.ODM.encountBool.text, 'encountBool');
     };
 
-    Window_FtDebugCommand.prototype.drawItem = function(index) {
+    Window_FtDebugCommand.prototype.drawItem = function (index) {
         var rect = this.itemRectForText(index);
         var statusWidth = this.statusWidth();
         var titleWidth = rect.width - statusWidth;
@@ -243,42 +313,42 @@ FTKR.ODM = FTKR.ODM || {};
         this.drawText(this.statusText(index), titleWidth, rect.y, statusWidth, 'right');
     };
 
-    Window_FtDebugCommand.prototype.statusWidth = function() {
+    Window_FtDebugCommand.prototype.statusWidth = function () {
         return 120;
     };
 
-    Window_FtDebugCommand.prototype.statusText = function(index) {
+    Window_FtDebugCommand.prototype.statusText = function (index) {
         var symbol = this.commandSymbol(index);
         var value = this.getFtDebugValue(symbol);
         return this.booleanStatusText(value);
     };
 
-    Window_FtDebugCommand.prototype.booleanStatusText = function(value) {
+    Window_FtDebugCommand.prototype.booleanStatusText = function (value) {
         return value ? 'ON' : 'OFF';
     };
 
-    Window_FtDebugCommand.prototype.processOk = function() {
+    Window_FtDebugCommand.prototype.processOk = function () {
         var index = this.index();
         var symbol = this.commandSymbol(index);
         var value = this.getFtDebugValue(symbol);
         this.changeValue(symbol, !value);
     };
 
-    Window_FtDebugCommand.prototype.cursorRight = function(wrap) {
+    Window_FtDebugCommand.prototype.cursorRight = function (wrap) {
         var index = this.index();
         var symbol = this.commandSymbol(index);
         var value = this.getFtDebugValue(symbol);
         this.changeValue(symbol, true);
     };
 
-    Window_FtDebugCommand.prototype.cursorLeft = function(wrap) {
+    Window_FtDebugCommand.prototype.cursorLeft = function (wrap) {
         var index = this.index();
         var symbol = this.commandSymbol(index);
         var value = this.getFtDebugValue(symbol);
         this.changeValue(symbol, false);
     };
 
-    Window_FtDebugCommand.prototype.changeValue = function(symbol, value) {
+    Window_FtDebugCommand.prototype.changeValue = function (symbol, value) {
         var lastValue = this.getFtDebugValue(symbol);
         if (lastValue !== value) {
             this.setFtDegubValue(symbol, value);
@@ -287,11 +357,11 @@ FTKR.ODM = FTKR.ODM || {};
         }
     };
 
-    Window_FtDebugCommand.prototype.getFtDebugValue = function(symbol) {
+    Window_FtDebugCommand.prototype.getFtDebugValue = function (symbol) {
         return FTKR.ODM[symbol].value;
     };
 
-    Window_FtDebugCommand.prototype.setFtDegubValue = function(symbol, value) {
+    Window_FtDebugCommand.prototype.setFtDegubValue = function (symbol, value) {
         FTKR.ODM[symbol].value = value;
     };
 

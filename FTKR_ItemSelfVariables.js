@@ -16,303 +16,579 @@ FTKR.ISV = FTKR.ISV || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.2.2 アイテムやスキルにセルフ変数を実装するプラグイン
- * @author フトコロ
- *
- * @param --セーブ設定--
- * @desc 
- * 
- * @param Enabled Save
- * @desc セーブ時にセルフ変数を保存するか
- * 0 - 保存しない, 1 - 保存する
- * @default 0
- *
- * @param --アイテム設定--
- * @desc 
- * 
- * @param Item Number
- * @desc アイテムで使用するセルフ変数の数を設定する
- * @default 0
- *
- * @param --武器設定--
- * @desc 
- * 
- * @param Weapon Number
- * @desc 武器で使用するセルフ変数の数を設定する
- * @default 0
- *
- * @param --防具設定--
- * @desc 
- * 
- * @param Armor Number
- * @desc 防具で使用するセルフ変数の数を設定する
- * @default 0
- *
- * @param --スキル設定--
- * @desc 
- * 
- * @param Skill Number
- * @desc スキルで使用するセルフ変数の数を設定する
- * @default 0
- *
- * @param --アクター設定--
- * @desc 
- * 
- * @param Actor Number
- * @desc アクターで使用するセルフ変数の数を設定する
- * @default 0
- *
- * @param --エネミー設定--
- * @desc 
- * 
- * @param Enemy Number
- * @desc エネミーで使用するセルフ変数の数を設定する
- * @default 0
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインを実装することで、以下の対象にセーブ時に記録し値の操作が
- * 可能な、セルフ変数を実装することができます。
- * 
- * 1. アイテム
- * 2. 武器
- * 3. 防具
- * 4. スキル
- * 5. アクター
- * 6. エネミー
- * 
- * セルフ変数は、制御文字で表示させることができます。
- * 
- * 
- * プラグインの使い方は、以下のHPを参照してください。
- * https://github.com/futokoro/RPGMaker/blob/master/FTKR_ItemSelfVariables.ja.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- *    本プラグインは、ダメージ計算式の処理部を書き換えています。
- *    そのため、プラグイン管理の出来るだけ上の位置に追加してください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * セルフ変数の設定
- *-----------------------------------------------------------------------------
- * 以下の、プラグインパラメータで設定を変更します。
- * 
- * <*** Number>
- *    :使用するセルフ変数の数を個別に設定します。
- * 
- * <Enabled Save>
- *    :セーブ時にセルフ変数を保存するか指定します。
- *    :保存しない場合、ゲーム起動毎にリセットします。
- *    :この設定は、アイテム、武器、防具、スキル、アクター、エネミー共通です。
- * 
- * 
- * 以下の、タグをアイテム(武器・防具含む)やスキル、アクターのメモ欄に
- * 追記すると初期値を設定できます。
- * 
- * <ISV IV[x]: y>
- * <ISV セルフ変数[x]: y>
- *    :セルフ変数ID x の初期値を y に設定します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * スクリプトコマンド
- *-----------------------------------------------------------------------------
- * セルフ変数に対して、以下のスクリプトコマンドを使用できます。
- * なお、item(x)の部分は、武器は'weapon(x)'、防具は'armor(x)'、
- * スキルは'skill(x)'、アクターは'actor(x)'、エネミーは'enemy(x)'に
- * 変えてください。
- * 
- * １．セルフ変数の値の取得
- * $gameSelfVariables.item(x).value(y)
- *    :アイテムID x のセルフ変数 y の値を取得します。
- * 
- * ２．セルフ変数の値の変更
- * $gameSelfVariables.item(x).setValue(y, value (, 'code') )
- *    :アイテムID x のセルフ変数 y に value を代入します。
- *    :code部に以下の文字を入力することで、代入以外の計算が可能です。
- *    : 加算(+) - セルフ変数 y の値に value を加算します。
- *    : 減算(-) - セルフ変数 y の値から value を減算します。
- *    : 積算(*) - セルフ変数 y の値に value を積算します。
- *    : 除算(/) - セルフ変数 y の値から value を除算します。
- *    : 剰余(%) - セルフ変数 y の値から value を除算した余りを代入します。
- *    :
- *    :入力例)
- *    : $gameSelfVariables.item(10).setValue(1, 10)
- *    :   アイテムID 10 のセルフ変数 1 に 10 を代入する
- *    :
- *    : $gameSelfVariables.weapon(12).setValue(2, 6, '加算')
- *    : $gameSelfVariables.weapon(12).setValue(2, 6, '+')
- *    :   武器ID 12 のセルフ変数 2 に 6 を加算する
- *    :   
- * 
- * ３．セルフ変数の削除
- * $gameSelfVariables.item(x).clear()
- *    :アイテムID x のセルフ変数をすべて削除します。
- *    :0 が代入されるわけではありません。
- * 
- * ４．セルフ変数の初期化
- * $gameSelfVariables.item(x).allReset(value)
- *    :アイテムID x のすべてのセルフ変数に value を代入します。
- *    :このときの'すべて'とは、<*** Number>で設定した数を指します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * プラグインコマンド
- *-----------------------------------------------------------------------------
- * 本プラグインでは、以下のコマンドを使用できます。
- * なお、大文字小文字は区別しないため、どちらを使用しても構いません。
- * 
- * 1. セルフ変数の変更
- * 指定したアイテムIDのセルフ変数を変更します。
- * 
- * ISV_セルフ変数変更 アイテムタイプ アイテムID セルフ変数ID 演算方法 値
- * ISV_SET_SELF_VARIABLES ITEMTYPE itemId selfVariableId CALCTYPE value
- * 
- * アイテムタイプには、アイテム(item)、武器(weapon)、防具(armor)、
- * スキル(skill)、アクター(actor)、エネミー(enemy)を代入してください。
- * 演算方法には、代入(=)、加算(+)、減算(-)、積算(*)、除算(/)、剰余(%)を
- * 代入してください。
- * アイテムID、セルフ変数ID、代入する値には、ゲーム内変数を指定できます。
- * ゲーム内変数を使用する場合は、数値の変わりに v[n] を入力してください。
- * 
- * 入力例)
- * ISV_セルフ変数変更 アイテム 10 1 代入 v[5]
- * ISV_SET_SELF_VARIABLES item 10 1 = v[5]
- *    :アイテムID10 のセルフ変数ID1 に ゲーム内変数ID5 の値を代入する
- * 
- * 
- * 2. セルフ変数の取得
- * 指定したアイテムIDのセルフ変数を、ゲーム内変数に代入します。
- * 
- * ISV_セルフ変数取得 ゲーム内変数ID アイテムタイプ アイテムID セルフ変数ID
- * ISV_GET_SELF_VARIABLES variableId ITEMTYPE itemId selfVariableId
- * 
- * アイテムタイプには、アイテム(item)、武器(weapon)、防具(armor)、
- * スキル(skill)、アクター(actor)、エネミー(enemy)を代入してください。
- * ゲーム内変数ID、アイテムID、セルフ変数IDには、ゲーム内変数を指定できます。
- * ゲーム内変数を使用する場合は、数値の変わりに v[n] を入力してください。
- * 
- * 入力例)
- * ISV_セルフ変数取得 5 武器 10 1
- * ISV_GET_SELF_VARIABLES 5 weapon 10 1
- *    :武器ID10 のセルフ変数ID1 の値を ゲーム内変数ID5 に代入する
- * 
- * 
- *-----------------------------------------------------------------------------
- * セルフ変数のダメージ計算式への適用
- *-----------------------------------------------------------------------------
- * セルフ変数は、アイテムおよびスキルのダメージ計算式に使用できます。
- * 計算式に以下のコードを入力することで、セルフ変数ID x の値を参照します。
- * 
- *  av[x]   - 使用者のセルフ変数ID x の値を参照します。
- *  bv[x]   - 対象者のセルフ変数ID x の値を参照します。
- *  iv[x]   - 使用するアイテムまたはスキルのセルフ変数ID x の値を参照します。
- * 
- * 入力例）
- * a.atk * (4 + iv[1]) - b.def * 2
- * 
- * 
- * ＜'iv[x]'などセルフ変数を入力すると、必ずダメージを与えられなくなる場合＞
- * 他のプラグインと競合しており、コードが使用できません。
- * この場合は、コードの替わりに、以下のスクリプトを記述してください。
- * 
- * iv[x] ⇒ item._seflVariables._data[x]
- * av[x] ⇒ (a.isActor() ? a.actor()._seflVariables._data[x] : a.enemy()._seflVariables._data[x])
- * bv[x] ⇒ (b.isActor() ? b.actor()._seflVariables._data[x] : b.enemy()._seflVariables._data[x])
- * 
- * なお、av[x]のスクリプトについて、そのスキルやアイテムをアクターしか
- * 使用しない場合は、以下の様に記述を省くことも可能です。
- * 
- *    av[x] ⇒ a.actor()._seflVariables._data[x]
- * 
- * また、対象が味方のみであれば
- *    bv[x] ⇒ b.actor()._seflVariables._data[x]
- * 対象が敵のみであれば
- *    bv[x] ⇒ b.enemy()._seflVariables._data[x]
- * のように記述できます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 制御文字
- *-----------------------------------------------------------------------------
- * 本プラグインでは、以下の制御文字を使用できます。
- * なお、大文字小文字は区別しないため、どちらを使用しても構いません。
- * 
- * \ITV[x,y]   : アイテムID x のセルフ変数ID y の値を参照する。
- * \WEV[x,y]   : 武器ID x のセルフ変数ID y の値を参照する。
- * \ARV[x,y]   : 防具ID x のセルフ変数ID y の値を参照する。
- * \SKV[x,y]   : スキルID x のセルフ変数ID y の値を参照する。
- * \ACV[x,y]   : アクターID x のセルフ変数ID y の値を参照する。
- * \ENV[x,y]   : エネミーID x のセルフ変数ID y の値を参照する。
- * 
- * 注意) x と y の数字はどちらも必要です
- * 
- * 説明文やプロフィールで、上記制御文字を使う場合に
- * []内の "x,"部分を省略することが可能です。
- * 省略した場合は、例えばアイテムならそのアイテムのセルフ変数を参照します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.2.2 - 2018/01/08 : ヘルプ追記
- * 
- * v1.2.1 - 2017/10/20 : 機能追加
- *    1. アイテムの説明欄に制御文字を使用する場合に、アイテムIDを
- *       省略できる機能を追加。
- * 
- * v1.2.0 - 2017/10/19 : 制御文字に対応
- * 
- * v1.1.3 - 2017/05/03 : 計算式の機能追加
- * 
- * v1.1.2 - 2017/04/29 : ダメージ計算式の処理を見直し
- * 
- * v1.1.1 - 2017/04/26 : 不具合修正
- *    1. ダメージ計算式に例外処理を追加。
- * 
- * v1.1.0 - 2017/04/18 : 仕様変更、機能追加
- *    1. 使用するセルフ変数の数を、アイテムやスキル毎に設定できるように変更。
- *    2. アクターとエネミーにセルフ変数を追加。
- * 
- * v1.0.1 - 2017/04/14 : 機能追加
- *    1. セルフ変数の初期値を設定する機能追加。
- *    2. セルフ変数に文字列を代入できる機能を追加。
- *    3. ライセンス変更。
- * 
- * v1.0.0 - 2017/03/26 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.2.2 A plugin that implements self variables for items and skills
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+By implementing this plugin, you can implement self variables that can be recorded and manipulated during saves for the following objects.
+
+1. Items
+2. Weapons
+3. Armors
+4. Skills
+5. Actors
+6. Enemies
+
+Self variables can be displayed using control characters.
+
+For instructions on how to use the plugin, please refer to the following website:
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_ItemSelfVariables.ja.md
+
+-----------------------------------------------------------------------------
+Setup
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+This plugin rewrites the damage calculation formula.
+
+For this reason, please add it as high up in the Plugin Manager as possible.
+
+----------------------------------------------------------------------------
+Self Variable Settings
+----------------------------------------------------------------------------
+Change the settings using the following plugin parameters.
+
+<*** Number>
+: Sets the number of self variables to use individually.
+
+<Enabled Save>
+: Specifies whether self variables are saved when saving.
+: If not saved, they will be reset each time the game is started.
+: This setting applies to items, weapons, armor, skills, actors, and enemies.
+
+You can set initial values by adding the following tags to the Note field for items (including weapons and armor), skills, and actors.
+
+<ISV IV[x]: y>
+: Sets the initial value of self variable ID x to y.
+
+-----------------------------------------------------------------------------
+Script Commands
+-----------------------------------------------------------------------------
+The following script commands can be used with self variables.
+Please change the item(x) part to 'weapon(x)' for weapons, 'armor(x)' for armor,
+'skill(x)' for skills, 'actor(x)' for actors, and 'enemy(x)' for enemies.
+
+1. Getting the Value of a Self Variable
+$gameSelfVariables.item(x).value(y)
+: Gets the value of self variable y for item ID x.
+
+2. Changing the Value of a Self Variable
+$gameSelfVariables.item(x).setValue(y, value (, 'code') )
+: Assigns value to self variable y for item ID x.
+: You can perform calculations other than assignments by entering the following characters in the code section.
+: Addition (+) - Adds value to the value of self variable y.
+: Subtraction (-) - Subtracts value from the value of self variable y.
+: Multiplication (*) - Multiplies the value of self variable y by value.
+: Division (/) - Divides the value of self variable y by value.
+: Remainder (%) - Assigns the remainder when dividing value by self variable y.
+:
+: Input example)
+: $gameSelfVariables.item(10).setValue(1, 10)
+: Assigns 10 to self variable 1 of item ID 10.
+:
+: $gameSelfVariables.weapon(12).setValue(2, 6, '+')
+: Adds 6 to self variable 2 of weapon ID 12.
+:
+
+3. Deleting Self Variables
+$gameSelfVariables.item(x).clear()
+: Deletes all self variables for item ID x.
+: Does not assign 0.
+
+4. Initializing Self Variables
+$gameSelfVariables.item(x).allReset(value)
+: Assigns value to all self variables for item ID x.
+: 'All' here refers to the number specified by <*** Number>.
+
+-----------------------------------------------------------------------------
+Plugin Commands
+-----------------------------------------------------------------------------
+This plugin supports the following commands.
+Note that they are case-insensitive, so either uppercase or lowercase is acceptable.
+
+1. Changing Self Variables
+Changes the self variable for the specified item ID.
+
+ISV_SET_SELF_VARIABLES ITEMTYPE itemId selfVariableId CALCTYPE value
+
+For item type, enter item, weapon, armor,
+skill, actor, or enemy.
+For calculation method, enter assignment (=), addition (+), subtraction (-), multiplication (*), division (/), or remainder (%).
+You can specify in-game variables for the item ID, self variable ID, and assigned value.
+To use an in-game variable, enter v[n] instead of a numeric value.
+
+Input example)
+ISV_SET_SELF_VARIABLES item 10 1 = v[5]
+: Assigns the value of in-game variable ID 5 to self variable ID 1 of item ID 10.
+
+2. Get Self Variable
+Assigns the self variable of the specified item ID to an in-game variable.
+
+ISV_GET_SELF_VARIABLES variableId ITEMTYPE itemId selfVariableId
+
+For item type, enter item, weapon, armor, skill, actor, or enemy.
+You can specify in-game variables for the in-game variable ID, item ID, and self variable ID.
+To use an in-game variable, enter v[n] instead of a numeric value.
+
+Input example)
+ISV_GET_SELF_VARIABLES 5 weapon 10 1
+: Assigns the value of self variable ID1 of weapon ID10 to in-game variable ID5.
+
+-----------------------------------------------------------------------------
+Applying self variables to damage calculation formulas
+-----------------------------------------------------------------------------
+Self variables can be used in item and skill damage calculation formulas.
+Reference the value of self variable ID x by entering the following code in the formula:
+
+av[x] - References the value of self variable ID x of the user.
+bv[x] - References the value of self variable ID x of the target.
+iv[x] - References the value of self variable ID x of the item or skill being used.
+
+Example:
+a.atk * (4 + iv[1]) - b.def * 2
+
+<If you are unable to deal damage whenever you enter a self variable such as 'iv[x]'>
+The code cannot be used due to a conflict with another plugin.
+In this case, please use the following script instead.
+
+iv[x] ⇒ item._seflVariables._data[x]
+av[x] ⇒ (a.isActor() ? a.actor()._seflVariables._data[x] : a.enemy()._seflVariables._data[x])
+bv[x] ⇒ (b.isActor() ? b.actor()._seflVariables._data[x] : b.enemy()._seflVariables._data[x])
+
+Note that if the skill or item in the av[x] script is only used by actors, you can omit the line as shown below.
+
+av[x] ⇒ a.actor()._seflVariables._data[x]
+
+Also, if the target is only allies,
+bv[x] ⇒ b.actor()._seflVariables._data[x]
+
+If the target is only enemies,
+bv[x] ⇒ b.enemy()._seflVariables._data[x]
+
+
+-----------------------------------------------------------------------------
+Control Characters
+-----------------------------------------------------------------------------
+This plugin supports the following control characters.
+Note that they are case-insensitive, so either uppercase or lowercase characters can be used.
+
+\ITV[x,y]: References the value of the self variable ID y for item ID x.
+\WEV[x,y]: References the value of the self variable ID y for weapon ID x.
+\ARV[x,y]: References the value of the self variable ID y for armor ID x.
+\SKV[x,y]: Refers to the value of self variable ID y for skill ID x.
+\ACV[x,y]: Refers to the value of self variable ID y for actor ID x.
+\ENV[x,y]: Refers to the value of self variable ID y for enemy ID x.
+
+Note: Both the numbers x and y are required.
+
+When using the above control characters in descriptions or profiles,
+you can omit the "x," part within [].
+If omitted, for example, in the case of an item, the self variable of that item will be referenced.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+----------------------------------------------------------------------------
+Change History
+----------------------------------------------------------------------------
+
+v1.2.2 - 2018/01/08: Help section additions
+
+v1.2.1 - 2017/10/20: Traits additions
+1. Added the ability to omit the item ID when using control characters in the item description.
+
+v1.2.0 - October 19, 2017: Added support for control characters.
+
+v1.1.3 - May 3, 2017: Added formula functions.
+
+v1.1.2 - April 29, 2017: Revised damage calculation formula processing.
+
+v1.1.1 - April 26, 2017: Bug fixes.
+1. Added exception handling to the damage calculation formula.
+
+v1.1.0 - April 18, 2017: Specification changes and Traits additions.
+1. The number of self variables used can now be set for each item and skill.
+2. Added self variables to actors and enemies.
+
+v1.0.1 - April 14, 2017: Traits additions.
+1. Added the ability to set the initial value of self variables.
+2. Added the ability to assign strings to self variables.
+3. License change.
+
+v1.0.0 - March 26, 2017: First version created
+
+-----------------------------------------------------------------------------
+
+@param --セーブ設定--
+@text --Save settings--
+
+@param Enabled Save
+@desc Whether to save self variables when saving: 0 - Do not save, 1 - Save
+@default 0
+
+@param --アイテム設定--
+@text --Item Settings--
+
+@param Item Number
+@desc Set the number of self variables used in an item
+@default 0
+
+@param --武器設定--
+@text --Weapon Settings--
+
+@param Weapon Number
+@desc Set the number of self variables used by the weapon
+@default 0
+
+@param --防具設定--
+@text --Armor settings--
+
+@param Armor Number
+@desc Set the number of self variables used by the armour
+@default 0
+
+@param --スキル設定--
+@text --Skill Settings--
+
+@param Skill Number
+@desc Set the number of self variables used in your skill
+@default 0
+
+@param --アクター設定--
+@text --Actor Settings--
+
+@param Actor Number
+@desc Set the number of self variables used by an actor
+@default 0
+
+@param --エネミー設定--
+@text --Enemy Settings--
+
+@param Enemy Number
+@desc Set the number of self variables used by enemies
+@default 0
 */
+
+
+/*:ja
+@plugindesc v1.2.2 アイテムやスキルにセルフ変数を実装するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインを実装することで、以下の対象にセーブ時に記録し値の操作が
+可能な、セルフ変数を実装することができます。
+
+1. アイテム
+2. 武器
+3. 防具
+4. スキル
+5. アクター
+6. エネミー
+
+セルフ変数は、制御文字で表示させることができます。
+
+
+プラグインの使い方は、以下のHPを参照してください。
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_ItemSelfVariables.ja.md
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+   本プラグインは、ダメージ計算式の処理部を書き換えています。
+   そのため、プラグイン管理の出来るだけ上の位置に追加してください。
+
+
+-----------------------------------------------------------------------------
+セルフ変数の設定
+-----------------------------------------------------------------------------
+以下の、プラグインパラメータで設定を変更します。
+
+<*** Number>
+   :使用するセルフ変数の数を個別に設定します。
+
+<Enabled Save>
+   :セーブ時にセルフ変数を保存するか指定します。
+   :保存しない場合、ゲーム起動毎にリセットします。
+   :この設定は、アイテム、武器、防具、スキル、アクター、エネミー共通です。
+
+
+以下の、タグをアイテム(武器・防具含む)やスキル、アクターのメモ欄に
+追記すると初期値を設定できます。
+
+<ISV IV[x]: y>
+<ISV セルフ変数[x]: y>
+   :セルフ変数ID x の初期値を y に設定します。
+
+
+-----------------------------------------------------------------------------
+スクリプトコマンド
+-----------------------------------------------------------------------------
+セルフ変数に対して、以下のスクリプトコマンドを使用できます。
+なお、item(x)の部分は、武器は'weapon(x)'、防具は'armor(x)'、
+スキルは'skill(x)'、アクターは'actor(x)'、エネミーは'enemy(x)'に
+変えてください。
+
+１．セルフ変数の値の取得
+$gameSelfVariables.item(x).value(y)
+   :アイテムID x のセルフ変数 y の値を取得します。
+
+２．セルフ変数の値の変更
+$gameSelfVariables.item(x).setValue(y, value (, 'code') )
+   :アイテムID x のセルフ変数 y に value を代入します。
+   :code部に以下の文字を入力することで、代入以外の計算が可能です。
+   : 加算(+) - セルフ変数 y の値に value を加算します。
+   : 減算(-) - セルフ変数 y の値から value を減算します。
+   : 積算(*) - セルフ変数 y の値に value を積算します。
+   : 除算(/) - セルフ変数 y の値から value を除算します。
+   : 剰余(%) - セルフ変数 y の値から value を除算した余りを代入します。
+   :
+   :入力例)
+   : $gameSelfVariables.item(10).setValue(1, 10)
+   :   アイテムID 10 のセルフ変数 1 に 10 を代入する
+   :
+   : $gameSelfVariables.weapon(12).setValue(2, 6, '加算')
+   : $gameSelfVariables.weapon(12).setValue(2, 6, '+')
+   :   武器ID 12 のセルフ変数 2 に 6 を加算する
+   :
+
+３．セルフ変数の削除
+$gameSelfVariables.item(x).clear()
+   :アイテムID x のセルフ変数をすべて削除します。
+   :0 が代入されるわけではありません。
+
+４．セルフ変数の初期化
+$gameSelfVariables.item(x).allReset(value)
+   :アイテムID x のすべてのセルフ変数に value を代入します。
+   :このときの'すべて'とは、<*** Number>で設定した数を指します。
+
+
+-----------------------------------------------------------------------------
+プラグインコマンド
+-----------------------------------------------------------------------------
+本プラグインでは、以下のコマンドを使用できます。
+なお、大文字小文字は区別しないため、どちらを使用しても構いません。
+
+1. セルフ変数の変更
+指定したアイテムIDのセルフ変数を変更します。
+
+ISV_セルフ変数変更 アイテムタイプ アイテムID セルフ変数ID 演算方法 値
+ISV_SET_SELF_VARIABLES ITEMTYPE itemId selfVariableId CALCTYPE value
+
+アイテムタイプには、アイテム(item)、武器(weapon)、防具(armor)、
+スキル(skill)、アクター(actor)、エネミー(enemy)を代入してください。
+演算方法には、代入(=)、加算(+)、減算(-)、積算(*)、除算(/)、剰余(%)を
+代入してください。
+アイテムID、セルフ変数ID、代入する値には、ゲーム内変数を指定できます。
+ゲーム内変数を使用する場合は、数値の変わりに v[n] を入力してください。
+
+入力例)
+ISV_セルフ変数変更 アイテム 10 1 代入 v[5]
+ISV_SET_SELF_VARIABLES item 10 1 = v[5]
+   :アイテムID10 のセルフ変数ID1 に ゲーム内変数ID5 の値を代入する
+
+
+2. セルフ変数の取得
+指定したアイテムIDのセルフ変数を、ゲーム内変数に代入します。
+
+ISV_セルフ変数取得 ゲーム内変数ID アイテムタイプ アイテムID セルフ変数ID
+ISV_GET_SELF_VARIABLES variableId ITEMTYPE itemId selfVariableId
+
+アイテムタイプには、アイテム(item)、武器(weapon)、防具(armor)、
+スキル(skill)、アクター(actor)、エネミー(enemy)を代入してください。
+ゲーム内変数ID、アイテムID、セルフ変数IDには、ゲーム内変数を指定できます。
+ゲーム内変数を使用する場合は、数値の変わりに v[n] を入力してください。
+
+入力例)
+ISV_セルフ変数取得 5 武器 10 1
+ISV_GET_SELF_VARIABLES 5 weapon 10 1
+   :武器ID10 のセルフ変数ID1 の値を ゲーム内変数ID5 に代入する
+
+
+-----------------------------------------------------------------------------
+セルフ変数のダメージ計算式への適用
+-----------------------------------------------------------------------------
+セルフ変数は、アイテムおよびスキルのダメージ計算式に使用できます。
+計算式に以下のコードを入力することで、セルフ変数ID x の値を参照します。
+
+ av[x]   - 使用者のセルフ変数ID x の値を参照します。
+ bv[x]   - 対象者のセルフ変数ID x の値を参照します。
+ iv[x]   - 使用するアイテムまたはスキルのセルフ変数ID x の値を参照します。
+
+入力例）
+a.atk * (4 + iv[1]) - b.def * 2
+
+
+＜'iv[x]'などセルフ変数を入力すると、必ずダメージを与えられなくなる場合＞
+他のプラグインと競合しており、コードが使用できません。
+この場合は、コードの替わりに、以下のスクリプトを記述してください。
+
+iv[x] ⇒ item._seflVariables._data[x]
+av[x] ⇒ (a.isActor() ? a.actor()._seflVariables._data[x] : a.enemy()._seflVariables._data[x])
+bv[x] ⇒ (b.isActor() ? b.actor()._seflVariables._data[x] : b.enemy()._seflVariables._data[x])
+
+なお、av[x]のスクリプトについて、そのスキルやアイテムをアクターしか
+使用しない場合は、以下の様に記述を省くことも可能です。
+
+   av[x] ⇒ a.actor()._seflVariables._data[x]
+
+また、対象が味方のみであれば
+   bv[x] ⇒ b.actor()._seflVariables._data[x]
+対象が敵のみであれば
+   bv[x] ⇒ b.enemy()._seflVariables._data[x]
+のように記述できます。
+
+
+-----------------------------------------------------------------------------
+制御文字
+-----------------------------------------------------------------------------
+本プラグインでは、以下の制御文字を使用できます。
+なお、大文字小文字は区別しないため、どちらを使用しても構いません。
+
+\ITV[x,y]   : アイテムID x のセルフ変数ID y の値を参照する。
+\WEV[x,y]   : 武器ID x のセルフ変数ID y の値を参照する。
+\ARV[x,y]   : 防具ID x のセルフ変数ID y の値を参照する。
+\SKV[x,y]   : スキルID x のセルフ変数ID y の値を参照する。
+\ACV[x,y]   : アクターID x のセルフ変数ID y の値を参照する。
+\ENV[x,y]   : エネミーID x のセルフ変数ID y の値を参照する。
+
+注意) x と y の数字はどちらも必要です
+
+説明文やプロフィールで、上記制御文字を使う場合に
+[]内の "x,"部分を省略することが可能です。
+省略した場合は、例えばアイテムならそのアイテムのセルフ変数を参照します。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.2.2 - 2018/01/08 : ヘルプ追記
+
+v1.2.1 - 2017/10/20 : 機能追加
+   1. アイテムの説明欄に制御文字を使用する場合に、アイテムIDを
+      省略できる機能を追加。
+
+v1.2.0 - 2017/10/19 : 制御文字に対応
+
+v1.1.3 - 2017/05/03 : 計算式の機能追加
+
+v1.1.2 - 2017/04/29 : ダメージ計算式の処理を見直し
+
+v1.1.1 - 2017/04/26 : 不具合修正
+   1. ダメージ計算式に例外処理を追加。
+
+v1.1.0 - 2017/04/18 : 仕様変更、機能追加
+   1. 使用するセルフ変数の数を、アイテムやスキル毎に設定できるように変更。
+   2. アクターとエネミーにセルフ変数を追加。
+
+v1.0.1 - 2017/04/14 : 機能追加
+   1. セルフ変数の初期値を設定する機能追加。
+   2. セルフ変数に文字列を代入できる機能を追加。
+   3. ライセンス変更。
+
+v1.0.0 - 2017/03/26 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param --セーブ設定--
+@text --セーブ設定--
+
+@param Enabled Save
+@desc セーブ時にセルフ変数を保存するか 0 - 保存しない, 1 - 保存する
+@default 0
+
+@param --アイテム設定--
+@text --アイテム設定--
+
+@param Item Number
+@desc アイテムで使用するセルフ変数の数を設定する
+@default 0
+
+@param --武器設定--
+@text --武器設定--
+
+@param Weapon Number
+@desc 武器で使用するセルフ変数の数を設定する
+@default 0
+
+@param --防具設定--
+@text --防具設定--
+
+@param Armor Number
+@desc 防具で使用するセルフ変数の数を設定する
+@default 0
+
+@param --スキル設定--
+@text --スキル設定--
+
+@param Skill Number
+@desc スキルで使用するセルフ変数の数を設定する
+@default 0
+
+@param --アクター設定--
+@text --アクター設定--
+
+@param Actor Number
+@desc アクターで使用するセルフ変数の数を設定する
+@default 0
+
+@param --エネミー設定--
+@text --エネミー設定--
+
+@param Enemy Number
+@desc エネミーで使用するセルフ変数の数を設定する
+@default 0
+*/
+
 //=============================================================================
 
 function Game_IsvItems() {
-  this.initialize.apply(this, arguments);
+    this.initialize.apply(this, arguments);
 }
 
 function Game_IsvSelfVariables() {
-  this.initialize.apply(this, arguments);
+    this.initialize.apply(this, arguments);
 }
 
-(function() {
-  
+(function () {
+
     //=============================================================================
     // プラグイン パラメータ
     //=============================================================================
@@ -320,12 +596,12 @@ function Game_IsvSelfVariables() {
 
     FTKR.ISV.enabledSave = Number(parameters['Enabled Save'] || 0);
     FTKR.ISV.number = {
-        item:Number(parameters['Item Number'] || 0),
-        weapon:Number(parameters['Weapon Number'] || 0),
-        armor:Number(parameters['Armor Number'] || 0),
-        skill:Number(parameters['Skill Number'] || 0),
-        actor:Number(parameters['Actor Number'] || 0),
-        enemy:Number(parameters['Enemy Number'] || 0),
+        item: Number(parameters['Item Number'] || 0),
+        weapon: Number(parameters['Weapon Number'] || 0),
+        armor: Number(parameters['Armor Number'] || 0),
+        skill: Number(parameters['Skill Number'] || 0),
+        actor: Number(parameters['Actor Number'] || 0),
+        enemy: Number(parameters['Enemy Number'] || 0),
     };
 
     //=============================================================================
@@ -333,31 +609,31 @@ function Game_IsvSelfVariables() {
     //=============================================================================
 
     FTKR.gameData = FTKR.gameData || {
-        user   :null,
-        target :null,
-        item   :null,
-        number :0,
+        user: null,
+        target: null,
+        item: null,
+        number: 0,
     };
 
     if (!FTKR.setGameData) {
-    FTKR.setGameData = function(user, target, item, number) {
-        FTKR.gameData = {
-            user   :user || null,
-            target :target || null,
-            item   :item || null,
-            number :number || 0
+        FTKR.setGameData = function (user, target, item, number) {
+            FTKR.gameData = {
+                user: user || null,
+                target: target || null,
+                item: item || null,
+                number: number || 0
+            };
         };
-    };
     }
 
-    FTKR.evalFormula = function(formula) {
+    FTKR.evalFormula = function (formula) {
         var datas = FTKR.gameData;
         try {
             var s = $gameSwitches._data;
             var v = $gameVariables._data;
             var a = datas.user;
             var b = datas.target;
-            var item   = datas.item;
+            var item = datas.item;
             var number = datas.number;
             if (a) {
                 var aData = a.isActor() ? a.actor() : a.enemy();
@@ -378,14 +654,14 @@ function Game_IsvSelfVariables() {
         }
     };
 
-    FTKR.evalCalcFormula = function(formula) {
+    FTKR.evalCalcFormula = function (formula) {
         var datas = FTKR.gameData;
         try {
             var s = $gameSwitches._data;
             var v = $gameVariables._data;
             var a = datas.user;
             var b = datas.target;
-            var item   = datas.item;
+            var item = datas.item;
             var number = datas.number;
             if (a) {
                 var aData = a.isActor() ? a.actor() : a.enemy();
@@ -407,8 +683,8 @@ function Game_IsvSelfVariables() {
     // Array
     //=============================================================================
 
-    Array.prototype.setIsv = function() {
-        return this.map(function(item) {
+    Array.prototype.setIsv = function () {
+        return this.map(function (item) {
             return item ? item._selfVariables : null;
         });
     };
@@ -418,7 +694,7 @@ function Game_IsvSelfVariables() {
     //=============================================================================
 
     var _ISV_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-    Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    Game_Interpreter.prototype.pluginCommand = function (command, args) {
         _ISV_Game_Interpreter_pluginCommand.call(this, command, args);
         if (!command.match(/ISV_(.+)/i)) return;
         command = (RegExp.$1 + '').toUpperCase();
@@ -434,11 +710,11 @@ function Game_IsvSelfVariables() {
         }
     };
 
-    Game_Interpreter.prototype.setSeflVariables = function(command, args) {
+    Game_Interpreter.prototype.setSeflVariables = function (command, args) {
         var itemId = this.setNum(args[1]);
         var selfId = this.setNum(args[2]);
         var value = this.setNum(args[4]);
-        if (!itemId || !selfId) return this.showLog(command, args, [0,1,1,0,1]);
+        if (!itemId || !selfId) return this.showLog(command, args, [0, 1, 1, 0, 1]);
         switch (true) {
             case /アイテム/.test(args[0]):
             case /item/i.test(args[0]):
@@ -465,16 +741,16 @@ function Game_IsvSelfVariables() {
                 $gameSelfVariables.enemy(itemId).setValue(selfId, value, args[3]);
                 break;
             default:
-                this.showLog(command, args, [1,0,0,0,0]);
+                this.showLog(command, args, [1, 0, 0, 0, 0]);
                 break;
         }
     };
 
-    Game_Interpreter.prototype.getSeflVariables = function(command, args) {
+    Game_Interpreter.prototype.getSeflVariables = function (command, args) {
         var varId = this.setNum(args[0]);
         var itemId = this.setNum(args[2]);
         var selfId = this.setValue(args[3]);
-        if (!varId || !itemId || !selfId) return this.showLog(command, args, [1,0,1,1]);
+        if (!varId || !itemId || !selfId) return this.showLog(command, args, [1, 0, 1, 1]);
         var value = null;
         switch (true) {
             case /アイテム/.test(args[1]):
@@ -502,13 +778,13 @@ function Game_IsvSelfVariables() {
                 value = $gameSelfVariables.enemy(itemId).value(selfId);
                 break;
             default:
-                this.showLog(command, args, [0,1,0,0]);
+                this.showLog(command, args, [0, 1, 0, 0]);
                 break;
         }
         $gameVariables.setValue(varId, value);
     };
 
-    Game_Interpreter.prototype.setNum = function(data) {
+    Game_Interpreter.prototype.setNum = function (data) {
         var data1 = /v\[(\d+)\]/i;
         var data2 = /(\d+)/i;
         if (data.match(data1)) {
@@ -520,7 +796,7 @@ function Game_IsvSelfVariables() {
         }
     };
 
-    Game_Interpreter.prototype.setValue = function(data) {
+    Game_Interpreter.prototype.setValue = function (data) {
         var data1 = /v\[(\d+)\]/i;
         var data2 = /(.+)/i;
         if (data.match(data1)) {
@@ -533,10 +809,10 @@ function Game_IsvSelfVariables() {
         }
     };
 
-    Game_Interpreter.prototype.showLog = function(command, args, errors) {
-        console.log('プラグイン名:','FTKR_ItemSelfVariables.js');
+    Game_Interpreter.prototype.showLog = function (command, args, errors) {
+        console.log('プラグイン名:', 'FTKR_ItemSelfVariables.js');
         console.log('コマンド名  :', command);
-        console.log('エラー内容  :','不正な値を入力しています');
+        console.log('エラー内容  :', '不正な値を入力しています');
         for (var i = 0; i < errors.length; i++) {
             if (errors[i]) console.log('エラーINDEX:', i, '引数:', args[i]);
         }
@@ -548,7 +824,7 @@ function Game_IsvSelfVariables() {
 
     var _ISV_DatabaseLoaded = false;
     var _ISV_DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-    DataManager.isDatabaseLoaded = function() {
+    DataManager.isDatabaseLoaded = function () {
         if (!_ISV_DataManager_isDatabaseLoaded.call(this)) return false;
         if (!_ISV_DatabaseLoaded) {
             var isv = FTKR.ISV.number;
@@ -563,10 +839,10 @@ function Game_IsvSelfVariables() {
         return true;
     };
 
-    DataManager.setSelfVariables = function(group, number) {
+    DataManager.setSelfVariables = function (group, number) {
         for (var n = 1; n < group.length; n++) {
             var obj = group[n];
-            
+
             obj._selfVariables = new Game_IsvSelfVariables(number);
             obj._selfVariables.allReset(0);
 
@@ -585,13 +861,13 @@ function Game_IsvSelfVariables() {
     };
 
     var _ISV_DataManager_createGameObjects = DataManager.createGameObjects;
-    DataManager.createGameObjects = function() {
+    DataManager.createGameObjects = function () {
         _ISV_DataManager_createGameObjects.call(this);
         $gameSelfVariables = new Game_IsvItems();
     };
 
     var _ISV_DataManager_makeSaveContents = DataManager.makeSaveContents;
-    DataManager.makeSaveContents = function() {
+    DataManager.makeSaveContents = function () {
         var contents = _ISV_DataManager_makeSaveContents.call(this);
         if (FTKR.ISV.enabledSave) {
             var isv = FTKR.ISV.number;
@@ -618,38 +894,38 @@ function Game_IsvSelfVariables() {
     };
 
     var _ISV_DataManager_extractSaveContents = DataManager.extractSaveContents;
-    DataManager.extractSaveContents = function(contents) {
+    DataManager.extractSaveContents = function (contents) {
         _ISV_DataManager_extractSaveContents.call(this, contents);
         if (FTKR.ISV.enabledSave) {
             var isv = FTKR.ISV.number;
-            if(isv.item) {
-                $dataItems.forEach( function(item, i) {
-                    if(item) item._selfVariables = contents.iepItemSelf[i];
+            if (isv.item) {
+                $dataItems.forEach(function (item, i) {
+                    if (item) item._selfVariables = contents.iepItemSelf[i];
                 });
             }
-            if(isv.weapon) {
-                $dataWeapons.forEach( function(item, i) {
-                    if(item) item._selfVariables = contents.iepWeaponSelf[i];
+            if (isv.weapon) {
+                $dataWeapons.forEach(function (item, i) {
+                    if (item) item._selfVariables = contents.iepWeaponSelf[i];
                 });
             }
-            if(isv.armor) {
-                $dataArmors.forEach( function(item, i) {
-                    if(item) item._selfVariables = contents.iepArmorSelf[i];
+            if (isv.armor) {
+                $dataArmors.forEach(function (item, i) {
+                    if (item) item._selfVariables = contents.iepArmorSelf[i];
                 });
             }
-            if(isv.skill) {
-                $dataSkills.forEach( function(item, i) {
-                    if(item) item._selfVariables = contents.iepSkillSelf[i];
+            if (isv.skill) {
+                $dataSkills.forEach(function (item, i) {
+                    if (item) item._selfVariables = contents.iepSkillSelf[i];
                 });
             }
-            if(isv.actor) {
-                $dataActors.forEach( function(item, i) {
-                    if(item) item._selfVariables = contents.iepActorSelf[i];
+            if (isv.actor) {
+                $dataActors.forEach(function (item, i) {
+                    if (item) item._selfVariables = contents.iepActorSelf[i];
                 });
             }
-            if(isv.enemy) {
-                $dataEnemies.forEach( function(item, i) {
-                    if(item) item._selfVariables = contents.iepEnemySelf[i];
+            if (isv.enemy) {
+                $dataEnemies.forEach(function (item, i) {
+                    if (item) item._selfVariables = contents.iepEnemySelf[i];
                 });
             }
         }
@@ -660,7 +936,7 @@ function Game_IsvSelfVariables() {
     //=============================================================================
 
     //書き換え
-    Game_Action.prototype.evalDamageFormula = function(target) {
+    Game_Action.prototype.evalDamageFormula = function (target) {
         var item = this.item();
         FTKR.setGameData(this.subject(), target, item);
         var value = FTKR.evalFormula(item.damage.formula);
@@ -675,11 +951,11 @@ function Game_IsvSelfVariables() {
     // Game_IsvItems
     //=============================================================================
 
-    Game_IsvItems.prototype.initialize = function() {
-        this._data = [[],[],[],[],[],[]];
+    Game_IsvItems.prototype.initialize = function () {
+        this._data = [[], [], [], [], [], []];
     };
 
-    Game_IsvItems.prototype.item = function(itemId) {
+    Game_IsvItems.prototype.item = function (itemId) {
         if ($dataItems[itemId]) {
             if (!this._data[0][itemId]) {
                 this._data[0][itemId] = $dataItems[itemId];
@@ -689,7 +965,7 @@ function Game_IsvSelfVariables() {
         return null;
     };
 
-    Game_IsvItems.prototype.weapon = function(itemId) {
+    Game_IsvItems.prototype.weapon = function (itemId) {
         if ($dataWeapons[itemId]) {
             if (!this._data[1][itemId]) {
                 this._data[1][itemId] = $dataWeapons[itemId];
@@ -699,7 +975,7 @@ function Game_IsvSelfVariables() {
         return null;
     };
 
-    Game_IsvItems.prototype.armor = function(itemId) {
+    Game_IsvItems.prototype.armor = function (itemId) {
         if ($dataArmors[itemId]) {
             if (!this._data[2][itemId]) {
                 this._data[2][itemId] = $dataArmors[itemId];
@@ -709,7 +985,7 @@ function Game_IsvSelfVariables() {
         return null;
     };
 
-    Game_IsvItems.prototype.skill = function(itemId) {
+    Game_IsvItems.prototype.skill = function (itemId) {
         if ($dataSkills[itemId]) {
             if (!this._data[3][itemId]) {
                 this._data[3][itemId] = $dataSkills[itemId];
@@ -719,7 +995,7 @@ function Game_IsvSelfVariables() {
         return null;
     };
 
-    Game_IsvItems.prototype.actor = function(itemId) {
+    Game_IsvItems.prototype.actor = function (itemId) {
         if ($dataActors[itemId]) {
             if (!this._data[4][itemId]) {
                 this._data[4][itemId] = $dataActors[itemId];
@@ -729,7 +1005,7 @@ function Game_IsvSelfVariables() {
         return null;
     };
 
-    Game_IsvItems.prototype.enemy = function(itemId) {
+    Game_IsvItems.prototype.enemy = function (itemId) {
         if ($dataEnemies[itemId]) {
             if (!this._data[5][itemId]) {
                 this._data[5][itemId] = $dataEnemies[itemId];
@@ -743,26 +1019,26 @@ function Game_IsvSelfVariables() {
     // Game_IsvSelfVariables
     //=============================================================================
 
-    Game_IsvSelfVariables.prototype.initialize = function(number) {
+    Game_IsvSelfVariables.prototype.initialize = function (number) {
         this.clear();
         this._number = number || 1;
     };
 
-    Game_IsvSelfVariables.prototype.clear = function() {
+    Game_IsvSelfVariables.prototype.clear = function () {
         this._data = [];
     };
 
-    Game_IsvSelfVariables.prototype.allReset = function(value) {
+    Game_IsvSelfVariables.prototype.allReset = function (value) {
         for (var i = 0; i < this._number + 1; i++) {
             this._data[i] = value;
         }
     };
 
-    Game_IsvSelfVariables.prototype.value = function(variableId) {
+    Game_IsvSelfVariables.prototype.value = function (variableId) {
         return this._data[variableId] || 0;
     };
 
-    Game_IsvSelfVariables.prototype.setValue = function(variableId, value, code) {
+    Game_IsvSelfVariables.prototype.setValue = function (variableId, value, code) {
         if (variableId > 0 && variableId < this._number + 1) {
             if (!isNaN(parseInt(value))) {
                 value = parseInt(value);
@@ -772,36 +1048,36 @@ function Game_IsvSelfVariables() {
         }
     };
 
-    Game_IsvSelfVariables.prototype.calcValue = function(value1, value2, code) {
+    Game_IsvSelfVariables.prototype.calcValue = function (value1, value2, code) {
         switch (code) {
-        case '加算':
-        case '+':
-            return value1 + value2;
-        case '減算':
-        case '-':
-            return value1 - value2;
-        case '積算':
-        case '×':
-        case '*':
-            return value1 * value2;
-        case '除算':
-        case '／':
-        case '/':
-            return value1 / value2;
-        case '剰余':
-        case '％':
-        case '%':
-            return value1 % value2;
-        case '代入':
-        case '＝':
-        case '=':
-        default:
-            return value2;
+            case '加算':
+            case '+':
+                return value1 + value2;
+            case '減算':
+            case '-':
+                return value1 - value2;
+            case '積算':
+            case '×':
+            case '*':
+                return value1 * value2;
+            case '除算':
+            case '／':
+            case '/':
+                return value1 / value2;
+            case '剰余':
+            case '％':
+            case '%':
+                return value1 % value2;
+            case '代入':
+            case '＝':
+            case '=':
+            default:
+                return value2;
         }
     };
 
-    Game_IsvSelfVariables.prototype.onChange = function() {
-        if($gameMap) $gameMap.requestRefresh();
+    Game_IsvSelfVariables.prototype.onChange = function () {
+        if ($gameMap) $gameMap.requestRefresh();
     };
 
     //=============================================================================
@@ -810,57 +1086,57 @@ function Game_IsvSelfVariables() {
 
     //制御文字の表示処理の修正
     var _ISV_Window_Base_convertEscapeCharacters = Window_Base.prototype.convertEscapeCharacters;
-    Window_Base.prototype.convertEscapeCharacters = function(text) {
+    Window_Base.prototype.convertEscapeCharacters = function (text) {
         text = _ISV_Window_Base_convertEscapeCharacters.call(this, text);
         if (this._setItem) {
-            text = text.replace(/\x1bITV\[(\d+)\]/gi, function() {
+            text = text.replace(/\x1bITV\[(\d+)\]/gi, function () {
                 return $gameSelfVariables.item(parseInt(this._setItem.id)).value(parseInt(arguments[1]));
             }.bind(this));
-            text = text.replace(/\x1bWEV\[(\d+)\]/gi, function() {
+            text = text.replace(/\x1bWEV\[(\d+)\]/gi, function () {
                 return $gameSelfVariables.weapon(parseInt(this._setItem.id)).value(parseInt(arguments[1]));
             }.bind(this));
-            text = text.replace(/\x1bARV\[(\d+)\]/gi, function() {
+            text = text.replace(/\x1bARV\[(\d+)\]/gi, function () {
                 return $gameSelfVariables.armor(parseInt(this._setItem.id)).value(parseInt(arguments[1]));
             }.bind(this));
-            text = text.replace(/\x1bSKV\[(\d+)\]/gi, function() {
+            text = text.replace(/\x1bSKV\[(\d+)\]/gi, function () {
                 return $gameSelfVariables.skill(parseInt(this._setItem.id)).value(parseInt(arguments[1]));
             }.bind(this));
-            text = text.replace(/\x1bACV\[(\d+)\]/gi, function() {
+            text = text.replace(/\x1bACV\[(\d+)\]/gi, function () {
                 return $gameSelfVariables.actor(parseInt(this._setItem.id)).value(parseInt(arguments[1]));
             }.bind(this));
         }
-        text = text.replace(/\x1bITV\[(\d+),(\d+)\]/gi, function() {
+        text = text.replace(/\x1bITV\[(\d+),(\d+)\]/gi, function () {
             return $gameSelfVariables.item(parseInt(arguments[1])).value(parseInt(arguments[2]));
         }.bind(this));
-        text = text.replace(/\x1bWEV\[(\d+),(\d+)\]/gi, function() {
+        text = text.replace(/\x1bWEV\[(\d+),(\d+)\]/gi, function () {
             return $gameSelfVariables.weapon(parseInt(arguments[1])).value(parseInt(arguments[2]));
         }.bind(this));
-        text = text.replace(/\x1bARV\[(\d+),(\d+)\]/gi, function() {
+        text = text.replace(/\x1bARV\[(\d+),(\d+)\]/gi, function () {
             return $gameSelfVariables.armor(parseInt(arguments[1])).value(parseInt(arguments[2]));
         }.bind(this));
-        text = text.replace(/\x1bSKV\[(\d+),(\d+)\]/gi, function() {
+        text = text.replace(/\x1bSKV\[(\d+),(\d+)\]/gi, function () {
             return $gameSelfVariables.skill(parseInt(arguments[1])).value(parseInt(arguments[2]));
         }.bind(this));
-        text = text.replace(/\x1bACV\[(\d+),(\d+)\]/gi, function() {
+        text = text.replace(/\x1bACV\[(\d+),(\d+)\]/gi, function () {
             return $gameSelfVariables.actor(parseInt(arguments[1])).value(parseInt(arguments[2]));
         }.bind(this));
-        text = text.replace(/\x1bENV\[(\d+),(\d+)\]/gi, function() {
+        text = text.replace(/\x1bENV\[(\d+),(\d+)\]/gi, function () {
             return $gameSelfVariables.enemy(parseInt(arguments[1])).value(parseInt(arguments[2]));
         }.bind(this));
         return text;
     };
 
     var _ISV_Window_Help_setItem = Window_Help.prototype.setItem;
-    Window_Help.prototype.setItem = function(item) {
+    Window_Help.prototype.setItem = function (item) {
         this._setItem = item;
         _ISV_Window_Help_setItem.call(this, item);
     };
 
     var _ISV_Window_Status_drawProfile = Window_Status.prototype.drawProfile;
-    Window_Status.prototype.drawProfile = function(x, y) {
+    Window_Status.prototype.drawProfile = function (x, y) {
         this._setItem = this._actor.actor();
         _ISV_Window_Status_drawProfile.call(this, x, y);
     };
 
-    
+
 }());//EOF

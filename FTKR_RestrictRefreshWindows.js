@@ -13,91 +13,152 @@ Imported.FTKR_RRW = true;
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.2 ウィンドウのリフレッシュ回数を制限して負荷を抑える
- * @author フトコロ
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 各画面におけるウィンドウのリフレッシュ回数を制限して負荷を抑えます。
- * 
- * 制限対象の画面：装備画面
- * 
- * このプラグインによる修正点の解説は、下のオンラインマニュアルページを見てください。
- * https://github.com/futokoro/RPGMaker/blob/master/FTKR_RestrictRefreshWindows.ja.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1. このプラグインはできる限り、プラグイン管理の一番下に登録してください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.2 - 2018/12/16 : 仕様見直し
- *    1. 装備アイテムウィンドウの _slotId の更新処理を見直し。
- *    2. 装備データ比較用のダミーアクターの作成処理に関する軽量化を追加。
- * 
- * v1.0.1 - 2018/12/15 : 仕様見直し
- *    1. 装備アイテムウィンドウのリフレッシュの挙動を修正。
- * 
- * v1.0.0 - 2018/12/15 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.2 Limit the number of window refreshes to reduce load
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+This plugin reduces load by limiting the number of window refreshes on each screen.
+
+Restricted screen: Equipment screen
+
+For a description of the modifications made by this plugin, see the online manual page below.
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_RestrictRefreshWindows.ja.md
+
+-----------------------------------------------------------------------------
+Setup Instructions
+---------------------------------------------------------------------------
+1. Please register this plugin at the bottom of the Plugin Manager whenever possible.
+
+---------------------------------------------------------------------------
+License for this Plugin
+---------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.2 - December 16, 2018: Specification Revision
+1. Revised the _slotId update process in the Equipment Item window.
+2. Added a lightweight process for creating dummy actors for equipment data comparison.
+
+v1.0.1 - December 15, 2018: Specification Revision
+1. Fixed the behavior of refreshing the Equipment Item window.
+
+v1.0.0 - December 15, 2018: First version created
+
+----------------------------------------------------------------------------
 */
+
+/*:ja
+@plugindesc v1.0.2 ウィンドウのリフレッシュ回数を制限して負荷を抑える
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+各画面におけるウィンドウのリフレッシュ回数を制限して負荷を抑えます。
+
+制限対象の画面：装備画面
+
+このプラグインによる修正点の解説は、下のオンラインマニュアルページを見てください。
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_RestrictRefreshWindows.ja.md
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1. このプラグインはできる限り、プラグイン管理の一番下に登録してください。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.2 - 2018/12/16 : 仕様見直し
+   1. 装備アイテムウィンドウの _slotId の更新処理を見直し。
+   2. 装備データ比較用のダミーアクターの作成処理に関する軽量化を追加。
+
+v1.0.1 - 2018/12/15 : 仕様見直し
+   1. 装備アイテムウィンドウのリフレッシュの挙動を修正。
+
+v1.0.0 - 2018/12/15 : 初版作成
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
-(function() {
+(function () {
 
     //ウィンドウのリフレッシュを禁止する
-    Window_Base.prototype.onDisabledRefresh = function() {
+    Window_Base.prototype.onDisabledRefresh = function () {
         this._disabledRefresh = true;
     };
 
     //ウィンドウのリフレッシュ禁止を解除する
     //引数に 1 をセットするとリフレッシュも行う
-    Window_Base.prototype.offDisabledRefresh = function(arg) {
+    Window_Base.prototype.offDisabledRefresh = function (arg) {
         this._disabledRefresh = false;
         if (arg) this.refresh();
     };
 
     // ヘルプウィンドウにリフレッシュ禁止フラグ判定を追加
     var _Window_Help_refresh = Window_Help.prototype.refresh;
-    Window_Help.prototype.refresh = function() {
+    Window_Help.prototype.refresh = function () {
         if (!this._disabledRefresh) {
             _Window_Help_refresh.call(this);
         }
     };
-    
+
     // 装備ステータスウィンドウにリフレッシュ禁止フラグ判定を追加
     var _Window_EquipStatus_refresh = Window_EquipStatus.prototype.refresh;
-    Window_EquipStatus.prototype.refresh = function() {
+    Window_EquipStatus.prototype.refresh = function () {
         if (!this._disabledRefresh) {
             _Window_EquipStatus_refresh.call(this);
         }
     };
-    
+
     // 装備スロットウィンドウにリフレッシュ禁止フラグ判定を追加
     var _Window_EquipSlot_refresh = Window_EquipSlot.prototype.refresh;
-    Window_EquipSlot.prototype.refresh = function() {
+    Window_EquipSlot.prototype.refresh = function () {
         if (!this._disabledRefresh) {
             _Window_EquipSlot_refresh.call(this);
         }
@@ -105,12 +166,12 @@ Imported.FTKR_RRW = true;
 
     // 装備アイテムウィンドウにリフレッシュ禁止フラグ判定を追加
     var _Window_EquipItem_refresh = Window_EquipItem.prototype.refresh;
-    Window_EquipItem.prototype.refresh = function() {
+    Window_EquipItem.prototype.refresh = function () {
         if (!this._disabledRefresh) {
             _Window_EquipItem_refresh.call(this);
         }
     };
-    
+
     /*---------------------------------------------------
     上書きする場合には、ここまでの↑の記述は不要
     ----------------------------------------------------*/
@@ -121,23 +182,23 @@ Imported.FTKR_RRW = true;
     //すぐあとのsetActor()でリフレッシュが必要になるため、実行不要
     //上書きする場合は、refresh() の記述を削除すればよい。
     var _Window_EquipStatus_initialize = Window_EquipStatus.prototype.initialize;
-    Window_EquipStatus.prototype.initialize = function(x, y) {
+    Window_EquipStatus.prototype.initialize = function (x, y) {
         this.onDisabledRefresh();
         _Window_EquipStatus_initialize.call(this, x, y);
         this.offDisabledRefresh(0);
     };
-    
+
     //=============================================================================
     //装備スロットウィンドウのinitialize時に refresh() の処理があるが
     //すぐあとのsetActor()でリフレッシュが必要になるため、実行不要
     //上書きする場合は、refresh() の記述を削除すればよい。
     var _Window_EquipSlot_initialize = Window_EquipSlot.prototype.initialize;
-    Window_EquipSlot.prototype.initialize = function(x, y, width, height) {
+    Window_EquipSlot.prototype.initialize = function (x, y, width, height) {
         this.onDisabledRefresh();
         _Window_EquipSlot_initialize.call(this, x, y, width, height);
         this.offDisabledRefresh(0);
     };
-    
+
     //=============================================================================
     //アイテムウィンドウは、updateで自動的にリフレッシュが実行されるため
     //装備画面遷移時のリフレッシュは無効にする
@@ -164,13 +225,13 @@ Imported.FTKR_RRW = true;
     };
     ----------------------------------------------------*/
     var _Window_EquipItem_setActor = Window_EquipItem.prototype.setActor;
-    Window_EquipItem.prototype.setActor = function(actor) {
+    Window_EquipItem.prototype.setActor = function (actor) {
         this._slotId = -1;
         this.onDisabledRefresh();
         _Window_EquipItem_setActor.call(this, actor);
         this.offDisabledRefresh(0);
     };
-    
+
     //=============================================================================
     //装備スロットを決定して、装備アイテムウィンドウにカーソルが移る時に
     //ステータスウィンドウとヘルプウィンドウが2回リフレッシュされているため
@@ -188,7 +249,7 @@ Imported.FTKR_RRW = true;
     };
     ----------------------------------------------------*/
     var _Scene_Equip_onSlotOk = Scene_Equip.prototype.onSlotOk;
-    Scene_Equip.prototype.onSlotOk = function() {
+    Scene_Equip.prototype.onSlotOk = function () {
         this._statusWindow.onDisabledRefresh();
         this._helpWindow.onDisabledRefresh();
         _Scene_Equip_onSlotOk.call(this);
@@ -225,7 +286,7 @@ Imported.FTKR_RRW = true;
     };
     ----------------------------------------------------*/
     var _Scene_Equip_onItemOk = Scene_Equip.prototype.onItemOk;
-    Scene_Equip.prototype.onItemOk = function() {
+    Scene_Equip.prototype.onItemOk = function () {
         this._statusWindow.onDisabledRefresh();
         this._helpWindow.onDisabledRefresh();
         _Scene_Equip_onItemOk.call(this);
@@ -241,7 +302,7 @@ Imported.FTKR_RRW = true;
     //上のWindow_EquipSlot.prototype.updateHelpの修正で対応。
     ----------------------------------------------------*/
     var _Scene_Equip_onItemCancel = Scene_Equip.prototype.onItemCancel;
-    Scene_Equip.prototype.onItemCancel = function() {
+    Scene_Equip.prototype.onItemCancel = function () {
         this._helpWindow.onDisabledRefresh();
         _Scene_Equip_onItemCancel.call(this);
         this._helpWindow.offDisabledRefresh(1);
@@ -280,7 +341,7 @@ Imported.FTKR_RRW = true;
     };
     ----------------------------------------------------*/
     var _Window_EquipItem_updateHelp = Window_EquipItem.prototype.updateHelp;
-    Window_EquipItem.prototype.updateHelp = function() {
+    Window_EquipItem.prototype.updateHelp = function () {
         var statusWindow = this._statusWindow;
         this._statusWindow = null;
         _Window_EquipItem_updateHelp.call(this);
@@ -288,7 +349,7 @@ Imported.FTKR_RRW = true;
         this.updateTempActorEquip();
     };
 
-    Window_EquipItem.prototype.updateTempActorEquip = function() {
+    Window_EquipItem.prototype.updateTempActorEquip = function () {
         if (this._actor && this._statusWindow && this._index >= 0) {
             if (!this._statusWindow._tempActor) {
                 var actor = JsonEx.makeDeepCopy(this._actor);

@@ -13,196 +13,370 @@ Imported.FTKR_IBC = true;
 
 var FTKR = FTKR || {};
 FTKR.IBC = FTKR.IBC || {};
-
 /*:
- * @plugindesc v1.0.1 アイテムボックスに所持容量を追加する
- * @author フトコロ
- *
- * @param --アイテムボックス容量設定--
- * @default
- * 
- * @param Item Capacity
- * @desc アイテムの所持容量
- * 0 - 無制限, 1~ - 指定した数
- * @default 0
- * 
- * @param Weapon Capacity
- * @desc 武器の所持容量
- * 0 - 無制限, 1~ - 指定した数
- * @default 0
- * 
- * @param Armor Capacity
- * @desc 防具の所持容量
- * 0 - 無制限, 1~ - 指定した数
- * @default 0
- * 
- * @param --スタック設定--
- * @default
- * 
- * @param Display Number of Digit
- * @desc アイテム所持数の表示桁数を設定する
- * 所持数が表示桁数を超えると横に圧縮して表示する
- * @default 2
- * 
- * @param Max Stack Number
- * @desc スタック数の最大値
- * @default 99
- * 
- * @param Enable Duplicate Stack
- * @desc 同一アイテムを重複してスタックできるか
- * 1 - 許可する, 0 - 許可しない
- * @default 0
- * 
- * @param --購入設定--
- * @default
- * 
- * @param Max Buy Number
- * @desc 一度に購入できる最大数
- * @default 99
- * 
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインを実装することで、アイテムボックスに所持容量を追加します。
- * 
- * また、アイテムの最大スタック数を超えた場合、別にスタックすることができます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. 既存のセーブデータは使用できません。
- * 
- * 
- *-----------------------------------------------------------------------------
- * アイテムボックスの所持容量の設定
- *-----------------------------------------------------------------------------
- * アイテムボックスに所持容量を設定することができます。
- * この機能を使うためには、プラグインパラメータ<Enable Capacity>を
- * 有効にしてください。
- * 
- * 所持容量を設定すると、そのカテゴリーは設定した数の種類までしか所持することが
- * できなくなります。
- * この設定数以上のアイテムは所持することができず、入手しても自動的に破棄します。
- * 
- * アイテムの所持容量を 10 に設定した場合、アイテムは 10種類までしか
- * 所持できません。
- * この時、各アイテムが何個持っているかは関係ありません。
- * 
- * 設定できるカテゴリーは「アイテム」「武器」「防具」の３つです。
- * 「大事なもの」は、アイテムに含まれます。
- * 
- * 
- * アイテムボックスに空きがあるかどうかは、以下のスクリプトで判定できます。
- * 
- * $gameParty.isItemsCapacityOk()   - アイテムの所持容量
- * $gameParty.isWeaponsCapacityOk() - 武器の所持容量
- * $gameParty.isArmorsCapacityOk()  - 防具の所持容量
- * 
- * 
- * 所持容量の設定方法は以下の通りです。
- * 1. プラグインパラメータで[初期値]を設定
- *    <Item Capacity>
- *    <Weapon Capacity>
- *    <Armor Capacity>
- *    : 0 を設定した場合は、容量が無制限になります。
- * 
- * 
- * 2. プラグインコマンドで[追加分]を設定
- *    この追加分は、プラグインパラメータの値とは別に計算します。
- * 
- *    IBC_所持容量設定 [カテゴリー] [数値] [計算方法]
- *    IBC_SET_CAPACITY [category] [value] [calc_method]
- * 
- *    [カテゴリー]の入力内容で、どのカテゴリーの容量を変えるか指定します。
- *      アイテム or ITEM
- *      武器 or WEAPON
- *      防具 or ARMOR
- * 
- *    [数値]の入力内容
- *      \V[x] でゲーム内変数ID x の値を参照できます。
- *    
- *    [計算方法]の入力内容で、[数値]をどのように計算するか指定します。
- *    計算方法を指定しない場合は、代入を適用します。
- *      加算 or ADD or +
- *      減算 or SUBTRACT or -
- *      乗算 or MULTIPLY or *
- *      除算 or DIVIDE or /
- *      剰余 or MOD or %
- *      代入 or SUBSTITUTE or =
- * 
- *    例)
- *    IBC_所持容量設定 アイテム 10 加算
- *    IBC_所持容量設定 防具 \V[1] 代入
- *    IBC_SET_CAPACITY WEAPON 5 SUBTRACT
- * 
- * 
- * 上記の設定によって所持容量は以下の結果になります。
- * 
- * 　所持容量　＝　初期値　＋　追加分
- * 
- * 
- *-----------------------------------------------------------------------------
- * アイテムのスタックの設定
- *-----------------------------------------------------------------------------
- * アイテムボックスの中で、１つのアイテムは１行にまとめて表示します。
- * そして、所持数を表示することでそのアイテムを何個所持しているか分かります。
- * これがアイテムのスタックです。
- * 
- * 当プラグインでは、このスタック機能を変更することができます。
- * この機能を使うためには、プラグインパラメータ<Enable Capacity>を
- * 有効にしてください。
- * 
- * 
- * アイテムをスタックできる数は以下の方法で設定できます。
- * 1. プラグインパラメータで設定
- *    <Max Stack Number>
- * 
- * 2. アイテムのメモ欄に以下のタグを記入
- *    <IBC_スタック: x>
- *    <IBC_STACK: x>
- *        : x - 最大スタック数
- * 
- * 設定が被った場合、メモ欄の設定を優先します。
- * この設定数以上のアイテムは所持することができず、入手しても自動的に破棄します。
- * 
- * 
- * プラグインパラメータ<Enable Duplicate Stack>を許可設定すると
- * スタック数以上にアイテムを所持することができます。
- * スタック数を超えた分は、別の行に表示します。
- * なお、この別の行に表示したアイテムは、所持容量上別のアイテムとして計算します。
- * 
- * 例えば「ポーション」を20個所持していて、スタック数の最大が10の場合
- * 「ポーション」の行が 2つできます。
- * この時、アイテムを２種類持っていると数えます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017,2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.1 - 2018/09/22 : スクリプトが正常に動作しない不具合を修正。
- * v1.0.0 - 2017/06/09 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.1 Add capacity to item box
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+Implementing this plugin will increase the item box's inventory capacity.
+
+Also, if the maximum item stack size is exceeded, you can stack items separately.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. Existing save data cannot be used.
+
+-----------------------------------------------------------------------------
+Setting the Item Box Capacity
+-----------------------------------------------------------------------------
+You can set the item box's inventory capacity.
+To use this function, enable the plugin parameter <Enable Capacity>.
+
+Setting the inventory capacity limits you to the number of items in that category.
+You cannot possess more items than this number, and any items you acquire will be automatically discarded.
+
+If you set the item capacity to 10, you can only possess 10 different items.
+This does not affect how many of each item you have.
+
+There are three categories that can be set: "Items," "Weapons," and "Armor."
+"Key Item" are included in the "Items" category.
+
+You can determine whether your item box has space using the following script:
+
+$gameParty.isItemsCapacityOk() - Item capacity
+$gameParty.isWeaponsCapacityOk() - Weapon capacity
+$gameParty.isArmorsCapacityOk() - Armor capacity
+
+To set capacity:
+1. Set the [Initial Value] in the plugin parameters.
+<Item Capacity>
+<Weapon Capacity>
+<Armor Capacity>
+: Setting this to 0 will set the capacity to unlimited.
+
+2. Set the [Additional Capacity] in the plugin command.
+This additional capacity is calculated separately from the plugin parameter value.
+
+IBC_SET_CAPACITY [category] [value] [calc_method]
+
+The [Category] entry specifies which category's capacity to change.
+ITEM
+WEAPON
+ARMOR
+
+[Value] entry
+\V[x] can be used to reference the value of the in-game variable ID x.
+
+The [Calculation Method] entry specifies how the [Value] is calculated.
+If no calculation method is specified, substitution will be applied.
+ADD or +
+SUBTRACT or -
+MULTIPLY or *
+DIVIDE or /
+MOD or %
+SUBSTITUTE or =
+
+Example)
+IBC_SET_CAPACITY ITEM 10 ADD
+IBC_SET_CAPACITY ARMOR \V[1] SUBSTITUTE
+IBC_SET_CAPACITY WEAPON 5 SUBTRACT
+
+
+The above settings will result in the following inventory capacity:
+
+Capacity = Initial Value + Additional Amount
+
+----------------------------------------------------------------------------
+Item Stack Settings
+-----------------------------------------------------------------------------
+In the item box, each item is displayed on its own line.
+The inventory count shows how many of that item you have.
+This is the item stack.
+
+This plugin allows you to change this stacking function.
+To use this function, enable the plugin parameter <Enable Capacity>.
+
+You can set the maximum number of stackable items using the following methods.
+
+1. Set it in the plugin parameter
+<Max Stack Number>
+
+2. Enter the following tag in the item's Note field:
+<IBC_STACK: x>
+: x - Maximum Stack Number
+
+If settings overlap, the Note field setting takes priority.
+You cannot possess more items than this setting, and any obtained items will be automatically discarded.
+
+By enabling the plugin parameter <Enable Duplicate Stack>,
+you can possess more items than the stack limit.
+Items exceeding the stack limit will be displayed on a separate line.
+Note that items displayed on this separate line are counted as separate items in your inventory.
+
+For example, if you have 20 "Potions" and the maximum stack limit is 10,
+two "Potion" lines will be created.
+This counts as two types of items.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017,2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.1 - 2018/09/22: Fixed a bug that prevented the script from working properly.
+v1.0.0 - 2017/06/09: First version created
+
+-----------------------------------------------------------------------------
+
+@param --アイテムボックス容量設定--
+@text --Item box capacity setting--
+
+@param Item Capacity
+@desc Item carrying capacity: 0 - unlimited, 1~ - specified number
+@default 0
+
+@param Weapon Capacity
+@desc Weapon Capacity: 0 - Unlimited, 1~ - Specified number
+@default 0
+
+@param Armor Capacity
+@desc Armor carrying capacity: 0 - unlimited, 1~ - specified number
+@default 0
+
+@param --スタック設定--
+@text --Stack Settings--
+
+@param Display Number of Digit
+@desc Set the number of digits to display for the number of items you own. If the number of digits you own exceeds the number of digits to display, it will be compressed horizontally.
+@default 2
+
+@param Max Stack Number
+@desc Maximum stack count
+@default 99
+
+@param Enable Duplicate Stack
+@desc Can duplicate items be stacked? 1 - Allowed, 0 - Not allowed
+@default 0
+
+@param --購入設定--
+@text --Purchase Settings--
+
+@param Max Buy Number
+@desc Maximum number of items that can be purchased at one time
+@default 99
 */
+
+
+/*:ja
+@plugindesc v1.0.1 アイテムボックスに所持容量を追加する
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインを実装することで、アイテムボックスに所持容量を追加します。
+
+また、アイテムの最大スタック数を超えた場合、別にスタックすることができます。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. 既存のセーブデータは使用できません。
+
+
+-----------------------------------------------------------------------------
+アイテムボックスの所持容量の設定
+-----------------------------------------------------------------------------
+アイテムボックスに所持容量を設定することができます。
+この機能を使うためには、プラグインパラメータ<Enable Capacity>を
+有効にしてください。
+
+所持容量を設定すると、そのカテゴリーは設定した数の種類までしか所持することが
+できなくなります。
+この設定数以上のアイテムは所持することができず、入手しても自動的に破棄します。
+
+アイテムの所持容量を 10 に設定した場合、アイテムは 10種類までしか
+所持できません。
+この時、各アイテムが何個持っているかは関係ありません。
+
+設定できるカテゴリーは「アイテム」「武器」「防具」の３つです。
+「大事なもの」は、アイテムに含まれます。
+
+
+アイテムボックスに空きがあるかどうかは、以下のスクリプトで判定できます。
+
+$gameParty.isItemsCapacityOk()   - アイテムの所持容量
+$gameParty.isWeaponsCapacityOk() - 武器の所持容量
+$gameParty.isArmorsCapacityOk()  - 防具の所持容量
+
+
+所持容量の設定方法は以下の通りです。
+1. プラグインパラメータで[初期値]を設定
+   <Item Capacity>
+   <Weapon Capacity>
+   <Armor Capacity>
+   : 0 を設定した場合は、容量が無制限になります。
+
+
+2. プラグインコマンドで[追加分]を設定
+   この追加分は、プラグインパラメータの値とは別に計算します。
+
+   IBC_所持容量設定 [カテゴリー] [数値] [計算方法]
+   IBC_SET_CAPACITY [category] [value] [calc_method]
+
+   [カテゴリー]の入力内容で、どのカテゴリーの容量を変えるか指定します。
+     アイテム or ITEM
+     武器 or WEAPON
+     防具 or ARMOR
+
+   [数値]の入力内容
+     \V[x] でゲーム内変数ID x の値を参照できます。
+
+   [計算方法]の入力内容で、[数値]をどのように計算するか指定します。
+   計算方法を指定しない場合は、代入を適用します。
+     加算 or ADD or +
+     減算 or SUBTRACT or -
+     乗算 or MULTIPLY or *
+     除算 or DIVIDE or /
+     剰余 or MOD or %
+     代入 or SUBSTITUTE or =
+
+   例)
+   IBC_所持容量設定 アイテム 10 加算
+   IBC_所持容量設定 防具 \V[1] 代入
+   IBC_SET_CAPACITY WEAPON 5 SUBTRACT
+
+
+上記の設定によって所持容量は以下の結果になります。
+
+ 所持容量　＝　初期値　＋　追加分
+
+
+-----------------------------------------------------------------------------
+アイテムのスタックの設定
+-----------------------------------------------------------------------------
+アイテムボックスの中で、１つのアイテムは１行にまとめて表示します。
+そして、所持数を表示することでそのアイテムを何個所持しているか分かります。
+これがアイテムのスタックです。
+
+当プラグインでは、このスタック機能を変更することができます。
+この機能を使うためには、プラグインパラメータ<Enable Capacity>を
+有効にしてください。
+
+
+アイテムをスタックできる数は以下の方法で設定できます。
+1. プラグインパラメータで設定
+   <Max Stack Number>
+
+2. アイテムのメモ欄に以下のタグを記入
+   <IBC_スタック: x>
+   <IBC_STACK: x>
+       : x - 最大スタック数
+
+設定が被った場合、メモ欄の設定を優先します。
+この設定数以上のアイテムは所持することができず、入手しても自動的に破棄します。
+
+
+プラグインパラメータ<Enable Duplicate Stack>を許可設定すると
+スタック数以上にアイテムを所持することができます。
+スタック数を超えた分は、別の行に表示します。
+なお、この別の行に表示したアイテムは、所持容量上別のアイテムとして計算します。
+
+例えば「ポーション」を20個所持していて、スタック数の最大が10の場合
+「ポーション」の行が 2つできます。
+この時、アイテムを２種類持っていると数えます。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017,2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.1 - 2018/09/22 : スクリプトが正常に動作しない不具合を修正。
+v1.0.0 - 2017/06/09 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param --アイテムボックス容量設定--
+@text --アイテムボックス容量設定--
+
+@param Item Capacity
+@desc アイテムの所持容量 0 - 無制限, 1~ - 指定した数
+@default 0
+
+@param Weapon Capacity
+@desc 武器の所持容量 0 - 無制限, 1~ - 指定した数
+@default 0
+
+@param Armor Capacity
+@desc 防具の所持容量 0 - 無制限, 1~ - 指定した数
+@default 0
+
+@param --スタック設定--
+@text --スタック設定--
+
+@param Display Number of Digit
+@desc アイテム所持数の表示桁数を設定する 所持数が表示桁数を超えると横に圧縮して表示する
+@default 2
+
+@param Max Stack Number
+@desc スタック数の最大値
+@default 99
+
+@param Enable Duplicate Stack
+@desc 同一アイテムを重複してスタックできるか 1 - 許可する, 0 - 許可しない
+@default 0
+
+@param --購入設定--
+@text --購入設定--
+
+@param Max Buy Number
+@desc 一度に購入できる最大数
+@default 99
+*/
+
 //=============================================================================
 
-(function() {
+(function () {
 
     //=============================================================================
     // プラグイン パラメータ
@@ -210,42 +384,42 @@ FTKR.IBC = FTKR.IBC || {};
     var parameters = PluginManager.parameters('FTKR_ItemBoxCapacity');
 
     FTKR.IBC = {
-        disp:{
-            digit     :Number(parameters['Display Number of Digit'] || 0),
+        disp: {
+            digit: Number(parameters['Display Number of Digit'] || 0),
         },
-        capacity:{
-            item      :Number(parameters['Item Capacity'] || 0),
-            weapon    :Number(parameters['Weapon Capacity'] || 0),
-            armor     :Number(parameters['Armor Capacity'] || 0),
+        capacity: {
+            item: Number(parameters['Item Capacity'] || 0),
+            weapon: Number(parameters['Weapon Capacity'] || 0),
+            armor: Number(parameters['Armor Capacity'] || 0),
         },
-        stack:{
-            max       :Number(parameters['Max Stack Number'] || 0),
-            dup       :Number(parameters['Enable Duplicate Stack'] || 0),
+        stack: {
+            max: Number(parameters['Max Stack Number'] || 0),
+            dup: Number(parameters['Enable Duplicate Stack'] || 0),
         },
-        buy:{
-            max       :Number(parameters['Max Buy Number'] || 0),
+        buy: {
+            max: Number(parameters['Max Buy Number'] || 0),
         },
     };
 
     //objのメモ欄から <metacode: x> の値を読み取って返す
-    var readObjectMeta = function(obj, metacodes) {
+    var readObjectMeta = function (obj, metacodes) {
         if (!obj) return false;
         var match = {};
-        metacodes.some(function(metacode){
+        metacodes.some(function (metacode) {
             var metaReg = new RegExp('<' + metacode + ':[ ]*(.+)>', 'i');
             match = metaReg.exec(obj.note);
             return match;
-        }); 
+        });
         return match ? match[1] : '';
     };
 
-    var convertEscapeCharacters = function(text) {
+    var convertEscapeCharacters = function (text) {
         if (text == null) text = '';
         var window = SceneManager._scene._windowLayer.children[0];
         return window ? window.convertEscapeCharacters(text) : text;
     };
 
-    var setArgNumber = function(arg) {
+    var setArgNumber = function (arg) {
         try {
             var arg = convertEscapeCharacters(arg);
             return Number(eval(arg));
@@ -255,7 +429,7 @@ FTKR.IBC = FTKR.IBC || {};
         }
     };
 
-    var calcValueCode = function(value1, value2, code) {
+    var calcValueCode = function (value1, value2, code) {
         switch ((code + '').toUpperCase()) {
             case '加算':
             case 'ADD':
@@ -278,7 +452,7 @@ FTKR.IBC = FTKR.IBC || {};
             case '/':
                 return value1 / value2;
             case '剰余':
-            case  'MOD':
+            case 'MOD':
             case '％':
             case '%':
                 return value1 % value2;
@@ -296,7 +470,7 @@ FTKR.IBC = FTKR.IBC || {};
     //=============================================================================
 
     var _IBC_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-    Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    Game_Interpreter.prototype.pluginCommand = function (command, args) {
         _IBC_Game_Interpreter_pluginCommand.call(this, command, args);
         if (!command.match(/IBC_(.+)/i)) return;
         command = (RegExp.$1 + '').toUpperCase();
@@ -308,7 +482,7 @@ FTKR.IBC = FTKR.IBC || {};
         }
     };
 
-    Game_Interpreter.prototype.setItemBoxCapacity = function(args) {
+    Game_Interpreter.prototype.setItemBoxCapacity = function (args) {
         var arg = (args[0] + '').toUpperCase();
         switch (arg) {
             case 'アイテム':
@@ -326,7 +500,7 @@ FTKR.IBC = FTKR.IBC || {};
                 var oldvalue = $gameParty.armorsCapacityPlus();
                 $gameParty.setArmorsCapacityPlus(calcValueCode(oldvalue, setArgNumber(args[1]), args[2]));
                 break;
-            default :
+            default:
                 return;
         }
     };
@@ -339,7 +513,7 @@ FTKR.IBC = FTKR.IBC || {};
     //アイテムボックスのデータ保存形式を変更
     //------------------------------------------------------------------------
     //書き換え
-    Game_Party.prototype.initAllItems = function() {
+    Game_Party.prototype.initAllItems = function () {
         this._items = [];
         this._weapons = [];
         this._armors = [];
@@ -349,37 +523,37 @@ FTKR.IBC = FTKR.IBC || {};
     };
 
     //書き換え
-    Game_Party.prototype.items = function() {
+    Game_Party.prototype.items = function () {
         var list = [];
-        this._items.forEach( function(item){
+        this._items.forEach(function (item) {
             list.push($dataItems[item.id]);
         });
         return list;
     };
 
     //書き換え
-    Game_Party.prototype.weapons = function() {
+    Game_Party.prototype.weapons = function () {
         var list = [];
-        this._weapons.forEach( function(item){
+        this._weapons.forEach(function (item) {
             list.push($dataWeapons[item.id]);
         });
         return list;
     };
 
     //書き換え
-    Game_Party.prototype.armors = function() {
+    Game_Party.prototype.armors = function () {
         var list = [];
-        this._armors.forEach( function(item){
+        this._armors.forEach(function (item) {
             list.push($dataArmors[item.id]);
         });
         return list;
     };
 
-    Game_Party.prototype.equipItemBoxs = function() {
+    Game_Party.prototype.equipItemBoxs = function () {
         return this._weapons.concat(this._armors);
     };
 
-    Game_Party.prototype.allItemBoxs = function() {
+    Game_Party.prototype.allItemBoxs = function () {
         return this._items.concat(this.equipItemBoxs());
     };
 
@@ -387,116 +561,116 @@ FTKR.IBC = FTKR.IBC || {};
     //アイテムの所持数の処理の修正
     //------------------------------------------------------------------------
     //書き換え
-    Game_Party.prototype.numItems = function(item) {
+    Game_Party.prototype.numItems = function (item) {
         var list = this.dupItems(item);
         if (list) {
-            return list.reduce( function(prev, current, i, arr) {
+            return list.reduce(function (prev, current, i, arr) {
                 return prev + current.number;
             }, 0);
         }
         return 0;
     };
 
-    Game_Party.prototype.dupItems = function(item) {
+    Game_Party.prototype.dupItems = function (item) {
         var cont = [];
         var container = this.itemContainer(item);
         if (container) {
-            cont = container.filter( function(box) {
+            cont = container.filter(function (box) {
                 return box.id === item.id;
             });
         }
         return cont;
     };
 
-    Game_Party.prototype.numItem = function(item, index) {
+    Game_Party.prototype.numItem = function (item, index) {
         var container = this.itemContainer(item);
         return container && container[index] ? container[index].number : 0;
     };
 
     //書き換え
-    Game_Party.prototype.maxItems = function(item) {
+    Game_Party.prototype.maxItems = function (item) {
         var stack = Number(readObjectMeta(item, ['IBC_スタック', 'IBC_STACK'])) || FTKR.IBC.stack.max;
         return stack || 1;
     };
 
     //書き換え
-    Game_Party.prototype.hasMaxItems = function(item) {
+    Game_Party.prototype.hasMaxItems = function (item) {
         return FTKR.IBC.stack.dup ? false : this.numItems(item) >= this.maxItems(item);
     };
 
     /*-------------------------------------------------------------
       アイテムの容量
     -------------------------------------------------------------*/
-    Game_Party.prototype.itemsCapacityPlus = function() {
+    Game_Party.prototype.itemsCapacityPlus = function () {
         return this._itemsCapacityPlus || 0;
     };
 
-    Game_Party.prototype.setItemsCapacityPlus = function(value) {
+    Game_Party.prototype.setItemsCapacityPlus = function (value) {
         this._itemsCapacityPlus = value;
     };
 
-    Game_Party.prototype.maxItemsCapacity = function() {
+    Game_Party.prototype.maxItemsCapacity = function () {
         return FTKR.IBC.capacity.item + this.itemsCapacityPlus();
     };
 
-    Game_Party.prototype.isItemsCapacity = function() {
+    Game_Party.prototype.isItemsCapacity = function () {
         return this.maxItemsCapacity() - this._items.length;
     };
 
-    Game_Party.prototype.isItemsCapacityOk = function() {
+    Game_Party.prototype.isItemsCapacityOk = function () {
         return this.isItemsCapacity() > 0;
     };
 
     /*-------------------------------------------------------------
       武器の容量
     -------------------------------------------------------------*/
-    Game_Party.prototype.weaponsCapacityPlus = function() {
+    Game_Party.prototype.weaponsCapacityPlus = function () {
         return this._weaponsCapacityPlus || 0;
     };
 
-    Game_Party.prototype.setWeaponsCapacityPlus = function(value) {
+    Game_Party.prototype.setWeaponsCapacityPlus = function (value) {
         this._weaponsCapacityPlus = value;
     };
 
-    Game_Party.prototype.maxWeaponsCapacity = function() {
+    Game_Party.prototype.maxWeaponsCapacity = function () {
         return FTKR.IBC.capacity.weapon + this.weaponsCapacityPlus();
     };
 
-    Game_Party.prototype.isWeaponsCapacity = function() {
+    Game_Party.prototype.isWeaponsCapacity = function () {
         return this.maxWeaponsCapacity() - this._weapons.length;
     };
 
-    Game_Party.prototype.isWeaponsCapacityOk = function() {
+    Game_Party.prototype.isWeaponsCapacityOk = function () {
         return this.isWeaponsCapacity() > 0;
     };
 
     /*-------------------------------------------------------------
       防具の容量
     -------------------------------------------------------------*/
-    Game_Party.prototype.armorsCapacityPlus = function() {
+    Game_Party.prototype.armorsCapacityPlus = function () {
         return this._armorsCapacityPlus || 0;
     };
 
-    Game_Party.prototype.setArmorsCapacityPlus = function(value) {
+    Game_Party.prototype.setArmorsCapacityPlus = function (value) {
         this._armorsCapacityPlus = value;
     };
 
-    Game_Party.prototype.maxArmorsCapacity = function() {
+    Game_Party.prototype.maxArmorsCapacity = function () {
         return FTKR.IBC.capacity.armor + this.armorsCapacityPlus();
     };
 
-    Game_Party.prototype.isArmorsCapacity = function() {
+    Game_Party.prototype.isArmorsCapacity = function () {
         return this.maxArmorsCapacity() - this._armors.length;
     };
 
-    Game_Party.prototype.isArmorsCapacityOk = function() {
+    Game_Party.prototype.isArmorsCapacityOk = function () {
         return this.isArmorsCapacity() > 0;
     }
 
     /*-------------------------------------------------------------
       全体の容量
     -------------------------------------------------------------*/
-    Game_Party.prototype.isItemCapacity = function(item) {
+    Game_Party.prototype.isItemCapacity = function (item) {
         var cap = FTKR.IBC.capacity;
         if (!item) {
             return false;
@@ -511,15 +685,15 @@ FTKR.IBC = FTKR.IBC || {};
         }
     };
 
-    Game_Party.prototype.isItemCapacityOk = function(item) {
+    Game_Party.prototype.isItemCapacityOk = function (item) {
         return this.isItemCapacity(item) > 0;
     };
 
-    Game_Party.prototype.emptyNumber = function(item) {
+    Game_Party.prototype.emptyNumber = function (item) {
         return this.isEmptyStack(item) + this.isItemCapacity(item) * this.maxItems(item);
     };
 
-    Game_Party.prototype.isEmptyStack = function(item) {
+    Game_Party.prototype.isEmptyStack = function (item) {
         if (!this.hasItem(item)) return false;
         var diff = this.maxItems(item) * this.dupItems(item).length - this.numItems(item);
         if (!FTKR.IBC.stack.dup) return diff;
@@ -531,7 +705,7 @@ FTKR.IBC = FTKR.IBC || {};
     //アイテムの入手処理の修正
     //------------------------------------------------------------------------
     //書き換え
-    Game_Party.prototype.gainItem = function(item, amount, includeEquip) {
+    Game_Party.prototype.gainItem = function (item, amount, includeEquip) {
         if (this.hasItem(item) || this.isItemCapacityOk(item)) {
             var container = this.itemContainer(item);
             if (container) {
@@ -539,12 +713,12 @@ FTKR.IBC = FTKR.IBC || {};
                 var newNumber = lastNumber + amount;
                 if (this.hasItem(item)) {
                     var number = newNumber;
-                    container.forEach( function(box) {
+                    container.forEach(function (box) {
                         if (box.id === item.id) {
                             box.number = number.clamp(0, this.maxItems(item));
                             number -= this.maxItems(item);
                         }
-                    },this);
+                    }, this);
                     if (number && FTKR.IBC.stack.dup) {
                         this.addItemBoxs(item, number);
                     }
@@ -566,14 +740,14 @@ FTKR.IBC = FTKR.IBC || {};
         }
     };
 
-    Game_Party.prototype.addItemBoxs = function(item, number) {
+    Game_Party.prototype.addItemBoxs = function (item, number) {
         var container = this.itemContainer(item);
         var addNum = FTKR.IBC.stack.dup ? number : 1;
         for (var i = 0; i < addNum / this.maxItems(item); i++) {
             if (!this.isItemCapacityOk(item)) return;
             var newItem = {
-                id    :item.id,
-                number:number.clamp(0, this.maxItems(item)),
+                id: item.id,
+                number: number.clamp(0, this.maxItems(item)),
             };
             container.push(newItem);
             number -= this.maxItems(item);
@@ -585,13 +759,13 @@ FTKR.IBC = FTKR.IBC || {};
     //=============================================================================
 
     var _Window_ItemList_drawItem = Window_ItemList.prototype.drawItem;
-    Window_ItemList.prototype.drawItem = function(index) {
+    Window_ItemList.prototype.drawItem = function (index) {
         this._listIndex = index;
         _Window_ItemList_drawItem.call(this, index);
     };
 
     //書き換え
-    Window_ItemList.prototype.drawItemNumber = function(item, x, y, width) {
+    Window_ItemList.prototype.drawItemNumber = function (item, x, y, width) {
         if (this.needsNumber()) {
             var tw = this.textWidth('0') * this.itemNumberDigit();
             this.drawText(':', x, y, width - tw, 'right');
@@ -599,18 +773,18 @@ FTKR.IBC = FTKR.IBC || {};
         }
     };
 
-    Window_ItemList.prototype.itemNumberDigit = function() {
+    Window_ItemList.prototype.itemNumberDigit = function () {
         return FTKR.IBC.disp.digit;
     };
 
-    Window_ItemList.prototype.itemNumber = function(item) {
+    Window_ItemList.prototype.itemNumber = function (item) {
         return this._boxData[this._listIndex].number;
     };
 
     var _Window_ItemList_makeItemList = Window_ItemList.prototype.makeItemList;
-    Window_ItemList.prototype.makeItemList = function() {
+    Window_ItemList.prototype.makeItemList = function () {
         _Window_ItemList_makeItemList.call(this);
-        this._boxData = $gameParty.allItemBoxs().filter(function(box, i) {
+        this._boxData = $gameParty.allItemBoxs().filter(function (box, i) {
             return this.includes($gameParty.allItems()[i]);
         }, this);
         if (this.includes(null)) {
@@ -623,14 +797,14 @@ FTKR.IBC = FTKR.IBC || {};
     //=============================================================================
     //容量以上に購入させない
     var _Window_ShopBuy_isEnabled = Window_ShopBuy.prototype.isEnabled;
-    Window_ShopBuy.prototype.isEnabled = function(item) {
+    Window_ShopBuy.prototype.isEnabled = function (item) {
         return _Window_ShopBuy_isEnabled.call(this, item) &&
             ($gameParty.isEmptyStack(item) || $gameParty.isItemCapacityOk(item));
     };
 
     //書き換え
-    Scene_Shop.prototype.maxBuy = function() {
-        var max = $gameParty.hasItem(this._item) ? 
+    Scene_Shop.prototype.maxBuy = function () {
+        var max = $gameParty.hasItem(this._item) ?
             Math.min(FTKR.IBC.buy.max, $gameParty.emptyNumber(this._item)) :
             Math.min(FTKR.IBC.buy.max, $gameParty.maxItems(this._item));
         var price = this.buyingPrice();

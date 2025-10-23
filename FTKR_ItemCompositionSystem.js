@@ -16,923 +16,1762 @@ FTKR.ICS = FTKR.ICS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.7.4 アイテム合成システム
- * @author フトコロ
- *
- * @param --基本設定--
- * @default
- * 
- * @param Menu Command
- * @desc メニューに表示するコマンドを設定します。
- * @default ["{\"enabled\":\"1\",\"name\":\"アイテム合成\",\"switchId\":\"0\"}"]
- * @type struct<menu>[]
- * 
- * @param Enable Confirmation
- * @desc アイテム合成実行時に確認画面で実行確認するか。
- * @default 1
- * @type select
- * @option 確認する
- * @value 1
- * @option 確認しない
- * @value 0
- *
- * @param Enable End Confirmation
- * @desc アイテム合成終了時に確認画面で実行確認するか。
- * @default 0
- * @type select
- * @option 確認する
- * @value 1
- * @option 確認しない
- * @value 0
- *
- * @param Disable Material Number Input
- * @desc 素材アイテム選択時に数値入力を無効にするか。
- * @default 0
- * @type select
- * @option 数値入力する
- * @value 0
- * @option 数値入力しない
- * @value 1
- *
- * @param Category Type ID
- * @desc カテゴリータイプを設定した武器タイプIDを設定します。
- * @default 
- *
- * @param Category Format
- * @desc カテゴリータイプの表示内容を設定します。
- * %1 - カテゴリータイプ
- * @default カテゴリー %1
- *
- * @param Not Applicable to Recipe
- * @desc レシピが無い組み合わせの場合の結果を設定します。
- * lost - 消失, reset - 復元
- * @default lost
- * @type select
- * @option 消失(lost)
- * @value lost
- * @option 復元(reset)
- * @value reset
- *
- * @param Recipe Materials Treatment
- * @desc 合成に使用した素材アイテムの扱いを設定します。
- * lost - 消失, reset - 復元
- * @default lost
- * @type select
- * @option 消失(lost)
- * @value lost
- * @option 復元(reset)
- * @value reset
- *
- * @param Recipe Matching Pattern
- * @desc レシピに対してセットした素材がどの程度合致すると合成成功するか設定します。
- * @default 0
- * @type select
- * @option レシピと一致
- * @value 1
- * @option レシピを含む
- * @value 0
- *
- * @param Item Number Delimiters
- * @desc アイテム名とアイテム数の間の区切り文字を設定します。
- * @default :
- * 
- * @param --合成成功率の設定--
- * @default
- * 
- * @param Composition Parameter
- * @desc アイテム合成の成功率で参照するパラメータを指定します。
- * 設定しない場合は、アイテムの難易度が成功値になります。
- * @default 
- *
- * @param Success Base Rate
- * @desc 合成難易度とパラメータが一致した時の成功値を設定します。
- * @default 80
- *
- * @param Upper Add Rate
- * @desc 合成難易度よりもパラメータが高い場合の成功補正値を設定します。
- * @default 2
- *
- * @param Downer Reduce Rate
- * @desc 合成難易度よりもパラメータが低い場合の成功補正値を設定します。
- * @default -5
- *
- * @param Max Success Rate
- * @desc 成功値を何分率で計算するか設定します。
- * 成功率 = 成功値 / この値 (最大 10000)
- * @default 100
- *
- * @param Default Difficulty
- * @desc タグで設定しない時に使用する成功率
- * カンマ(,)で区切ること (大成功,成功,失敗)
- * @default 10,40,40
- *
- * @param --合成タイトルウィンドウの設定--
- * @default
- *
- * @param Composit Title Format
- * @desc 合成画面のタイトルの表示内容を設定します。
- * @type string[]
- * @default ["\\c[16]合成"]
- * 
- * @param Composit Title Align
- * @desc 表示内容の表示位置を設定します。
- * @default 0
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param Comp Title Opacity
- * @desc 合成タイトルウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Comp Title Frame Hide
- * @desc 合成タイトルウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --合成コマンドウィンドウの設定--
- *
- * @param Command List
- * @desc コマンドの表示内容と順番を設定します。
- * カンマ(,)で区切ってください
- * @type string[]
- * @default ["action,item,weapon,armor,change,slot,end"]
- * 
- * @param Change Materials Name
- * @desc 「素材から選ぶ」コマンドの表示内容を設定します。
- * @type string[]
- * @default ["素材から選ぶ"]
- * 
- * @param Change Resipes Name
- * @desc 「レシピから選ぶ」コマンドの表示内容を設定します。
- * @type string[]
- * @default ["レシピから選ぶ"]
- * 
- * @param Slot Cmd Name
- * @desc 「合成素材を戻す」コマンドの表示内容を設定します。
- * @type string[]
- * @default ["合成素材を戻す"]
- * 
- * @param Action Cmd Name
- * @desc 「合成を行う」コマンドの表示内容を設定します。
- * @type string[]
- * @default ["合成を行う"]
- * 
- * @param End Cmd Name
- * @desc 「合成を止める」コマンドの表示内容を設定します。
- * @type string[]
- * @default ["合成を止める"]
- * 
- * @param Item Cmd Name
- * @desc 「アイテム」コマンドの表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @type string[]
- * @default ["アイテム"]
- * 
- * @param Weapon Cmd Name
- * @desc 「武器」コマンドの表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @type string[]
- * @default ["武器"]
- * 
- * @param Armor Cmd Name
- * @desc 「防具」コマンドの表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @type string[]
- * @default ["防具"]
- * 
- * @param Composit Command Align
- * @desc 表示内容の表示位置を設定します。
- * @default 0
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param Comp Cmd Opacity
- * @desc 合成コマンドウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Comp Cmd Frame Hide
- * @desc 合成コマンドウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --アイテムリストウィンドウの設定--
- * @default
- *
- * @param Item List Opacity
- * @desc アイテムリストウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Item List Frame Hide
- * @desc アイテムリストウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --素材数指定ウィンドウの設定--
- * @default
- *
- * @param Show Number Button
- * @desc アイテム数の指定画面でタッチ用ボタンを表示するか。
- *  1 - 表示する, 0 - 表示しない
- * @default 1
- *
- * @param Display Materials On Number
- * @desc 素材数指定ウィンドウにレシピ素材を表示するか。
- * 0 - 表示させない, 1 - 表示する
- * @default 1
- * 
- * @param Number Opacity
- * @desc 素材数指定ウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Number Frame Hide
- * @desc 素材数指定ウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --スロットタイトルウィンドウの設定--
- * @default
- *
- * @param Slot Title Format
- * @desc スロットタイトルウィンドウのタイトル表示内容を設定します。
- * @type string[]
- * @default ["\\c[16]合成素材"]
- * 
- * @param Slot Title Align
- * @desc 表示内容の表示位置を設定します。
- * @default 0
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param Slot Title Opacity
- * @desc スロットタイトルウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Slot Title Frame Hide
- * @desc スロットタイトルウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --素材スロットウィンドウの設定--
- * @default
- *
- * @param Empty Format
- * @desc 空きスロットの表示名を設定します。
- * @type string[]
- * @default ["未設定"]
- * 
- * @param Empty Icon
- * @desc 空きスロットのアイコンを設定します。
- * @default 160
- * 
- * @param Return All Slot
- * @desc 合成素材をすべて戻すコマンドの表示名を設定します。
- * @type string[]
- * @default ["合成素材をすべて戻す"]
- * 
- * @param Slot Opacity
- * @desc 素材スロットウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Slot Frame Hide
- * @desc 素材スロットウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --合成情報タイトルウィンドウの設定--
- * @default
- *
- * @param Status Title Format
- * @desc 合成情報ウィンドウのタイトル表示内容を設定します。
- * @type string[]
- * @default ["\\c[16]合成情報"]
- * 
- * @param Status Title Align
- * @desc 表示内容の表示位置を設定します。
- * @default 0
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param Status Title Opacity
- * @desc 合成情報タイトルウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Status Title Frame Hide
- * @desc 合成情報タイトルウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --合成情報ウィンドウの設定--
- * @default
- *
- * @param Unkouwn Item Name
- * @desc 合成結果が不明な場合の表示内容を設定します。
- * @type string[]
- * @default ["？？？？"]
- * 
- * @param Display Difficulty
- * @desc 合成の難易度を表示するか設定します。
- * 1 - 表示する, 0 - 表示しない
- * @default 1
- * 
- * @param Difficulty Format
- * @desc 合成アイテムの生成数の難易度の表示内容を設定します。
- * %1 - 合成の難易度
- * @type string[]
- * @default ["難易度：%1"]
- * 
- * @param Composit Number Format
- * @desc 合成アイテムの生成数の表示内容を設定します。
- * @type string[]
- * @default ["生成数："]
- * 
- * @param Display Recipe Materials
- * @desc レシピから選んでいる場合に、必要素材を表示する。
- * 1 - 表示する, 0 - 表示しない
- * @default 1
- * 
- * @param Recipe Title Format
- * @desc 必要素材を表示する時のタイトル文字列を設定します。
- * @type string[]
- * @default ["必要素材"]
- * 
- * @param Recipe Material Number Format
- * @desc 必要素材数の表示形式を設定します。
- * @type struct<numItem>
- * @default {"text":"%2/%1","width":"5"}
- * 
- * @param Status Opacity
- * @desc 合成情報ウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Status Frame Hide
- * @desc 合成情報ウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --確認ウィンドウの設定(Confirmation Window)--
- * @default
- *
- * @param Conf Title Format
- * @desc アイテム合成時の確認内容を記述します。
- * @type string[]
- * @default ["\\c[16]合成実行の確認"]
- * 
- * @param Conf Title Align
- * @desc 確認内容の表示位置を設定します。
- * @default 0
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param Confirmation Ok Format
- * @desc 確認コマンドの「実行する」の表示内容を記述します。
- * @type string[]
- * @default ["実行する"]
- *
- * @param Confirmation Cancel Format
- * @desc 確認コマンドの「実行しない」の表示内容を記述します。
- * @type string[]
- * @default ["実行しない"]
- *
- * @param Conf Command Align
- * @desc 確認コマンドの表示位置を設定します。
- * @default 1
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param Confirmation Opacity
- * @desc 確認ウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Confirmation Frame Hide
- * @desc 確認ウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --合成結果ウィンドウの設定--
- * @default
- *
- * @param Result Title Format
- * @desc 合成結果ウィンドウのタイトル表示内容を記述します。
- * @type string[]
- * @default ["\\c[16]合成結果"]
- * 
- * @param Result Title Align
- * @desc 表示内容の表示位置を設定します。
- * @default 0
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param Result Great Success
- * @desc 大成功時の表示内容を記述します。
- * @type string[]
- * @default ["大成功"]
- * 
- * @param Result Success
- * @desc 成功時の表示内容を記述します。
- * @type string[]
- * @default ["成功"]
- * 
- * @param Result Failure
- * @desc 失敗時の表示内容を記述します。
- * @type string[]
- * @default ["失敗"]
- * 
- * @param Result Lost
- * @desc 消失時の表示内容を記述します。
- * @type string[]
- * @default ["消失"]
- * 
- * @param Result Reset
- * @desc 復元時の表示内容を記述します。
- * @type string[]
- * @default ["復元"]
- * 
- * @param Result Ok Format
- * @desc 確認コマンドの表示内容を記述します。
- * @type string[]
- * @default ["確認"]
- * 
- * @param Result Opacity
- * @desc 合成結果ウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param Result Frame Hide
- * @desc 合成結果ウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --終了確認ウィンドウの設定--
- * @default
- *
- * @param End Title Format
- * @desc アイテム合成を終了する時の確認内容を記述します。
- * @type string[]
- * @default ["\\c[16]合成を終了しますか？"]
- * 
- * @param End Title Align
- * @desc 終了確認内容の表示位置を設定します。
- * @default 0
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param End Ok Format
- * @desc 終了確認コマンドの「終了する」の表示内容を記述します。
- * @type string[]
- * @default ["終了する"]
- *
- * @param End Cancel Format
- * @desc 終了確認コマンドの「終了しない」の表示内容を記述します。
- * @type string[]
- * @default ["終了しない"]
- *
- * @param End Command Align
- * @desc 終了確認コマンドの表示位置を設定します。
- * @default 1
- * @type select
- * @option 左寄せ
- * @value 0
- * @option 中央
- * @value 1
- * @option 右寄せ
- * @value 2
- * 
- * @param End Opacity
- * @desc 終了確認ウィンドウの透明率を指定します。
- * @default 192
- * @type number
- *
- * @param End Frame Hide
- * @desc 終了確認ウィンドウの枠を非表示にするか。
- * @type select
- * @default 表示する(show)
- * @option 表示する(show)
- * @option 表示しない(hide)
- *
- * @param --背景設定(Background Window)--
- * @default 
- * 
- * @param Background Image Name
- * @desc 背景に使用する画像ファイル名を指定します。
- * 画像ファイルは/img/systemに保存すること
- * @default 
- * @require 1
- * @dir img/system/
- * @type file[]
- * 
- * @param --合成時のSEの設定--
- * @default
- * 
- * @param Success SE
- * @desc アイテム合成実行時に鳴らすSEを指定します。
- * @default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
- * @type struct<sound>[]
- * 
- * @param Great SE
- * @desc アイテム合成実行時に鳴らすSEの名前を指定します。
- * @default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
- * @type struct<sound>[]
- *
- * @param Failure SE
- * @desc アイテム合成実行時に鳴らすSEの名前を指定します。
- * @default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
- * @type struct<sound>[]
- *
- * @param Lost SE
- * @desc アイテム合成実行時に鳴らすSEの名前を指定します。
- * @default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
- * @type struct<sound>[]
- *
- * @param --カテゴリー別の合成コマンドの設定--
- * @default
- * 
- * @param Custom Cmd 1 Name
- * @desc カテゴリー別のコマンド1の表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @default 
- * 
- * @param Custom Cmd 1 Category
- * @desc コマンド1のカテゴリーを設定します。
- * 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
- * @default 
- * 
- * @param Custom Cmd 2 Name
- * @desc カテゴリー別のコマンド2の表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @default 
- * 
- * @param Custom Cmd 2 Category
- * @desc コマンド2のカテゴリーを設定します。
- * 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
- * @default 
- * 
- * @param Custom Cmd 3 Name
- * @desc カテゴリー別のコマンド3の表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @default 
- * 
- * @param Custom Cmd 3 Category
- * @desc コマンド3のカテゴリーを設定します。
- * 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
- * @default 
- * 
- * @param Custom Cmd 4 Name
- * @desc カテゴリー別のコマンド4の表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @default 
- * 
- * @param Custom Cmd 4 Category
- * @desc コマンド4のカテゴリーを設定します。
- * 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
- * @default 
- * 
- * @param Custom Cmd 5 Name
- * @desc カテゴリー別のコマンド5の表示内容を設定します。
- * ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
- * @default 
- * 
- * @param Custom Cmd 5 Category
- * @desc コマンド5のカテゴリーを設定します。
- * 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
- * @default 
- * 
- * @help
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインは、アイテム合成システムを実装するプラグインです。
- * 
- * 
- * オンラインマニュアル
- * https://github.com/futokoro/RPGMaker/blob/master/FTKR_ItemCompositionSystem.ja.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法/PluginManager Setting
- *----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * プラグインコマンド
- *-----------------------------------------------------------------------------
- * 以下のプラグインコマンドが使用できます。
- * 
- * 1. アイテム合成画面の表示
- * ICS_Open [compositTitle] [slotTitle] [statusTitle] [commandList]
- * ICS_合成画面表示 [合成タイトル] [スロットタイトル] [情報タイトル] [コマンドリスト]
- *    :[]部の入力は必須ではありません。
- *    :入力した場合、合成画面の各表示を変更します。
- *    :タイトルの文字列に制御文字を使用できます。
- *    :
- *    :コマンドリスト - プラグインパラメータ<Command List>と同じ入力方式です。
- * 
- * ICS_Open [listNumber]
- * ICS_合成画面表示 [リスト番号]
- *    :リスト番号を指定すると、合成画面の表示内容をプラグインパラメータで設定した
- *    :リストの番号のものに変更します。
- * 
- * 
- * 2. レシピを追加
- * ICS_ADD_RECIPE ITEMNAME RecipeId
- * ICS_ADD_RECIPE ITEM ItemId RecipeId 
- * ICS_レシピ追加 アイテム名 レシピID
- * ICS_レシピ追加 アイテム アイテムID レシピID
- *    :'アイテム'部は、武器の場合は'武器'、防具の場合は'防具'と入力します。
- *    :指定したアイテムのレシピを覚えます。
- *    :アイテム名や、アイテム、アイテムID部に、v[n]と入力することで、
- *    :ゲーム内変数ID n の内容を参照できます。
- *    :レシピIDを入力しない場合は、指定したアイテムの1つめのレシピになります。
- *    :
- *    :入力例) アイテムID11 がポーションの場合、以下は同じ結果になります。
- *    : ICS_レシピ追加 ポーション 1
- *    : ICS_レシピ追加 アイテム 11 1
- * 
- * 
- * 3. レシピの削除
- * ICS_REDUCE_RECIPE ITEMNAME RecipeId
- * ICS_REDUCE_RECIPE ITEM ItemId RecipeId
- * ICS_レシピ削除 アイテム名 レシピID
- * ICS_レシピ削除 アイテム アイテムID レシピID
- *    :'アイテム'部は、武器の場合は'武器'、防具の場合は'防具'と入力します。
- *    :指定したアイテムのレシピを忘れます。
- *    :アイテム名や、アイテム、アイテムID部に、v[n]と入力することで、
- *    :ゲーム内変数ID n の内容を参照できます。
- *    :レシピIDを入力しない場合は、指定したアイテムの1つめのレシピになります。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2019 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.7.4 - 2020/03/18 : プラグイン内タイトル部の誤字修正
- * 
- * v1.7.3 - 2019/12/27 : 不具合修正、機能追加
- *    1. カテゴリー素材を含むレシピで合成する場合に、カテゴリー素材に該当するアイテム
- *       を所持数以上に素材スロットにセットできてしまう不具合を修正。
- *    2. カテゴリー素材を含むレシピで合成する場合に、指定のカテゴリーを持つ複数のアイ
- *       テムを組み合わせて素材スロットに自動セットできるように修正。
- *    3. レシピ素材を合成情報ウィンドウに表示する内容に、素材の必要数だけでなく
- *       所持数も表示できる機能を追加。
- * 
- * v1.7.2 - 2018/11/07 : 不具合修正
- *    1. 一つのアイテムに対して複数のレシピを覚えていた場合に、いずれか１つのレシピの
- *       素材をもっていれば、ほかのレシピで作れてしまう不具合を修正。
- * 
- * v1.7.1 - 2018/10/22 : 機能追加
- *    1. 素材選択時の数値入力を無効にする機能を追加。
- * 
- * v1.7.0 - 2018/10/14 : 機能追加
- *    1. 合成に使用した素材を合成成功時でも復元する機能を追加。
- *    2. コマンドとタイトル文字列の表示位置を調整する機能を追加。
- *    3. 合成時に複数のアイテムを入手できる詳細合成を追加。
- *    4. アイテム名とアイテム数の間に区切り文字を設定する機能を追加。
- * 
- * v1.6.0 - 2018/10/09 : 機能追加、ヘルプ削減
- *    1. 成功時のボーナスを設定する機能を追加。
- * 
- * v1.5.4 - 2018/07/12 : 他プラグインとの競合回避
- *    1. Scene_ICSの継承元を、Scene_ItemからScene_ItemBaseに変更
- *    2. Window_IcsItemListの継承元を、Window_ItemListからWindow_Selectableに変更
- * 
- * v1.5.3 - 2017/12/11 : 不具合修正、ヘルプ修正、他微修正
- *    1. レシピを設定したアイテムにカテゴリーを設定しても、特定のカテゴリーの
- *       アイテムだけ表示する合成コマンドの機能が反映されない不具合を修正。
- *    2. プラグインパラメータの初期値を見直し。
- * 
- * v1.5.2 - 2017/11/01 : ヘルプ修正
- *    1. レシピの素材にカテゴリーを設定する場合の説明が間違っていたため修正。
- * 
- * v1.5.1 - 2017/10/16 : 機能追加
- *    1. 合成画面を表示するメニューコマンドの設定方式をリスト方式に変更。
- *    2. メニュー画面に複数の合成コマンドを設定する機能を追加。
- * 
- * v1.5.0 - 2017/10/11 : 機能追加、仕様変更
- *    1. 合成画面の表示内容を設定するプラグインパラメータの入力方式を
- *       リスト方式に変更。
- *    2. プラグインコマンドで合成画面を表示するときに、オプションでリスト番号を
- *       指定すると表示内容をリストの番号に合わせて変更する機能を追加。
- *    3. 合成終了時に確認画面を表示する機能を追加。
- * 
- * v1.4.0 - 2017/10/07 : 機能追加
- *    1. プラグインコマンドで背景画像を設定する機能を追加。
- *    2. 特定のカテゴリーのアイテムだけ表示する合成コマンドを作成する機能を追加。
- * 
- * v1.3.2 - 2017/09/03 : 不具合修正
- *    1. 1.3.0の変更部の不具合修正
- * 
- * v1.3.1 - 2017/09/02 : 機能追加
- *    1. 背景画像を設定する機能を追加。
- * 
- * v1.3.0 - 2017/09/01 : 機能追加
- *    1. ウィンドウ背景の透明度と枠の有無を設定する機能を追加。
- * 
- * v1.2.0 - 2017/08/29 : 不具合修正、機能追加
- *    1. １つのアイテムに複数設定したレシピを正しく読み取れない不具合を修正。
- *    2. 合成コマンドの、「アイテム」「武器」「防具」の表示名を
- *       素材選択時とレシピ選択時で変える機能を追加。
- * 
- * v1.1.0 - 2017/08/22 : 機能追加
- *    1. 合成コマンドの、「アイテム」「武器」「防具」の表示名を
- *       プラグインパラメータで設定できる機能を追加。
- *    2. 合成レシピと使用素材の合致条件を設定する機能を追加。
- *    3. 素材を何もセットしていない場合に、合成実行できないように変更。
- * 
- * v1.0.6 - 2017/08/19 : 不具合修正
- *    1. 確認ウィンドウを無効にして合成を実行するとエラーになる不具合を修正。
- * 
- * v1.0.5 - 2017/07/12 : 仕様変更
- *    1. レシピ素材が１種類でも合成可能なように変更。
- * 
- * v1.0.4 - 2017/07/07 : 不具合修正
- *    1. プラグインコマンドで、レシピIDを指定しない場合に正しく処理できない
- *       不具合を修正。
- * 
- * v1.0.3 - 2017/06/27 : 不具合修正、機能追加
- *    1. 合成情報ウィンドウに必要レシピを表示する機能が、正しく動作しない
- *       不具合を修正。
- *    2. 素材数指定ウィンドウに、必要レシピを表示するかどうか設定する
- *       プラグインパラメータを追加。
- * 
- * v1.0.2 - 2017/06/27 不具合修正、ヘルプ修正
- *    1. レシピタグで難易度を設定すると、正しく反映されない不具合を修正。
- * 
- * v1.0.1 - 2017/06/27 ヘルプ修正
- * 
- * v1.0.0 - 2017/06/26 : 正式版公開
- *    1. レシピから選んで生成数を設定しても、スロットに正しい素材員数が
- *       セットされない不具合を修正。
- *    2. 合成画面の表示コマンドの機能拡張。
- *    3. コマンド名を設定するプラグインパラメータの名称変更
- *    4. プラグインコマンドの表記変更
- * 
- * v0.9.4 - 2017/06/11 : 機能追加
- *    1. 合成情報ウィンドウの難易度表示をON/OFFする機能を追加。
- *    2. レシピから選ぶ場合、合成情報ウィンドウに必要レシピを表示する機能を追加。
- * 
- * v0.9.3 - 2017/06/08 : 機能追加
- *    1. 投入したアイテムが何のレシピにも該当しない場合に、使用したアイテムが
- *       戻る処理を追加。
- * 
- * v0.9.2 - 2017/04/14 : 機能追加
- *    1. 特殊合成を追加。
- * 
- * v0.9.1 - 2017/04/13 : 不具合修正、機能追加
- *    1. 起動できないエラーを修正
- *    2. 投入したアイテムが何のレシピにも該当しない場合に、合成結果が消失に
- *       なるように処理を追加。
- *    2. デフォルトカテゴリーとして「アイテム」「武器」「防具」追加
- * 
- * v0.9.0 - 2017/04/08 : 試作版公開
- * 
- *-----------------------------------------------------------------------------
- */
-//=============================================================================
+@plugindesc v1.7.4 Item Synthesis System
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+This plugin implements the item composition system.
+
+Online Manual
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_ItemCompositionSystem.ja.md
+
+-----------------------------------------------------------------------------
+Setup Method/PluginManager Setting
+----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager (Plugin Management)."
+
+----------------------------------------------------------------------------
+Plugin Commands
+----------------------------------------------------------------------------
+The following plugin commands are available:
+
+1. Display the Item Composition Screen
+ICS_Open [compositTitle] [slotTitle] [statusTitle] [commandList]
+: The [] part is optional.
+: If entered, it will change the display of each component on the composition screen.
+: Control characters can be used in the title string.
+:
+:Command List - Use the same input method as the plugin parameter <Command List>.
+
+ICS_Open [listNumber]
+:Specifying a list number will change the content displayed on the synthesis screen to that of the list number set in the plugin parameter.
+:2. Add a Recipe
+ICS_ADD_RECIPE ITEMNAME RecipeId
+ICS_ADD_RECIPE ITEM ItemId RecipeId
+:For the 'item' portion, enter 'weapon' for weapons and 'armor' for armor.
+:Memorize the recipe for the specified item.
+:By entering v[n] in the item name, item, or item ID portion,
+:You can reference the contents of the in-game variable ID n.
+:If you do not enter a recipe ID, the first recipe for the specified item will be used.
+:
+:Input example) If item ID 11 is a potion, the following will produce the same result.
+: ICS_Add Recipe Potion 1
+: ICS_Add Recipe Item 11 1
+
+3. Deleting a Recipe
+ICS_REDUCE_RECIPE ITEMNAME RecipeId
+ICS_REDUCE_RECIPE ITEM ItemId RecipeId
+:For the 'item' part, enter 'weapon' for weapons and 'armor' for armor.
+:Forgets the recipe for the specified item.
+:By entering v[n] in the item name, item, or item ID part,
+:You can reference the contents of the in-game variable ID n.
+:If you do not enter a recipe ID, the first recipe for the specified item will be used.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2019 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin source
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.7.4 - 2020/03/18: Fixed a typo in the plugin title.
+
+v1.7.3 - 2019/12/27: Bug fixes and Traits additions.
+1. Fixed an issue where more items corresponding to category materials could be placed in material slots than the number of items in the category when synthesizing a recipe containing category materials.
+2. When synthesizing recipes containing category materials, we've fixed the issue so that combining multiple items of a specified category will automatically set them in a material slot.
+3. The recipe material synthesis information window now displays not only the required number of materials but also the number of materials you have.
+
+v1.7.2 - 2018/11/07: Bug Fixes
+1. Fixed an issue where, when multiple recipes for a single item were learned, you could create the item using another recipe if you had the materials for one of the recipes.
+
+v1.7.1 - 2018/10/22: Traits Addition
+1. Added a Traits to disable numerical input when selecting materials.
+
+v1.7.0 - 2018/10/14: Traits Addition
+1. Added a Traits to restore materials used in synthesis even when the synthesis is successful.
+2. Added a Traits to adjust the display position of command and title strings.
+3. Added advanced synthesis, which allows you to obtain multiple items when synthesizing.
+4. Added the ability to set a delimiter between the item name and the number of items.
+
+v1.6.0 - October 9, 2018: Added Traits and reduced help.
+1. Added the ability to set a bonus upon success.
+
+v1.5.4 - July 12, 2018: Prevented conflicts with other plugins.
+1. Changed the inheritance source of Scene_ICS from Scene_Item to Scene_ItemBase.
+2. Changed the inheritance source of Window_IcsItemList from Window_ItemList to Window_Selectable.
+
+v1.5.3 - December 11, 2017: Bug fixes, help fixes, and other minor fixes.
+1. Fixed an issue where the synthesis command's function to display only items from a specific category was not Reflectioned even when a category was set for an item with a recipe.
+2. Revised the default values of plugin parameters.
+
+v1.5.2 - November 1, 2017: Help revisions
+1. Corrected an incorrect explanation for setting categories for recipe ingredients.
+
+v1.5.1 - October 16, 2017: Traits additions
+1. Changed the setting method for the menu command that displays the synthesis screen to a list format.
+2. Added the ability to set multiple synthesis commands on the menu screen.
+
+v1.5.0 - October 11, 2017: Traits additions and specification changes
+1. Changed the input method for plugin parameters that set the display content of the synthesis screen to a list format.
+2. Added a Traits that allows you to specify a list number as an option when displaying the synthesis screen with a plugin command to change the display content to match the list number.
+3. Added a Traits that displays a confirmation screen when synthesis is complete.
+
+v1.4.0 - October 7, 2017: Traits additions
+1. Added the ability to set a background image with a plugin command.
+2. Added the ability to create synthesis commands that display only items from a specific category.
+
+v1.3.2 - 2017/09/03: Bug fixes
+1. Bug fixes for changes in 1.3.0
+
+v1.3.1 - 2017/09/02: Traits additions
+1. Added the ability to set a background image.
+
+v1.3.0 - 2017/09/01: Traits additions
+1. Added the ability to set the window background transparency and border.
+
+v1.2.0 - 2017/08/29: Bug fixes and Traits additions
+1. Fixed an issue where multiple recipes set for a single item were not correctly read.
+2. Added the ability to change the display names of "Items," "Weapons," and "Armor" in synthesis commands when selecting materials and recipes.
+
+v1.1.0 - 2017/08/22: Traits Additions
+1. Added the ability to set the display names of "items," "weapons," and "armor" for the synthesis command using plugin parameters.
+2. Added the ability to set matching conditions between synthesis recipes and materials used.
+3. Modified to prevent synthesis from being performed if no materials are set.
+
+v1.0.6 - 2017/08/19: Bug Fixes
+1. Fixed an issue where an error occurred when performing synthesis with the confirmation window disabled.
+
+v1.0.5 - 2017/07/12: Specification Changes
+1. Modified to allow synthesis even with only one type of recipe material.
+
+v1.0.4 - 2017/07/07: Bug Fixes
+1. Fixed an issue where plugin commands would not process correctly if the recipe ID was not specified.
+
+v1.0.3 - June 27, 2017: Bug fixes and Traits additions
+1. Fixed a bug where the Traits displaying required recipes in the synthesis information window was not working correctly.
+2. Added a plugin parameter to set whether required recipes are displayed in the material quantity specification window.
+
+v1.0.2 - June 27, 2017: Bug fixes and help corrections
+1. Fixed an issue where difficulty settings in recipe tags were not Reflectioned correctly.
+
+v1.0.1 - June 27, 2017: Help corrections
+
+v1.0.0 - June 26, 2017: Official release
+1. Fixed an issue where the correct number of materials was not set in the slot even when selecting the number of materials from the recipe.
+2. Functionality enhancements to the synthesis screen display command.
+3. Changed the name of the plugin parameter that sets the command name.
+4. Changed the notation of plugin commands.
+
+v0.9.4 - 2017/06/11: Added Traits
+1. Added the ability to turn the difficulty display on/off in the synthesis information window.
+2. Added the ability to display the required recipes in the synthesis information window when selecting from recipes.
+
+v0.9.3 - 2017/06/08: Added Traits
+1. Added a process to return the used item if the inserted item does not match any recipe.
+
+v0.9.2 - 2017/04/14: Added Traits
+1. Added special synthesis.
+
+v0.9.1 - 2017/04/13: Bug fixes and added Traits
+1. Fixed an error that prevented the app from launching.
+2. Added a process to cause the synthesis results to disappear if the inserted item does not match any recipe.
+2. Added "Items," "Weapons," and "Armor" as default categories.
+
+v0.9.0 - April 8, 2017: Prototype released.
+
+-----------------------------------------------------------------------------
+
+@param --基本設定--
+@text --Basic settings--
+
+@param Menu Command
+@desc Sets the commands to be displayed in the menu.
+@default ["{\"enabled\":\"1\",\"name\":\"Composite\",\"switchId\":\"0\"}"]
+@type struct<menu>[]
+
+@param Enable Confirmation
+@desc When combining items, do you want to confirm the execution on the confirmation screen?
+@default 1
+@type select
+@option confirm
+@value 1
+@option Do not confirm
+@value 0
+
+@param Enable End Confirmation
+@desc When item synthesis is complete, do you want to confirm the execution on the confirmation screen?
+@default 0
+@type select
+@option confirm
+@value 1
+@option Do not confirm
+@value 0
+
+@param Disable Material Number Input
+@desc Disable numeric input when selecting material items.
+@default 0
+@type select
+@option Entering numbers
+@value 0
+@option Do not enter a number
+@value 1
+
+@param Category Type ID
+@desc Set the weapon type ID for the category type.
+
+@param Category Format
+@desc Sets the display content of the category type. %1 - Category type
+@default Category %1
+
+@param Not Applicable to Recipe
+@desc Sets the result for combinations that do not have a recipe. lost - lost, reset - restored
+@default lost
+@type select
+@option Lost
+@value lost
+@option Reset
+@value reset
+
+@param Recipe Materials Treatment
+@desc Sets how to handle the material items used in synthesis. lost - lost, reset - restored
+@default lost
+@type select
+@option Lost
+@value lost
+@option Reset
+@value reset
+
+@param Recipe Matching Pattern
+@desc This sets how closely the materials set in the recipe must match for the synthesis to be successful.
+@default 0
+@type select
+@option Matches the recipe
+@value 1
+@option Includes recipes
+@value 0
+
+@param Item Number Delimiters
+@desc Sets the separator between the item name and the item number.
+@default :
+
+@param --合成成功率の設定--
+@text --Synthesis success rate setting--
+
+@param Composition Parameter
+@desc Specifies the parameter to refer to in the success rate of item synthesis. If not set, the difficulty of the item will be the success value.
+
+@param Success Base Rate
+@desc Set the success value when the synthesis difficulty and parameters match.
+@default 80
+
+@param Upper Add Rate
+@desc Sets the success correction value when the parameter is higher than the synthesis difficulty.
+@default 2
+
+@param Downer Reduce Rate
+@desc Sets the success correction value when the parameter is lower than the synthesis difficulty.
+@default -5
+
+@param Max Success Rate
+@desc Set the percentage of success value to be calculated. Success rate = success value / this value (maximum 10000)
+@default 100
+
+@param Default Difficulty
+@desc Success rates to use when not using tags. Separate with commas (,) (great success, success, failure)
+@default 10,40,40
+
+@param --合成タイトルウィンドウの設定--
+@text --Composite title window settings--
+
+@param Composit Title Format
+@desc Set the title to be displayed on the composite screen.
+@default ["\\c[16]Composite"]
+@type string[]
+
+@param Composit Title Align
+@desc Set the display position of the displayed content.
+@default 0
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Comp Title Opacity
+@desc Specifies the transparency of the composite title window.
+@default 192
+@type number
+
+@param Comp Title Frame Hide
+@desc Whether to hide the composite title window frame.
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --合成コマンドウィンドウの設定--
+@text --Synthesis Command Window Settings--
+
+@param Command List
+@desc Set the command display content and order. Separate with a comma (,).
+@default ["action,item,weapon,armor,change,slot,end"]
+@type string[]
+
+@param Change Materials Name
+@desc Sets the display content for the "Select from Materials" command.
+@default ["Select from Materials"]
+@type string[]
+
+@param Change Resipes Name
+@desc Sets the display content for the "Choose from recipes" command.
+@default ["Choose from recipes"]
+@type string[]
+
+@param Slot Cmd Name
+@desc Sets the display content for the "Return synthesis material" command.
+@default ["Return synthesis material"]
+@type string[]
+
+@param Action Cmd Name
+@desc Sets the display content of the "Composite" command.
+@default ["Composite"]
+@type string[]
+
+@param End Cmd Name
+@desc Sets the display content for the "Stop Compositing" command.
+@default ["Stop Compositing"]
+@type string[]
+
+@param Item Cmd Name
+@desc Sets the display content for the "Item" command. Separating with ';' will change the display when selecting materials and recipes.
+@default ["Item"]
+@type string[]
+
+@param Weapon Cmd Name
+@desc Sets the display content for the "Weapon" command. Separating with ';' will change the display when selecting materials and recipes.
+@default ["Weapon"]
+@type string[]
+
+@param Armor Cmd Name
+@desc Sets the display content for the "Armor" command. Separating with ';' will change the display when selecting materials and recipes.
+@default ["Armor"]
+@type string[]
+
+@param Composit Command Align
+@desc Set the display position of the displayed content.
+@default 0
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Comp Cmd Opacity
+@desc Specifies the transparency of the composite command window.
+@default 192
+@type number
+
+@param Comp Cmd Frame Hide
+@desc Hide the composite command window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --アイテムリストウィンドウの設定--
+@text --Item list window settings--
+
+@param Item List Opacity
+@desc Specifies the transparency of the item list window.
+@default 192
+@type number
+
+@param Item List Frame Hide
+@desc Whether to hide the item list window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --素材数指定ウィンドウの設定--
+@text --Material Quantity Specification Window Settings--
+
+@param Show Number Button
+@desc Whether to display touch buttons on the item number setting screen. 1 - Display, 0 - Do not display
+@default 1
+
+@param Display Materials On Number
+@desc Whether to display recipe materials in the material number selection window. 0 - Do not display, 1 - Display
+@default 1
+
+@param Number Opacity
+@desc Specifies the transparency of the material number specification window.
+@default 192
+@type number
+
+@param Number Frame Hide
+@desc Whether to hide the frame of the material number specification window.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --スロットタイトルウィンドウの設定--
+@text --Slot Title Window Settings--
+
+@param Slot Title Format
+@desc Sets the title display content of the slot title window.
+@default ["\\c[16]Synthetic materials"]
+@type string[]
+
+@param Slot Title Align
+@desc Set the display position of the displayed content.
+@default 0
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Slot Title Opacity
+@desc Specifies the transparency of the slot title window.
+@default 192
+@type number
+
+@param Slot Title Frame Hide
+@desc Whether to hide the slot title window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --素材スロットウィンドウの設定--
+@text --Material Slot Window Settings--
+
+@param Empty Format
+@desc Sets the display name for the empty slot.
+@default ["Not set"]
+@type string[]
+
+@param Empty Icon
+@desc Set empty slot icon.
+@default 160
+
+@param Return All Slot
+@desc Sets the display name for the command to return all synthetic materials.
+@default ["Return All Slot"]
+@type string[]
+
+@param Slot Opacity
+@desc Specifies the transparency of the material slot window.
+@default 192
+@type number
+
+@param Slot Frame Hide
+@desc Hide the material slot window border.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --合成情報タイトルウィンドウの設定--
+@text --Composite Information Title Window Settings--
+
+@param Status Title Format
+@desc Sets the title display content of the composite information window.
+@default ["\\c[16]composite information"]
+@type string[]
+
+@param Status Title Align
+@desc Set the display position of the displayed content.
+@default 0
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Status Title Opacity
+@desc Specifies the transparency of the composite information title window.
+@default 192
+@type number
+
+@param Status Title Frame Hide
+@desc Whether to hide the composite information title window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --合成情報ウィンドウの設定--
+@text --Mixing Information Window Settings--
+
+@param Unkouwn Item Name
+@desc Sets the content to be displayed when the composite result is unknown.
+@default ["？？？？"]
+@type string[]
+
+@param Display Difficulty
+@desc Set whether to display the synthesis difficulty. 1 - Display, 0 - Do not display
+@default 1
+
+@param Difficulty Format
+@desc Sets the display of the difficulty of the number of synthesized items generated. %1 - Difficulty of synthesis
+@default ["Difficulty:%1"]
+@type string[]
+
+@param Composit Number Format
+@desc Sets the display content for the number of composite items generated.
+@default ["Composit Number:"]
+@type string[]
+
+@param Display Recipe Materials
+@desc Show required ingredients when selecting from recipe. 1 - Show, 0 - Don't show
+@default 1
+
+@param Recipe Title Format
+@desc Set the title string when displaying required materials.
+@default ["Required Materials"]
+@type string[]
+
+@param Recipe Material Number Format
+@desc Sets the display format for the number of required materials.
+@default {"text":"%2/%1","width":"5"}
+@type struct<numItem>
+
+@param Status Opacity
+@desc Specifies the transparency of the composite information window.
+@default 192
+@type number
+
+@param Status Frame Hide
+@desc Hide the composite information window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --確認ウィンドウの設定(Confirmation Window)--
+@text --Confirmation Window Settings--
+
+@param Conf Title Format
+@desc This describes the confirmation items when synthesizing items.
+@default ["\\c[16]合成実行の確認"]
+@type string[]
+
+@param Conf Title Align
+@desc Set the display position of the confirmation content.
+@default 0
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Confirmation Ok Format
+@desc Describes what will be displayed when you click "Execute" in the confirmation command.
+@default ["Execute"]
+@type string[]
+
+@param Confirmation Cancel Format
+@desc Describes the display content of the confirmation command "Do not execute."
+@default ["Do not execute"]
+@type string[]
+
+@param Conf Command Align
+@desc Set the display position of the confirmation command.
+@default 1
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Confirmation Opacity
+@desc Specifies the transparency of the confirmation window.
+@default 192
+@type number
+
+@param Confirmation Frame Hide
+@desc Whether to hide the confirmation window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --合成結果ウィンドウの設定--
+@text --Synthesis Result Window Settings--
+
+@param Result Title Format
+@desc Describes the title display content of the synthesis result window.
+@default ["\\c[16]合成結果"]
+@type string[]
+
+@param Result Title Align
+@desc Set the display position of the displayed content.
+@default 0
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param Result Great Success
+@desc Describes what will be displayed when the game is a great success.
+@default ["大成功"]
+@type string[]
+
+@param Result Success
+@desc Describes what will be displayed when successful.
+@default ["Success"]
+@type string[]
+
+@param Result Failure
+@desc Describes what will be displayed in case of failure.
+@default ["Failure"]
+@type string[]
+
+@param Result Lost
+@desc Describes what will be displayed when the data is lost.
+@default ["Lost"]
+@type string[]
+
+@param Result Reset
+@desc Describes what will be displayed when restoring.
+@default ["Reset"]
+@type string[]
+
+@param Result Ok Format
+@desc Describes the display content of the confirmation command.
+@default ["Confirmation"]
+@type string[]
+
+@param Result Opacity
+@desc Specifies the transparency of the composite result window.
+@default 192
+@type number
+
+@param Result Frame Hide
+@desc Hide the composite results window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --終了確認ウィンドウの設定--
+@text --Setting the Exit Confirmation Window--
+
+@param End Title Format
+@desc Describes the confirmation content when completing item synthesis.
+@default ["\\c[16]Do you want to end the synthesis?"]
+@type string[]
+
+@param End Title Align
+@desc Set the display position of the confirmation message.
+@default 0
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param End Ok Format
+@desc Describes what will be displayed when you click "Exit" in the confirmation command for exiting.
+@default ["Exit"]
+@type string[]
+
+@param End Cancel Format
+@desc Describes what will be displayed when the confirmation command for termination is "Do not terminate."
+@default ["Do not terminate"]
+@type string[]
+
+@param End Command Align
+@desc Sets the display position of the exit confirmation command.
+@default 1
+@type select
+@option Left-justified
+@value 0
+@option center
+@value 1
+@option Right-justified
+@value 2
+
+@param End Opacity
+@desc Specifies the transparency of the exit confirmation window.
+@default 192
+@type number
+
+@param End Frame Hide
+@desc Whether to hide the exit confirmation window frame.
+@default 表示する(show)
+@type select
+@option show
+@value 表示する(show)
+@option hide
+@value 表示しない(hide)
+
+@param --背景設定(Background Window)--
+@text --Background Window--
+
+@param Background Image Name
+@desc Specify the image file name to use as the background. The image file must be saved in /img/system.
+@type file[]
+@require 1
+@dir img/system/
+
+@param --合成時のSEの設定--
+@text --Sound effects settings for synthesis--
+
+@param Success SE
+@desc Specifies the sound effect to be played when combining items.
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param Great SE
+@desc Specifies the name of the sound effect to be played when combining items.
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param Failure SE
+@desc Specifies the name of the sound effect to be played when combining items.
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param Lost SE
+@desc Specifies the name of the sound effect to be played when combining items.
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param --カテゴリー別の合成コマンドの設定--
+@text --Setting synthesis commands by category--
+
+@param Custom Cmd 1 Name
+@desc Sets the display content for Command 1 by category. Separating with ';' will change the display when selecting ingredients and recipes.
+
+@param Custom Cmd 1 Category
+@desc Set the category for Command 1. Enter the same string as the category name set in the composite category.
+
+@param Custom Cmd 2 Name
+@desc Sets the display content for Category Command 2. Separating with ';' will change the display when selecting ingredients and recipes.
+
+@param Custom Cmd 2 Category
+@desc Set the category for Command 2. Enter the same string as the category name set in the composite category.
+
+@param Custom Cmd 3 Name
+@desc Sets the display content for Category Command 3. Separating with ';' will change the display when selecting ingredients and recipes.
+
+@param Custom Cmd 3 Category
+@desc Set the category for Command 3. Enter the same string as the category name set in the composite category.
+
+@param Custom Cmd 4 Name
+@desc Sets the display content for Command 4 by category. Separating with ';' will change the display when selecting ingredients and recipes.
+
+@param Custom Cmd 4 Category
+@desc Set the category for Command 4. Enter the same string as the category name set in the composite category.
+
+@param Custom Cmd 5 Name
+@desc Sets the display content for Command 5 by category. Separating with ';' will change the display when selecting ingredients and recipes.
+
+@param Custom Cmd 5 Category
+@desc Set the category for Command 5. Enter the same string as the category name set in the composite category.
+*/
+
 
 /*~struct~sound:
- * @param name
- * @desc SEの名前を指定します。
- * @default Sound2
- * @type file
- * @require 1
- * @dir audio/se
- *
- * @param volume
- * @desc SEの音量を指定します。
- * @default 90
- * @type number
- * @max 100
- * 
- * @param pitch
- * @desc SEのピッチを指定します。
- * @default 100
- * @type number
- * @max 150
- * @min 50
- * 
- * @param pan
- * @desc SEの位相を指定します。
- * @default 0
- * @type number
- * @max 100
- * @min -100
- *
+@param name
+@desc Specifies the name of the SE.
+@default Sound2
+@type file
+@require 1
+@dir audio/se
+
+@param volume
+@desc Specifies the volume of the SE.
+@default 90
+@type number
+@max 100
+
+@param pitch
+@desc Specifies the pitch of the SE.
+@default 100
+@type number
+@min 50
+@max 150
+
+@param pan
+@desc Specifies the phase of the SE.
+@default 0
+@type number
+@min -100
+@max 100
 */
+
 /*~struct~menu:
- * @param enabled
- * @desc メニューにコマンドを表示するか。
- *  1 - 表示する, 0 - 表示しない
- * @type select
- * @option 表示する
- * @value 1
- * @option 表示しない
- * @value 0
- * @default 0
- *
- * @param name
- * @desc コマンド名を設定します。
- * @default アイテム合成
- * 
- * @param switchId
- * @desc メニュー欄の表示のON/OFFを制御するスイッチIDを指定します。
- * @default 0
- *
+@param enabled
+@desc Show command in menu: 1 - Show, 0 - Don't show
+@default 0
+@type select
+@option Show
+@value 1
+@option Do not display
+@value 0
+
+@param name
+@desc Set the command name.
+@default アイテム合成
+
+@param switchId
+@desc Specify the switch ID that controls whether the menu column display is on or off.
+@default 0
 */
+
 /*~struct~numItem:
- * @param text
- * @desc 必要素材数を表示する時の文字列を設定します。
- * %1:必要数, %2:所持数
- * @default %1
- *
- * @param width
- * @desc 必要素材数の表示幅(文字数)を設定します。
- * @type number
- * @default 2
- * 
+@param text
+@desc Set the string to display when the required number of materials is required. %1: Required number, %2: Number in possession
+@default %1
+
+@param width
+@desc Set the display width (number of characters) for the number of required materials.
+@default 2
+@type number
+*/
+
+
+/*:ja
+@plugindesc v1.7.4 アイテム合成システム
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインは、アイテム合成システムを実装するプラグインです。
+
+
+オンラインマニュアル
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_ItemCompositionSystem.ja.md
+
+
+-----------------------------------------------------------------------------
+設定方法/PluginManager Setting
+----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+-----------------------------------------------------------------------------
+プラグインコマンド
+-----------------------------------------------------------------------------
+以下のプラグインコマンドが使用できます。
+
+1. アイテム合成画面の表示
+ICS_Open [compositTitle] [slotTitle] [statusTitle] [commandList]
+ICS_合成画面表示 [合成タイトル] [スロットタイトル] [情報タイトル] [コマンドリスト]
+   :[]部の入力は必須ではありません。
+   :入力した場合、合成画面の各表示を変更します。
+   :タイトルの文字列に制御文字を使用できます。
+   :
+   :コマンドリスト - プラグインパラメータ<Command List>と同じ入力方式です。
+
+ICS_Open [listNumber]
+ICS_合成画面表示 [リスト番号]
+   :リスト番号を指定すると、合成画面の表示内容をプラグインパラメータで設定した
+   :リストの番号のものに変更します。
+
+
+2. レシピを追加
+ICS_ADD_RECIPE ITEMNAME RecipeId
+ICS_ADD_RECIPE ITEM ItemId RecipeId
+ICS_レシピ追加 アイテム名 レシピID
+ICS_レシピ追加 アイテム アイテムID レシピID
+   :'アイテム'部は、武器の場合は'武器'、防具の場合は'防具'と入力します。
+   :指定したアイテムのレシピを覚えます。
+   :アイテム名や、アイテム、アイテムID部に、v[n]と入力することで、
+   :ゲーム内変数ID n の内容を参照できます。
+   :レシピIDを入力しない場合は、指定したアイテムの1つめのレシピになります。
+   :
+   :入力例) アイテムID11 がポーションの場合、以下は同じ結果になります。
+   : ICS_レシピ追加 ポーション 1
+   : ICS_レシピ追加 アイテム 11 1
+
+
+3. レシピの削除
+ICS_REDUCE_RECIPE ITEMNAME RecipeId
+ICS_REDUCE_RECIPE ITEM ItemId RecipeId
+ICS_レシピ削除 アイテム名 レシピID
+ICS_レシピ削除 アイテム アイテムID レシピID
+   :'アイテム'部は、武器の場合は'武器'、防具の場合は'防具'と入力します。
+   :指定したアイテムのレシピを忘れます。
+   :アイテム名や、アイテム、アイテムID部に、v[n]と入力することで、
+   :ゲーム内変数ID n の内容を参照できます。
+   :レシピIDを入力しない場合は、指定したアイテムの1つめのレシピになります。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2019 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.7.4 - 2020/03/18 : プラグイン内タイトル部の誤字修正
+
+v1.7.3 - 2019/12/27 : 不具合修正、機能追加
+   1. カテゴリー素材を含むレシピで合成する場合に、カテゴリー素材に該当するアイテム
+      を所持数以上に素材スロットにセットできてしまう不具合を修正。
+   2. カテゴリー素材を含むレシピで合成する場合に、指定のカテゴリーを持つ複数のアイ
+      テムを組み合わせて素材スロットに自動セットできるように修正。
+   3. レシピ素材を合成情報ウィンドウに表示する内容に、素材の必要数だけでなく
+      所持数も表示できる機能を追加。
+
+v1.7.2 - 2018/11/07 : 不具合修正
+   1. 一つのアイテムに対して複数のレシピを覚えていた場合に、いずれか１つのレシピの
+      素材をもっていれば、ほかのレシピで作れてしまう不具合を修正。
+
+v1.7.1 - 2018/10/22 : 機能追加
+   1. 素材選択時の数値入力を無効にする機能を追加。
+
+v1.7.0 - 2018/10/14 : 機能追加
+   1. 合成に使用した素材を合成成功時でも復元する機能を追加。
+   2. コマンドとタイトル文字列の表示位置を調整する機能を追加。
+   3. 合成時に複数のアイテムを入手できる詳細合成を追加。
+   4. アイテム名とアイテム数の間に区切り文字を設定する機能を追加。
+
+v1.6.0 - 2018/10/09 : 機能追加、ヘルプ削減
+   1. 成功時のボーナスを設定する機能を追加。
+
+v1.5.4 - 2018/07/12 : 他プラグインとの競合回避
+   1. Scene_ICSの継承元を、Scene_ItemからScene_ItemBaseに変更
+   2. Window_IcsItemListの継承元を、Window_ItemListからWindow_Selectableに変更
+
+v1.5.3 - 2017/12/11 : 不具合修正、ヘルプ修正、他微修正
+   1. レシピを設定したアイテムにカテゴリーを設定しても、特定のカテゴリーの
+      アイテムだけ表示する合成コマンドの機能が反映されない不具合を修正。
+   2. プラグインパラメータの初期値を見直し。
+
+v1.5.2 - 2017/11/01 : ヘルプ修正
+   1. レシピの素材にカテゴリーを設定する場合の説明が間違っていたため修正。
+
+v1.5.1 - 2017/10/16 : 機能追加
+   1. 合成画面を表示するメニューコマンドの設定方式をリスト方式に変更。
+   2. メニュー画面に複数の合成コマンドを設定する機能を追加。
+
+v1.5.0 - 2017/10/11 : 機能追加、仕様変更
+   1. 合成画面の表示内容を設定するプラグインパラメータの入力方式を
+      リスト方式に変更。
+   2. プラグインコマンドで合成画面を表示するときに、オプションでリスト番号を
+      指定すると表示内容をリストの番号に合わせて変更する機能を追加。
+   3. 合成終了時に確認画面を表示する機能を追加。
+
+v1.4.0 - 2017/10/07 : 機能追加
+   1. プラグインコマンドで背景画像を設定する機能を追加。
+   2. 特定のカテゴリーのアイテムだけ表示する合成コマンドを作成する機能を追加。
+
+v1.3.2 - 2017/09/03 : 不具合修正
+   1. 1.3.0の変更部の不具合修正
+
+v1.3.1 - 2017/09/02 : 機能追加
+   1. 背景画像を設定する機能を追加。
+
+v1.3.0 - 2017/09/01 : 機能追加
+   1. ウィンドウ背景の透明度と枠の有無を設定する機能を追加。
+
+v1.2.0 - 2017/08/29 : 不具合修正、機能追加
+   1. １つのアイテムに複数設定したレシピを正しく読み取れない不具合を修正。
+   2. 合成コマンドの、「アイテム」「武器」「防具」の表示名を
+      素材選択時とレシピ選択時で変える機能を追加。
+
+v1.1.0 - 2017/08/22 : 機能追加
+   1. 合成コマンドの、「アイテム」「武器」「防具」の表示名を
+      プラグインパラメータで設定できる機能を追加。
+   2. 合成レシピと使用素材の合致条件を設定する機能を追加。
+   3. 素材を何もセットしていない場合に、合成実行できないように変更。
+
+v1.0.6 - 2017/08/19 : 不具合修正
+   1. 確認ウィンドウを無効にして合成を実行するとエラーになる不具合を修正。
+
+v1.0.5 - 2017/07/12 : 仕様変更
+   1. レシピ素材が１種類でも合成可能なように変更。
+
+v1.0.4 - 2017/07/07 : 不具合修正
+   1. プラグインコマンドで、レシピIDを指定しない場合に正しく処理できない
+      不具合を修正。
+
+v1.0.3 - 2017/06/27 : 不具合修正、機能追加
+   1. 合成情報ウィンドウに必要レシピを表示する機能が、正しく動作しない
+      不具合を修正。
+   2. 素材数指定ウィンドウに、必要レシピを表示するかどうか設定する
+      プラグインパラメータを追加。
+
+v1.0.2 - 2017/06/27 不具合修正、ヘルプ修正
+   1. レシピタグで難易度を設定すると、正しく反映されない不具合を修正。
+
+v1.0.1 - 2017/06/27 ヘルプ修正
+
+v1.0.0 - 2017/06/26 : 正式版公開
+   1. レシピから選んで生成数を設定しても、スロットに正しい素材員数が
+      セットされない不具合を修正。
+   2. 合成画面の表示コマンドの機能拡張。
+   3. コマンド名を設定するプラグインパラメータの名称変更
+   4. プラグインコマンドの表記変更
+
+v0.9.4 - 2017/06/11 : 機能追加
+   1. 合成情報ウィンドウの難易度表示をON/OFFする機能を追加。
+   2. レシピから選ぶ場合、合成情報ウィンドウに必要レシピを表示する機能を追加。
+
+v0.9.3 - 2017/06/08 : 機能追加
+   1. 投入したアイテムが何のレシピにも該当しない場合に、使用したアイテムが
+      戻る処理を追加。
+
+v0.9.2 - 2017/04/14 : 機能追加
+   1. 特殊合成を追加。
+
+v0.9.1 - 2017/04/13 : 不具合修正、機能追加
+   1. 起動できないエラーを修正
+   2. 投入したアイテムが何のレシピにも該当しない場合に、合成結果が消失に
+      なるように処理を追加。
+   2. デフォルトカテゴリーとして「アイテム」「武器」「防具」追加
+
+v0.9.0 - 2017/04/08 : 試作版公開
+
+-----------------------------------------------------------------------------
+
+@param --基本設定--
+@text --基本設定--
+
+@param Menu Command
+@desc メニューに表示するコマンドを設定します。
+@default ["{\"enabled\":\"1\",\"name\":\"アイテム合成\",\"switchId\":\"0\"}"]
+@type struct<menu>[]
+
+@param Enable Confirmation
+@desc アイテム合成実行時に確認画面で実行確認するか。
+@default 1
+@type select
+@option 確認する
+@value 1
+@option 確認しない
+@value 0
+
+@param Enable End Confirmation
+@desc アイテム合成終了時に確認画面で実行確認するか。
+@default 0
+@type select
+@option 確認する
+@value 1
+@option 確認しない
+@value 0
+
+@param Disable Material Number Input
+@desc 素材アイテム選択時に数値入力を無効にするか。
+@default 0
+@type select
+@option 数値入力する
+@value 0
+@option 数値入力しない
+@value 1
+
+@param Category Type ID
+@desc カテゴリータイプを設定した武器タイプIDを設定します。
+
+@param Category Format
+@desc カテゴリータイプの表示内容を設定します。 %1 - カテゴリータイプ
+@default カテゴリー %1
+
+@param Not Applicable to Recipe
+@desc レシピが無い組み合わせの場合の結果を設定します。 lost - 消失, reset - 復元
+@default lost
+@type select
+@option 消失(lost)
+@value lost
+@option 復元(reset)
+@value reset
+
+@param Recipe Materials Treatment
+@desc 合成に使用した素材アイテムの扱いを設定します。 lost - 消失, reset - 復元
+@default lost
+@type select
+@option 消失(lost)
+@value lost
+@option 復元(reset)
+@value reset
+
+@param Recipe Matching Pattern
+@desc レシピに対してセットした素材がどの程度合致すると合成成功するか設定します。
+@default 0
+@type select
+@option レシピと一致
+@value 1
+@option レシピを含む
+@value 0
+
+@param Item Number Delimiters
+@desc アイテム名とアイテム数の間の区切り文字を設定します。
+@default :
+
+@param --合成成功率の設定--
+@text --合成成功率の設定--
+
+@param Composition Parameter
+@desc アイテム合成の成功率で参照するパラメータを指定します。 設定しない場合は、アイテムの難易度が成功値になります。
+
+@param Success Base Rate
+@desc 合成難易度とパラメータが一致した時の成功値を設定します。
+@default 80
+
+@param Upper Add Rate
+@desc 合成難易度よりもパラメータが高い場合の成功補正値を設定します。
+@default 2
+
+@param Downer Reduce Rate
+@desc 合成難易度よりもパラメータが低い場合の成功補正値を設定します。
+@default -5
+
+@param Max Success Rate
+@desc 成功値を何分率で計算するか設定します。 成功率 = 成功値 / この値 (最大 10000)
+@default 100
+
+@param Default Difficulty
+@desc タグで設定しない時に使用する成功率 カンマ(,)で区切ること (大成功,成功,失敗)
+@default 10,40,40
+
+@param --合成タイトルウィンドウの設定--
+@text --合成タイトルウィンドウの設定--
+
+@param Composit Title Format
+@desc 合成画面のタイトルの表示内容を設定します。
+@default ["\\c[16]合成"]
+@type string[]
+
+@param Composit Title Align
+@desc 表示内容の表示位置を設定します。
+@default 0
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Comp Title Opacity
+@desc 合成タイトルウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Comp Title Frame Hide
+@desc 合成タイトルウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --合成コマンドウィンドウの設定--
+@text --合成コマンドウィンドウの設定--
+
+@param Command List
+@desc コマンドの表示内容と順番を設定します。 カンマ(,)で区切ってください
+@default ["action,item,weapon,armor,change,slot,end"]
+@type string[]
+
+@param Change Materials Name
+@desc 「素材から選ぶ」コマンドの表示内容を設定します。
+@default ["素材から選ぶ"]
+@type string[]
+
+@param Change Resipes Name
+@desc 「レシピから選ぶ」コマンドの表示内容を設定します。
+@default ["レシピから選ぶ"]
+@type string[]
+
+@param Slot Cmd Name
+@desc 「合成素材を戻す」コマンドの表示内容を設定します。
+@default ["合成素材を戻す"]
+@type string[]
+
+@param Action Cmd Name
+@desc 「合成を行う」コマンドの表示内容を設定します。
+@default ["合成を行う"]
+@type string[]
+
+@param End Cmd Name
+@desc 「合成を止める」コマンドの表示内容を設定します。
+@default ["合成を止める"]
+@type string[]
+
+@param Item Cmd Name
+@desc 「アイテム」コマンドの表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+@default ["アイテム"]
+@type string[]
+
+@param Weapon Cmd Name
+@desc 「武器」コマンドの表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+@default ["武器"]
+@type string[]
+
+@param Armor Cmd Name
+@desc 「防具」コマンドの表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+@default ["防具"]
+@type string[]
+
+@param Composit Command Align
+@desc 表示内容の表示位置を設定します。
+@default 0
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Comp Cmd Opacity
+@desc 合成コマンドウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Comp Cmd Frame Hide
+@desc 合成コマンドウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --アイテムリストウィンドウの設定--
+@text --アイテムリストウィンドウの設定--
+
+@param Item List Opacity
+@desc アイテムリストウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Item List Frame Hide
+@desc アイテムリストウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --素材数指定ウィンドウの設定--
+@text --素材数指定ウィンドウの設定--
+
+@param Show Number Button
+@desc アイテム数の指定画面でタッチ用ボタンを表示するか。 1 - 表示する, 0 - 表示しない
+@default 1
+
+@param Display Materials On Number
+@desc 素材数指定ウィンドウにレシピ素材を表示するか。 0 - 表示させない, 1 - 表示する
+@default 1
+
+@param Number Opacity
+@desc 素材数指定ウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Number Frame Hide
+@desc 素材数指定ウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --スロットタイトルウィンドウの設定--
+@text --スロットタイトルウィンドウの設定--
+
+@param Slot Title Format
+@desc スロットタイトルウィンドウのタイトル表示内容を設定します。
+@default ["\\c[16]合成素材"]
+@type string[]
+
+@param Slot Title Align
+@desc 表示内容の表示位置を設定します。
+@default 0
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Slot Title Opacity
+@desc スロットタイトルウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Slot Title Frame Hide
+@desc スロットタイトルウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --素材スロットウィンドウの設定--
+@text --素材スロットウィンドウの設定--
+
+@param Empty Format
+@desc 空きスロットの表示名を設定します。
+@default ["未設定"]
+@type string[]
+
+@param Empty Icon
+@desc 空きスロットのアイコンを設定します。
+@default 160
+
+@param Return All Slot
+@desc 合成素材をすべて戻すコマンドの表示名を設定します。
+@default ["合成素材をすべて戻す"]
+@type string[]
+
+@param Slot Opacity
+@desc 素材スロットウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Slot Frame Hide
+@desc 素材スロットウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --合成情報タイトルウィンドウの設定--
+@text --合成情報タイトルウィンドウの設定--
+
+@param Status Title Format
+@desc 合成情報ウィンドウのタイトル表示内容を設定します。
+@default ["\\c[16]合成情報"]
+@type string[]
+
+@param Status Title Align
+@desc 表示内容の表示位置を設定します。
+@default 0
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Status Title Opacity
+@desc 合成情報タイトルウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Status Title Frame Hide
+@desc 合成情報タイトルウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --合成情報ウィンドウの設定--
+@text --合成情報ウィンドウの設定--
+
+@param Unkouwn Item Name
+@desc 合成結果が不明な場合の表示内容を設定します。
+@default ["？？？？"]
+@type string[]
+
+@param Display Difficulty
+@desc 合成の難易度を表示するか設定します。 1 - 表示する, 0 - 表示しない
+@default 1
+
+@param Difficulty Format
+@desc 合成アイテムの生成数の難易度の表示内容を設定します。 %1 - 合成の難易度
+@default ["難易度：%1"]
+@type string[]
+
+@param Composit Number Format
+@desc 合成アイテムの生成数の表示内容を設定します。
+@default ["生成数："]
+@type string[]
+
+@param Display Recipe Materials
+@desc レシピから選んでいる場合に、必要素材を表示する。 1 - 表示する, 0 - 表示しない
+@default 1
+
+@param Recipe Title Format
+@desc 必要素材を表示する時のタイトル文字列を設定します。
+@default ["必要素材"]
+@type string[]
+
+@param Recipe Material Number Format
+@desc 必要素材数の表示形式を設定します。
+@default {"text":"%2/%1","width":"5"}
+@type struct<numItem>
+
+@param Status Opacity
+@desc 合成情報ウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Status Frame Hide
+@desc 合成情報ウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --確認ウィンドウの設定(Confirmation Window)--
+@text --確認ウィンドウの設定(Confirmation Window)--
+
+@param Conf Title Format
+@desc アイテム合成時の確認内容を記述します。
+@default ["\\c[16]合成実行の確認"]
+@type string[]
+
+@param Conf Title Align
+@desc 確認内容の表示位置を設定します。
+@default 0
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Confirmation Ok Format
+@desc 確認コマンドの「実行する」の表示内容を記述します。
+@default ["実行する"]
+@type string[]
+
+@param Confirmation Cancel Format
+@desc 確認コマンドの「実行しない」の表示内容を記述します。
+@default ["実行しない"]
+@type string[]
+
+@param Conf Command Align
+@desc 確認コマンドの表示位置を設定します。
+@default 1
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Confirmation Opacity
+@desc 確認ウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Confirmation Frame Hide
+@desc 確認ウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --合成結果ウィンドウの設定--
+@text --合成結果ウィンドウの設定--
+
+@param Result Title Format
+@desc 合成結果ウィンドウのタイトル表示内容を記述します。
+@default ["\\c[16]合成結果"]
+@type string[]
+
+@param Result Title Align
+@desc 表示内容の表示位置を設定します。
+@default 0
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param Result Great Success
+@desc 大成功時の表示内容を記述します。
+@default ["大成功"]
+@type string[]
+
+@param Result Success
+@desc 成功時の表示内容を記述します。
+@default ["成功"]
+@type string[]
+
+@param Result Failure
+@desc 失敗時の表示内容を記述します。
+@default ["失敗"]
+@type string[]
+
+@param Result Lost
+@desc 消失時の表示内容を記述します。
+@default ["消失"]
+@type string[]
+
+@param Result Reset
+@desc 復元時の表示内容を記述します。
+@default ["復元"]
+@type string[]
+
+@param Result Ok Format
+@desc 確認コマンドの表示内容を記述します。
+@default ["確認"]
+@type string[]
+
+@param Result Opacity
+@desc 合成結果ウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param Result Frame Hide
+@desc 合成結果ウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --終了確認ウィンドウの設定--
+@text --終了確認ウィンドウの設定--
+
+@param End Title Format
+@desc アイテム合成を終了する時の確認内容を記述します。
+@default ["\\c[16]合成を終了しますか？"]
+@type string[]
+
+@param End Title Align
+@desc 終了確認内容の表示位置を設定します。
+@default 0
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param End Ok Format
+@desc 終了確認コマンドの「終了する」の表示内容を記述します。
+@default ["終了する"]
+@type string[]
+
+@param End Cancel Format
+@desc 終了確認コマンドの「終了しない」の表示内容を記述します。
+@default ["終了しない"]
+@type string[]
+
+@param End Command Align
+@desc 終了確認コマンドの表示位置を設定します。
+@default 1
+@type select
+@option 左寄せ
+@value 0
+@option 中央
+@value 1
+@option 右寄せ
+@value 2
+
+@param End Opacity
+@desc 終了確認ウィンドウの透明率を指定します。
+@default 192
+@type number
+
+@param End Frame Hide
+@desc 終了確認ウィンドウの枠を非表示にするか。
+@default 表示する(show)
+@type select
+@option 表示する(show)
+@option 表示しない(hide)
+
+@param --背景設定(Background Window)--
+@text --背景設定(Background Window)--
+
+@param Background Image Name
+@desc 背景に使用する画像ファイル名を指定します。 画像ファイルは/img/systemに保存すること
+@type file[]
+@require 1
+@dir img/system/
+
+@param --合成時のSEの設定--
+@text --合成時のSEの設定--
+
+@param Success SE
+@desc アイテム合成実行時に鳴らすSEを指定します。
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param Great SE
+@desc アイテム合成実行時に鳴らすSEの名前を指定します。
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param Failure SE
+@desc アイテム合成実行時に鳴らすSEの名前を指定します。
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param Lost SE
+@desc アイテム合成実行時に鳴らすSEの名前を指定します。
+@default ["{\"name\":\"Sound2\",\"volume\":\"90\",\"pitch\":\"100\",\"pan\":\"0\"}"]
+@type struct<sound>[]
+
+@param --カテゴリー別の合成コマンドの設定--
+@text --カテゴリー別の合成コマンドの設定--
+
+@param Custom Cmd 1 Name
+@desc カテゴリー別のコマンド1の表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+
+@param Custom Cmd 1 Category
+@desc コマンド1のカテゴリーを設定します。 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
+
+@param Custom Cmd 2 Name
+@desc カテゴリー別のコマンド2の表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+
+@param Custom Cmd 2 Category
+@desc コマンド2のカテゴリーを設定します。 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
+
+@param Custom Cmd 3 Name
+@desc カテゴリー別のコマンド3の表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+
+@param Custom Cmd 3 Category
+@desc コマンド3のカテゴリーを設定します。 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
+
+@param Custom Cmd 4 Name
+@desc カテゴリー別のコマンド4の表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+
+@param Custom Cmd 4 Category
+@desc コマンド4のカテゴリーを設定します。 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
+
+@param Custom Cmd 5 Name
+@desc カテゴリー別のコマンド5の表示内容を設定します。 ';'で区切ると、素材選択時とレシピ選択時の表示が変わります。
+
+@param Custom Cmd 5 Category
+@desc コマンド5のカテゴリーを設定します。 合成カテゴリーで設定したカテゴリー名と同じ文字列を入力します。
+*/
+
+
+/*~struct~sound:ja
+@param name
+@desc SEの名前を指定します。
+@default Sound2
+@type file
+@require 1
+@dir audio/se
+
+@param volume
+@desc SEの音量を指定します。
+@default 90
+@type number
+@max 100
+
+@param pitch
+@desc SEのピッチを指定します。
+@default 100
+@type number
+@min 50
+@max 150
+
+@param pan
+@desc SEの位相を指定します。
+@default 0
+@type number
+@min -100
+@max 100
+*/
+
+/*~struct~menu:ja
+@param enabled
+@desc メニューにコマンドを表示するか。 1 - 表示する, 0 - 表示しない
+@default 0
+@type select
+@option 表示する
+@value 1
+@option 表示しない
+@value 0
+
+@param name
+@desc コマンド名を設定します。
+@default アイテム合成
+
+@param switchId
+@desc メニュー欄の表示のON/OFFを制御するスイッチIDを指定します。
+@default 0
+*/
+
+/*~struct~numItem:ja
+@param text
+@desc 必要素材数を表示する時の文字列を設定します。 %1:必要数, %2:所持数
+@default %1
+
+@param width
+@desc 必要素材数の表示幅(文字数)を設定します。
+@default 2
+@type number
 */
 
 function Game_Composit() {
@@ -955,13 +1794,13 @@ function Game_IcsRecipeBook() {
     this.initialize.apply(this, arguments);
 }
 
-(function() {
+(function () {
 
-    var paramParse = function(obj) {
+    var paramParse = function (obj) {
         return JSON.parse(JSON.stringify(obj, paramReplace));
     };
 
-    var paramReplace = function(key, value) {
+    var paramReplace = function (key, value) {
         try {
             return JSON.parse(value || null);
         } catch (e) {
@@ -976,175 +1815,185 @@ function Game_IcsRecipeBook() {
 
     //基本設定
     FTKR.ICS.basic = {
-        menuCmd         :paramParse(parameters['Menu Command']),
-        categoryId      :Number(parameters['Category Type ID'] || 0),
-        enableConf      :+paramParse(parameters['Enable Confirmation'] || 0),
-        enableEndConf   :+paramParse(parameters['Enable End Confirmation'] || 0),
-        disableNumInput :+paramParse(parameters['Disable Material Number Input'] || 0),
-        varId:{
-            itemId      :Number(parameters['Variables Get ItemId'] || 0),
-            itemClass   :Number(parameters['Variables Get ItemClass'] || 0),
+        menuCmd: paramParse(parameters['Menu Command']),
+        categoryId: Number(parameters['Category Type ID'] || 0),
+        enableConf: +paramParse(parameters['Enable Confirmation'] || 0),
+        enableEndConf: +paramParse(parameters['Enable End Confirmation'] || 0),
+        disableNumInput: +paramParse(parameters['Disable Material Number Input'] || 0),
+        varId: {
+            itemId: Number(parameters['Variables Get ItemId'] || 0),
+            itemClass: Number(parameters['Variables Get ItemClass'] || 0),
         },
-        notApp          :paramParse(parameters['Not Applicable to Recipe'] || 'lost'),
-        category        :String(parameters['Category Format'] || 'カテゴリー %1'),
-        match           :+paramParse(parameters['Recipe Matching Pattern'] || 0),
-        treatMaterial   :paramParse(parameters['Recipe Materials Treatment'] || 'lost'),
-        delimiters      :String(parameters['Item Number Delimiters'] || ''),
+        notApp: paramParse(parameters['Not Applicable to Recipe'] || 'lost'),
+        category: String(parameters['Category Format'] || 'カテゴリー %1'),
+        match: +paramParse(parameters['Recipe Matching Pattern'] || 0),
+        treatMaterial: paramParse(parameters['Recipe Materials Treatment'] || 'lost'),
+        delimiters: String(parameters['Item Number Delimiters'] || ''),
     };
 
     //合成成功率の設定
     FTKR.ICS.success = {
-        param         :String(parameters['Composition Parameter'] || ''),
-        baseRate      :Number(parameters['Success Base Rate'] || ''),
-        upRate        :Number(parameters['Upper Add Rate'] || ''),
-        downRate      :Number(parameters['Downer Reduce Rate'] || ''),
-        maxRate       :Number(parameters['Max Success Rate'] || ''),
-        defDiff       :String(parameters['Default Difficulty'] || ''),
+        param: String(parameters['Composition Parameter'] || ''),
+        baseRate: Number(parameters['Success Base Rate'] || ''),
+        upRate: Number(parameters['Upper Add Rate'] || ''),
+        downRate: Number(parameters['Downer Reduce Rate'] || ''),
+        maxRate: Number(parameters['Max Success Rate'] || ''),
+        defDiff: String(parameters['Default Difficulty'] || ''),
     };
 
     //背景設定
     FTKR.ICS.background = {
-        name          :JSON.parse(parameters['Background Image Name'] || '[]'),
+        name: JSON.parse(parameters['Background Image Name'] || '[]'),
     };
 
     //合成タイトルウィンドウ設定
     FTKR.ICS.compositTitle = {
-        format        :JSON.parse(parameters['Composit Title Format'] || '[]'),
-        align         :+paramParse(parameters['Composit Title Align'] || 0),
-        opacity       :Number(parameters['Comp Title Opacity'] || 192),
-        frame         :String(parameters['Comp Title Frame Hide'] || '表示する(show)'),
+        format: JSON.parse(parameters['Composit Title Format'] || '[]'),
+        align: +paramParse(parameters['Composit Title Align'] || 0),
+        opacity: Number(parameters['Comp Title Opacity'] || 192),
+        frame: String(parameters['Comp Title Frame Hide'] || '表示する(show)'),
     };
 
     //合成コマンド設定
     FTKR.ICS.command = {
-        maxCols       :Number(parameters['Category Window MaxCols'] || 1),
-        list          :JSON.parse(parameters['Command List'] || '[]'),
-        format:{
-            material  :JSON.parse(parameters['Change Materials Name'] || '[]'),
-            recipe    :JSON.parse(parameters['Change Resipes Name'] || '[]'),
-            slot      :JSON.parse(parameters['Slot Cmd Name'] || '[]'),
-            action    :JSON.parse(parameters['Action Cmd Name'] || '[]'),
-            end       :JSON.parse(parameters['End Cmd Name'] || '[]'),
-            item      :JSON.parse(parameters['Item Cmd Name'] || '[]'),
-            weapon    :JSON.parse(parameters['Weapon Cmd Name'] || '[]'),
-            armor     :JSON.parse(parameters['Armor Cmd Name'] || '[]'),
+        maxCols: Number(parameters['Category Window MaxCols'] || 1),
+        list: JSON.parse(parameters['Command List'] || '[]'),
+        format: {
+            material: JSON.parse(parameters['Change Materials Name'] || '[]'),
+            recipe: JSON.parse(parameters['Change Resipes Name'] || '[]'),
+            slot: JSON.parse(parameters['Slot Cmd Name'] || '[]'),
+            action: JSON.parse(parameters['Action Cmd Name'] || '[]'),
+            end: JSON.parse(parameters['End Cmd Name'] || '[]'),
+            item: JSON.parse(parameters['Item Cmd Name'] || '[]'),
+            weapon: JSON.parse(parameters['Weapon Cmd Name'] || '[]'),
+            armor: JSON.parse(parameters['Armor Cmd Name'] || '[]'),
         },
-        align         :+paramParse(parameters['Composit Command Align'] || 0),
-        opacity       :Number(parameters['Comp Cmd Opacity'] || 192),
-        frame         :String(parameters['Comp Cmd Frame Hide'] || '表示する(show)'),
-        custom:[
+        align: +paramParse(parameters['Composit Command Align'] || 0),
+        opacity: Number(parameters['Comp Cmd Opacity'] || 192),
+        frame: String(parameters['Comp Cmd Frame Hide'] || '表示する(show)'),
+        custom: [
             {},
-            { format  :String(parameters['Custom Cmd 1 Name'] || ''),
-              category:String(parameters['Custom Cmd 1 Category'] || ''),},
-            { format  :String(parameters['Custom Cmd 2 Name'] || ''),
-              category:String(parameters['Custom Cmd 2 Category'] || ''),},
-            { format  :String(parameters['Custom Cmd 3 Name'] || ''),
-              category:String(parameters['Custom Cmd 3 Category'] || ''),},
-            { format  :String(parameters['Custom Cmd 4 Name'] || ''),
-              category:String(parameters['Custom Cmd 4 Category'] || ''),},
-            { format  :String(parameters['Custom Cmd 5 Name'] || ''),
-              category:String(parameters['Custom Cmd 5 Category'] || ''),},
+            {
+                format: String(parameters['Custom Cmd 1 Name'] || ''),
+                category: String(parameters['Custom Cmd 1 Category'] || ''),
+            },
+            {
+                format: String(parameters['Custom Cmd 2 Name'] || ''),
+                category: String(parameters['Custom Cmd 2 Category'] || ''),
+            },
+            {
+                format: String(parameters['Custom Cmd 3 Name'] || ''),
+                category: String(parameters['Custom Cmd 3 Category'] || ''),
+            },
+            {
+                format: String(parameters['Custom Cmd 4 Name'] || ''),
+                category: String(parameters['Custom Cmd 4 Category'] || ''),
+            },
+            {
+                format: String(parameters['Custom Cmd 5 Name'] || ''),
+                category: String(parameters['Custom Cmd 5 Category'] || ''),
+            },
         ],
     };
 
     //合成コストウィンドウ設定
     FTKR.ICS.itemList = {
-        opacity       :Number(parameters['Item List Opacity'] || 192),
-        frame         :String(parameters['Item List Frame Hide'] || '表示する(show)'),
+        opacity: Number(parameters['Item List Opacity'] || 192),
+        frame: String(parameters['Item List Frame Hide'] || '表示する(show)'),
     };
 
     //素材数指定ウィンドウ設定
     FTKR.ICS.number = {
-        showButton    :Number(parameters['Show Number Button'] || 0),
-        dispMaterials :Number(parameters['Display Materials On Number'] || 0),
-        opacity       :Number(parameters['Number Opacity'] || 192),
-        frame         :String(parameters['Number Frame Hide'] || '表示する(show)'),
+        showButton: Number(parameters['Show Number Button'] || 0),
+        dispMaterials: Number(parameters['Display Materials On Number'] || 0),
+        opacity: Number(parameters['Number Opacity'] || 192),
+        frame: String(parameters['Number Frame Hide'] || '表示する(show)'),
     };
 
     //素材スロットタイトルウィンドウ設定
     FTKR.ICS.slotTitle = {
-        format        :JSON.parse(parameters['Slot Title Format'] || '[]'),
-        align         :+paramParse(parameters['Slot Title Align'] || 0),
-        opacity       :Number(parameters['Slot Title Opacity'] || 192),
-        frame         :String(parameters['Slot Title Frame Hide'] || '表示する(show)'),
+        format: JSON.parse(parameters['Slot Title Format'] || '[]'),
+        align: +paramParse(parameters['Slot Title Align'] || 0),
+        opacity: Number(parameters['Slot Title Opacity'] || 192),
+        frame: String(parameters['Slot Title Frame Hide'] || '表示する(show)'),
     };
 
     //素材スロットウィンドウ設定
     FTKR.ICS.slot = {
-        emptyIcon     :String(parameters['Empty Icon'] || ''),
-        emptyFormat   :JSON.parse(parameters['Empty Format'] || '[]'),
-        slotAlign     :+paramParse(parameters['Slot Text Align'] || 0),
-        return        :JSON.parse(parameters['Return All Slot'] || '[]'),
-        returnAlign   :+paramParse(parameters['Return Command Align'] || 0),
-        opacity       :Number(parameters['Slot Opacity'] || 192),
-        frame         :String(parameters['Slot Frame Hide'] || '表示する(show)'),
+        emptyIcon: String(parameters['Empty Icon'] || ''),
+        emptyFormat: JSON.parse(parameters['Empty Format'] || '[]'),
+        slotAlign: +paramParse(parameters['Slot Text Align'] || 0),
+        return: JSON.parse(parameters['Return All Slot'] || '[]'),
+        returnAlign: +paramParse(parameters['Return Command Align'] || 0),
+        opacity: Number(parameters['Slot Opacity'] || 192),
+        frame: String(parameters['Slot Frame Hide'] || '表示する(show)'),
     };
 
     //合成情報タイトルウィンドウ設定
     FTKR.ICS.statusTitle = {
-        format        :JSON.parse(parameters['Status Title Format'] || '[]'),
-        align         :+paramParse(parameters['Status Title Align'] || 0),
-        opacity       :Number(parameters['Status Title Opacity'] || 192),
-        frame         :String(parameters['Status Title Frame Hide'] || '表示する(show)'),
+        format: JSON.parse(parameters['Status Title Format'] || '[]'),
+        align: +paramParse(parameters['Status Title Align'] || 0),
+        opacity: Number(parameters['Status Title Opacity'] || 192),
+        frame: String(parameters['Status Title Frame Hide'] || '表示する(show)'),
     };
 
     //合成情報ウィンドウ設定
     FTKR.ICS.status = {
-        dispRecipe    :Number(parameters['Display Recipe Materials'] || 0),
-        unkouwn       :JSON.parse(parameters['Unkouwn Item Name'] || '[]'),
-        number        :JSON.parse(parameters['Composit Number Format'] || '[]'),
-        recipeTitle   :JSON.parse(parameters['Recipe Title Format'] || '[]'),
-        recipeMaterial:paramParse(parameters['Recipe Material Number Format'] || {}),
-        dispDiff      :Number(parameters['Display Difficulty'] || 0),
-        diffFormat    :JSON.parse(parameters['Difficulty Format'] || '[]'),
-        opacity       :Number(parameters['Status Opacity'] || 192),
-        frame         :String(parameters['Status Frame Hide'] || '表示する(show)'),
+        dispRecipe: Number(parameters['Display Recipe Materials'] || 0),
+        unkouwn: JSON.parse(parameters['Unkouwn Item Name'] || '[]'),
+        number: JSON.parse(parameters['Composit Number Format'] || '[]'),
+        recipeTitle: JSON.parse(parameters['Recipe Title Format'] || '[]'),
+        recipeMaterial: paramParse(parameters['Recipe Material Number Format'] || {}),
+        dispDiff: Number(parameters['Display Difficulty'] || 0),
+        diffFormat: JSON.parse(parameters['Difficulty Format'] || '[]'),
+        opacity: Number(parameters['Status Opacity'] || 192),
+        frame: String(parameters['Status Frame Hide'] || '表示する(show)'),
     };
 
     //確認ウィンドウ設定
     FTKR.ICS.confTitle = {
-        format        :JSON.parse(parameters['Conf Title Format'] || '[]'),
-        align         :+paramParse(parameters['Conf Title Align'] || 0),
+        format: JSON.parse(parameters['Conf Title Format'] || '[]'),
+        align: +paramParse(parameters['Conf Title Align'] || 0),
     };
     FTKR.ICS.conf = {
-        okFormat      :JSON.parse(parameters['Confirmation Ok Format'] || '[]'),
-        cancelFormat  :JSON.parse(parameters['Confirmation Cancel Format'] || '[]'),
-        align         :+paramParse(parameters['Conf Command Align'] || 0),
-        opacity       :Number(parameters['Confirmation Opacity'] || 192),
-        frame         :String(parameters['Confirmation Frame Hide'] || '表示する(show)'),
+        okFormat: JSON.parse(parameters['Confirmation Ok Format'] || '[]'),
+        cancelFormat: JSON.parse(parameters['Confirmation Cancel Format'] || '[]'),
+        align: +paramParse(parameters['Conf Command Align'] || 0),
+        opacity: Number(parameters['Confirmation Opacity'] || 192),
+        frame: String(parameters['Confirmation Frame Hide'] || '表示する(show)'),
     };
 
     //合成結果ウィンドウ設定
     FTKR.ICS.result = {
-        format        :JSON.parse(parameters['Result Title Format'] || '[]'),
-        align         :+paramParse(parameters['Result Title Align'] || 0),
-        great         :JSON.parse(parameters['Result Great Success'] || '[]'),
-        success       :JSON.parse(parameters['Result Success'] || '[]'),
-        failure       :JSON.parse(parameters['Result Failure'] || '[]'),
-        reset         :JSON.parse(parameters['Result Reset'] || '[]'),
-        lost          :JSON.parse(parameters['Result Lost'] || '[]'),
-        okFormat      :JSON.parse(parameters['Result Ok Format'] || '[]'),
-        opacity       :Number(parameters['Result Opacity'] || 192),
-        frame         :String(parameters['Result Frame Hide'] || '表示する(show)'),
+        format: JSON.parse(parameters['Result Title Format'] || '[]'),
+        align: +paramParse(parameters['Result Title Align'] || 0),
+        great: JSON.parse(parameters['Result Great Success'] || '[]'),
+        success: JSON.parse(parameters['Result Success'] || '[]'),
+        failure: JSON.parse(parameters['Result Failure'] || '[]'),
+        reset: JSON.parse(parameters['Result Reset'] || '[]'),
+        lost: JSON.parse(parameters['Result Lost'] || '[]'),
+        okFormat: JSON.parse(parameters['Result Ok Format'] || '[]'),
+        opacity: Number(parameters['Result Opacity'] || 192),
+        frame: String(parameters['Result Frame Hide'] || '表示する(show)'),
     };
 
     //確認ウィンドウ設定
     FTKR.ICS.endConf = {
-        format        :JSON.parse(parameters['End Title Format'] || '[]'),
-        titleAlign    :+paramParse(parameters['End Title Align'] || 0),
-        okFormat      :JSON.parse(parameters['End Ok Format'] || '[]'),
-        cancelFormat  :JSON.parse(parameters['End Cancel Format'] || '[]'),
-        cmdAlign      :+paramParse(parameters['End Command Align'] || 0),
-        opacity       :Number(parameters['End Opacity'] || 192),
-        frame         :String(parameters['End Frame Hide'] || '表示する(show)'),
+        format: JSON.parse(parameters['End Title Format'] || '[]'),
+        titleAlign: +paramParse(parameters['End Title Align'] || 0),
+        okFormat: JSON.parse(parameters['End Ok Format'] || '[]'),
+        cancelFormat: JSON.parse(parameters['End Cancel Format'] || '[]'),
+        cmdAlign: +paramParse(parameters['End Command Align'] || 0),
+        opacity: Number(parameters['End Opacity'] || 192),
+        frame: String(parameters['End Frame Hide'] || '表示する(show)'),
     };
 
     //SE
     FTKR.ICS.systemSe = {
-        success   :paramParse(parameters['Success SE']),
-        great     :paramParse(parameters['Great SE']),
-        failure   :paramParse(parameters['Failure SE']),
-        lost      :paramParse(parameters['Lost SE']),
+        success: paramParse(parameters['Success SE']),
+        great: paramParse(parameters['Great SE']),
+        failure: paramParse(parameters['Failure SE']),
+        lost: paramParse(parameters['Lost SE']),
     };
 
     Window_Base.SUCCESS_CORRECTION_RANK = 1;
@@ -1163,9 +2012,9 @@ function Game_IcsRecipeBook() {
     //=============================================================================
 
     //配列を複製する
-    var copyArray = function(arr) {
+    var copyArray = function (arr) {
         var newArr = [];
-        arr.forEach(function(data, prop) {
+        arr.forEach(function (data, prop) {
             if (data instanceof Object) {
                 if (data instanceof Array) {
                     newArr[prop] = copyArray(data);
@@ -1180,9 +2029,9 @@ function Game_IcsRecipeBook() {
     };
 
     //オブジェクトを複製する
-    var copyObject = function(obj) {
+    var copyObject = function (obj) {
         var newObj = {};
-        Object.getOwnPropertyNames(obj).forEach(function(prop) {
+        Object.getOwnPropertyNames(obj).forEach(function (prop) {
             var data = obj[prop];
             if (data instanceof Object) {
                 if (data instanceof Array) {
@@ -1197,7 +2046,7 @@ function Game_IcsRecipeBook() {
         return newObj;
     };
 
-    var readEntrapmentCodeToText = function(obj, codeTitles) {
+    var readEntrapmentCodeToText = function (obj, codeTitles) {
         var regs = convertEntrapmentRegArray(codeTitles);
         var notedata = obj.note.split(/[\r\n]+/);
         var setMode = 'none';
@@ -1207,7 +2056,7 @@ function Game_IcsRecipeBook() {
             var line = notedata[i];
             if (matchRegs(line, regs, 'start')) {
                 var data = {
-                    text:''
+                    text: ''
                 };
                 setMode = 'read';
             } else if (matchRegs(line, regs, 'end')) {
@@ -1220,16 +2069,16 @@ function Game_IcsRecipeBook() {
         return results;
     };
 
-    var convertEntrapmentRegArray = function(codeTitles) {
-        return codeTitles.map(function(codeTitle) {
+    var convertEntrapmentRegArray = function (codeTitles) {
+        return codeTitles.map(function (codeTitle) {
             return {
-                start:new RegExp('<' + codeTitle + '>', 'i'),
-                end  :new RegExp('<\/' + codeTitle + '>', 'i')
+                start: new RegExp('<' + codeTitle + '>', 'i'),
+                end: new RegExp('<\/' + codeTitle + '>', 'i')
             };
         });
     };
 
-    var readEntrapmentCodeToTextEx = function(obj, codeTitles) {
+    var readEntrapmentCodeToTextEx = function (obj, codeTitles) {
         var regs = convertEntrapmentRegArrayEx(codeTitles);
         var notedata = obj.note.split(/[\r\n]+/);
         var setMode = 'none';
@@ -1239,8 +2088,8 @@ function Game_IcsRecipeBook() {
             var line = notedata[i];
             if (matchRegs(line, regs, 'start')) {
                 var data = {
-                    id:RegExp.$1,
-                    text:''
+                    id: RegExp.$1,
+                    text: ''
                 };
                 setMode = 'read';
             } else if (matchRegs(line, regs, 'end')) {
@@ -1253,49 +2102,49 @@ function Game_IcsRecipeBook() {
         return results;
     };
 
-    var convertEntrapmentRegArrayEx = function(codeTitles) {
-        return codeTitles.map(function(codeTitle) {
+    var convertEntrapmentRegArrayEx = function (codeTitles) {
+        return codeTitles.map(function (codeTitle) {
             return {
-                start:new RegExp('<' + codeTitle + ':[ ]*(.+)>', 'i'),
-                end  :new RegExp('<\/' + codeTitle + '>', 'i')
+                start: new RegExp('<' + codeTitle + ':[ ]*(.+)>', 'i'),
+                end: new RegExp('<\/' + codeTitle + '>', 'i')
             };
         });
     };
 
-    var matchRegs = function(data, regs, prop) {
-        return regs.some(function(reg){
+    var matchRegs = function (data, regs, prop) {
+        return regs.some(function (reg) {
             return prop ? data.match(reg[prop]) : data.match(reg);
         });
     };
 
     //objのメモ欄から <metacode: x> の値を読み取って返す
-    var readObjectMeta = function(obj, metacodes) {
+    var readObjectMeta = function (obj, metacodes) {
         if (!obj) return false;
         var match = {};
-        metacodes.some(function(metacode){
+        metacodes.some(function (metacode) {
             var metaReg = new RegExp('<' + metacode + ':[ ]*(.+)>', 'i');
             match = metaReg.exec(obj.note);
             return match;
-        }); 
+        });
         return match ? match[1] : '';
     };
 
     //objのメモ欄に <metacode> があれば真を返す
-    var hasObjectMeta = function(obj, metacodes) {
+    var hasObjectMeta = function (obj, metacodes) {
         if (!obj) return false;
-        return metacodes.some(function(metacode){
+        return metacodes.some(function (metacode) {
             var metaReg = new RegExp('<' + metacode + '>', 'i');
             return metaReg.test(obj.note);
-        }); 
+        });
     };
 
-    var convertEscapeCharacters = function(text) {
+    var convertEscapeCharacters = function (text) {
         if (text == null) text = '';
         var window = SceneManager._scene._windowLayer.children[0];
         return window ? window.convertEscapeCharacters(text) : text;
     };
 
-    var convertAlign = function(align) {
+    var convertAlign = function (align) {
         switch (align) {
             case 0:
                 return 'left';
@@ -1307,13 +2156,13 @@ function Game_IcsRecipeBook() {
         return undefined;
     };
 
-    var textWidth = function(text) {
+    var textWidth = function (text) {
         if (text == null) text = '';
         var window = SceneManager._scene._windowLayer.children[0];
         return window ? window.textWidth(text) : 0;
     };
 
-    var convertTextWidth = function(text) {
+    var convertTextWidth = function (text) {
         var tw = 0;
         text = convertEscapeCharacters(text);
         if (/\x1bi\[(\d+)\]/i.test(text)) {
@@ -1337,11 +2186,11 @@ function Game_IcsRecipeBook() {
         return tw;
     };
 
-    var setArgStr = function(arg) {
+    var setArgStr = function (arg) {
         return convertEscapeCharacters(arg);
     };
 
-    var setArgNum = function(arg) {
+    var setArgNum = function (arg) {
         arg = arg || 0;
         try {
             return Number(eval(setArgStr(arg)));
@@ -1350,7 +2199,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    var convertDataClass = function(arg) {
+    var convertDataClass = function (arg) {
         switch ((arg + '').toUpperCase()) {
             case 'ITEM':
             case 'アイテム':
@@ -1366,75 +2215,75 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Array.prototype.searchProperty = function(props) {
-        return this.filter( function(item) {
-            return item && props.every( function(prop) {
+    Array.prototype.searchProperty = function (props) {
+        return this.filter(function (item) {
+            return item && props.every(function (prop) {
                 return item.hasOwnProperty(prop[0]) && item[prop[0]] === prop[1];
             });
         });
     };
 
     //配列の要素を、すべて数値に変換する。
-    Array.prototype.num = function() {
-      return this.map(function(elm) {
-          return Number(elm);
-      });
+    Array.prototype.num = function () {
+        return this.map(function (elm) {
+            return Number(elm);
+        });
     }
 
-    Array.prototype.icsType = function() {
-        return this[FTKR.ICS.openType-1] ? this[FTKR.ICS.openType-1] : this[0];
+    Array.prototype.icsType = function () {
+        return this[FTKR.ICS.openType - 1] ? this[FTKR.ICS.openType - 1] : this[0];
     };
 
-    Array.prototype.icsSoundType = function() {
-        return this[FTKR.ICS.openType-1] && this[FTKR.ICS.openType-1].name !== '' ? this[FTKR.ICS.openType-1] : this[0];
+    Array.prototype.icsSoundType = function () {
+        return this[FTKR.ICS.openType - 1] && this[FTKR.ICS.openType - 1].name !== '' ? this[FTKR.ICS.openType - 1] : this[0];
     };
 
     //find を追加
     if (!Array.prototype.find) {
-      Array.prototype.find = function(predicate) {
-        if (this === null) {
-          throw new TypeError('Array.prototype.find called on null or undefined');
-        }
-        if (typeof predicate !== 'function') {
-          throw new TypeError('predicate must be a function');
-        }
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
+        Array.prototype.find = function (predicate) {
+            if (this === null) {
+                throw new TypeError('Array.prototype.find called on null or undefined');
+            }
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            var list = Object(this);
+            var length = list.length >>> 0;
+            var thisArg = arguments[1];
+            var value;
 
-        for (var i = 0; i < length; i++) {
-          value = list[i];
-          if (predicate.call(thisArg, value, i, list)) {
-            return value;
-          }
-        }
-        return undefined;
-      };
+            for (var i = 0; i < length; i++) {
+                value = list[i];
+                if (predicate.call(thisArg, value, i, list)) {
+                    return value;
+                }
+            }
+            return undefined;
+        };
     }
 
     //findIndex を追加
     if (!Array.prototype.findIndex) {
-      Array.prototype.findIndex = function(predicate) {
-        if (this === null) {
-          throw new TypeError('Array.prototype.findIndex called on null or undefined');
-        }
-        if (typeof predicate !== 'function') {
-          throw new TypeError('predicate must be a function');
-        }
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
+        Array.prototype.findIndex = function (predicate) {
+            if (this === null) {
+                throw new TypeError('Array.prototype.findIndex called on null or undefined');
+            }
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            var list = Object(this);
+            var length = list.length >>> 0;
+            var thisArg = arguments[1];
+            var value;
 
-        for (var i = 0; i < length; i++) {
-          value = list[i];
-          if (predicate.call(thisArg, value, i, list)) {
-            return i;
-          }
-        }
-        return -1;
-      };
+            for (var i = 0; i < length; i++) {
+                value = list[i];
+                if (predicate.call(thisArg, value, i, list)) {
+                    return i;
+                }
+            }
+            return -1;
+        };
     }
 
     //=============================================================================
@@ -1442,42 +2291,42 @@ function Game_IcsRecipeBook() {
     //=============================================================================
 
     FTKR.gameData = FTKR.gameData || {
-        user   :null,
-        target :null,
-        item   :null,
-        number :0,
+        user: null,
+        target: null,
+        item: null,
+        number: 0,
     };
 
     if (!FTKR.setGameData) {
-    FTKR.setGameData = function(user, target, item, number) {
-        FTKR.gameData = {
-            user   :user || null,
-            target :target || null,
-            item   :item || null,
-            number :number || 0
+        FTKR.setGameData = function (user, target, item, number) {
+            FTKR.gameData = {
+                user: user || null,
+                target: target || null,
+                item: item || null,
+                number: number || 0
+            };
         };
-    };
     }
 
     if (!FTKR.evalFormula) {
-    FTKR.evalFormula = function(formula) {
-        var datas = FTKR.gameData;
-        try {
-            var s = $gameSwitches._data;
-            var v = $gameVariables._data;
-            var a = datas.user;
-            var b = datas.target;
-            var item   = datas.item;
-            var number = datas.number;
-            if (b) var result = b.result();
-            var value = eval(formula);
-            if (isNaN(value)) value = 0;
-            return value;
-        } catch (e) {
-            console.error(e);
-            return 0;
-        }
-    };
+        FTKR.evalFormula = function (formula) {
+            var datas = FTKR.gameData;
+            try {
+                var s = $gameSwitches._data;
+                var v = $gameVariables._data;
+                var a = datas.user;
+                var b = datas.target;
+                var item = datas.item;
+                var number = datas.number;
+                if (b) var result = b.result();
+                var value = eval(formula);
+                if (isNaN(value)) value = 0;
+                return value;
+            } catch (e) {
+                console.error(e);
+                return 0;
+            }
+        };
     }
 
     //=============================================================================
@@ -1485,7 +2334,7 @@ function Game_IcsRecipeBook() {
     //=============================================================================
 
     var _ICS_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-    Game_Interpreter.prototype.pluginCommand = function(command, args) {
+    Game_Interpreter.prototype.pluginCommand = function (command, args) {
         _ICS_Game_Interpreter_pluginCommand.call(this, command, args);
         if (!command.match(/ICS_(.+)/i)) return;
         command = (RegExp.$1 + '').toUpperCase();
@@ -1514,7 +2363,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Game_Interpreter.prototype.addRecipe = function(args) {
+    Game_Interpreter.prototype.addRecipe = function (args) {
         var dataClass = convertDataClass(setArgStr(args[0]));
         var item = DataManager.searchItemName(dataClass);
         if (item) {
@@ -1524,7 +2373,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Game_Interpreter.prototype.reduceRecipe = function(args) {
+    Game_Interpreter.prototype.reduceRecipe = function (args) {
         var dataClass = convertDataClass(setArgStr(args[0]));
         var item = DataManager.searchItemName(dataClass);
         if (item) {
@@ -1540,7 +2389,7 @@ function Game_IcsRecipeBook() {
 
     FTKR.ICS.DatabaseLoaded = false;
     FTKR.ICS.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-    DataManager.isDatabaseLoaded = function() {
+    DataManager.isDatabaseLoaded = function () {
         if (!FTKR.ICS.DataManager_isDatabaseLoaded.call(this)) return false;
         if (!FTKR.ICS.DatabaseLoaded) {
             this.icsIcsCategoryNoteTags($dataWeapons);
@@ -1555,7 +2404,7 @@ function Game_IcsRecipeBook() {
         return true;
     };
 
-    DataManager.icsIcsCategoryNoteTags = function(group) {
+    DataManager.icsIcsCategoryNoteTags = function (group) {
         for (var n = 1; n < group.length; n++) {
             var obj = group[n];
             if (this.isIcsCategory(obj)) {
@@ -1569,7 +2418,7 @@ function Game_IcsRecipeBook() {
                 } else if (hasObjectMeta(obj, ['ICS ARMOR', 'ICS 防具'])) {
                     obj.ics.setDataClass('armor');
                 } else {
-                    var category = readObjectMeta(obj, ['ICS CATEGORY','ICS カテゴリー']);
+                    var category = readObjectMeta(obj, ['ICS CATEGORY', 'ICS カテゴリー']);
                     if (category) obj.ics.setDataClass(category);
                 }
                 var datas = readEntrapmentCodeToText(obj, ['ICS RECIPES', 'ICS レシピ']);
@@ -1581,14 +2430,14 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    DataManager.icsCompositionNotetags = function(group) {
+    DataManager.icsCompositionNotetags = function (group) {
         for (var n = 1; n < group.length; n++) {
             var obj = group[n];
             if (!this.isIcsCategory(obj)) {
                 obj.ics = new Game_Composit();
                 obj.compositCount = 0;
-                obj.ics.setCategory(readObjectMeta(obj, ['ICS CATEGORY','ICS カテゴリー']));
-                obj.ics.setRank(Number(readObjectMeta(obj, ['ICS RANK','ICS ランク'])));
+                obj.ics.setCategory(readObjectMeta(obj, ['ICS CATEGORY', 'ICS カテゴリー']));
+                obj.ics.setRank(Number(readObjectMeta(obj, ['ICS RANK', 'ICS ランク'])));
 
                 var datas = readEntrapmentCodeToText(obj, ['ICS RECIPES', 'ICS レシピ']);
                 this.setIcsRecipes(obj, datas);
@@ -1596,7 +2445,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    DataManager.setIcsRecipes = function(obj, metaDatas) {
+    DataManager.setIcsRecipes = function (obj, metaDatas) {
         for (var t = 0; t < metaDatas.length; t++) {
             var datas = metaDatas[t].text.split(';');
             var recipe = new Game_IcsRecipe();
@@ -1671,7 +2520,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    DataManager.setIcsResults = function(obj, metaDatas) {
+    DataManager.setIcsResults = function (obj, metaDatas) {
         for (var t = 0; t < metaDatas.length; t++) {
             var datas = metaDatas[t].text.split(';');
             var results = new Game_IcsResults(metaDatas[t].id);
@@ -1715,7 +2564,7 @@ function Game_IcsRecipeBook() {
     };
 
     FTKR.ICS.DataManager_makeSaveContents = DataManager.makeSaveContents;
-    DataManager.makeSaveContents = function() {
+    DataManager.makeSaveContents = function () {
         var contents = FTKR.ICS.DataManager_makeSaveContents.call(this);
         if (FTKR.ICS.DATABASE_ITEMS_NUMBER < $dataItems.length) {
             contents.icsItemDatas = $dataItems.slice(FTKR.ICS.DATABASE_ITEMS_NUMBER);
@@ -1730,7 +2579,7 @@ function Game_IcsRecipeBook() {
     };
 
     FTKR.ICS.DataManager_extractSaveContents = DataManager.extractSaveContents;
-    DataManager.extractSaveContents = function(contents) {
+    DataManager.extractSaveContents = function (contents) {
         FTKR.ICS.DataManager_extractSaveContents.call(this, contents);
         if (contents.icsItemDatas) {
             $dataItems = $dataItems.concat(contents.icsItemDatas);
@@ -1743,11 +2592,11 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    DataManager.isIcsCategory = function(item) {
+    DataManager.isIcsCategory = function (item) {
         return this.isWeapon(item) && item.wtypeId === FTKR.ICS.basic.categoryId;
     };
 
-    DataManager.itemDataClass = function(item) {
+    DataManager.itemDataClass = function (item) {
         if (this.isItem(item)) {
             return 'item';
         } else if (this.isWeapon(item)) {
@@ -1759,7 +2608,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    DataManager.convertItem = function(dataClass, itemId) {
+    DataManager.convertItem = function (dataClass, itemId) {
         if (!itemId) return null;
         switch (dataClass) {
             case 'item':
@@ -1773,7 +2622,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    DataManager.searchItemName = function(itemName) {
+    DataManager.searchItemName = function (itemName) {
         var name = ['name', itemName];
         var item = this.searchItems(name);
         if (!item.length) {
@@ -1785,22 +2634,22 @@ function Game_IcsRecipeBook() {
         return item.length ? item[0] : null;
     };
 
-    DataManager.searchItems = function() {
+    DataManager.searchItems = function () {
         var args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
         return $dataItems.searchProperty(args);
     };
 
-    DataManager.searchWeapons = function() {
+    DataManager.searchWeapons = function () {
         var args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
         return $dataWeapons.searchProperty(args);
     };
 
-    DataManager.searchArmors = function() {
+    DataManager.searchArmors = function () {
         var args = arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments);
         return $dataArmors.searchProperty(args);
     };
 
-    DataManager.changeItemRank = function(item, addRank) {
+    DataManager.changeItemRank = function (item, addRank) {
         var category = item.ics.category();
         if (!category) return item;
         var items = this.searchCategoryAllItems(category);
@@ -1808,43 +2657,43 @@ function Game_IcsRecipeBook() {
         return items.length ? this.findSomeRank(items, item.ics.rank() + addRank) : item;
     };
 
-    DataManager.changeItemCategory = function(item, category) {
+    DataManager.changeItemCategory = function (item, category) {
         var items = this.searchCategoryAllItems(category);
         return items.length ? this.findSomeRank(items, item.ics.rank()) : item;
     };
 
-    DataManager.convertCategoryItem = function(item, rank) {
+    DataManager.convertCategoryItem = function (item, rank) {
         if (!this.isIcsCategory(item)) return item;
         return this.findSomeRank(this.searchCategoryAllItems(item.name), rank);
     };
 
-    DataManager.searchCategoryItems = function(datas, category) {
-        return datas.filter( function(item) {
+    DataManager.searchCategoryItems = function (datas, category) {
+        return datas.filter(function (item) {
             if (!item) return false;
             var notComp = hasObjectMeta(item, ['ICS 合成アイテム', 'ICS COMPOSIT_ITEM']);
             return !notComp && (item.ics.category() === category ||
                 this.itemDataClass(item) === convertDataClass(category));
-        },this);
+        }, this);
     };
 
-    DataManager.searchCategoryAllItems = function(category) {
+    DataManager.searchCategoryAllItems = function (category) {
         return this.searchCategoryItems($dataItems, category).concat(
             this.searchCategoryItems($dataWeapons, category),
             this.searchCategoryItems($dataArmors, category)
         );
     };
 
-    DataManager.findSomeRank = function(items,rank) {
-        return this.sortItemsRank(items).find( function(item) {
+    DataManager.findSomeRank = function (items, rank) {
+        return this.sortItemsRank(items).find(function (item) {
             return item && item.ics.rank() <= rank;
         });
     };
 
     //ランクが大きい順にソート
-    DataManager.sortItemsRank = function(items) {
-        return items.sort( function(a, b){
-            if( a.ics.rank() > b.ics.rank() ) return -1;
-            if( a.ics.rank() < b.ics.rank() ) return 1;
+    DataManager.sortItemsRank = function (items) {
+        return items.sort(function (a, b) {
+            if (a.ics.rank() > b.ics.rank()) return -1;
+            if (a.ics.rank() < b.ics.rank()) return 1;
             return 0;
         });
     };
@@ -1853,7 +2702,7 @@ function Game_IcsRecipeBook() {
     // Game_Composit
     //=============================================================================
 
-    Game_Composit.prototype.initialize = function() {
+    Game_Composit.prototype.initialize = function () {
         this._category = '';
         this._rank = 0;
         this._dataClass = '';
@@ -1861,76 +2710,76 @@ function Game_IcsRecipeBook() {
         this._resultItems = [];
     };
 
-    Game_Composit.prototype.category = function() {
+    Game_Composit.prototype.category = function () {
         return this._category;
     };
 
-    Game_Composit.prototype.rank = function() {
+    Game_Composit.prototype.rank = function () {
         return this._rank;
     };
 
-    Game_Composit.prototype.dataClass = function() {
+    Game_Composit.prototype.dataClass = function () {
         return this._dataClass;
     };
 
-    Game_Composit.prototype.recipes = function() {
+    Game_Composit.prototype.recipes = function () {
         return this._recipes;
     };
 
-    Game_Composit.prototype.recipe = function(index) {
+    Game_Composit.prototype.recipe = function (index) {
         return this._recipes[index];
     };
 
-    Game_Composit.prototype.resultItems = function() {
+    Game_Composit.prototype.resultItems = function () {
         return this._resultItems;
     };
 
-    Game_Composit.prototype.resultItem = function(index) {
+    Game_Composit.prototype.resultItem = function (index) {
         return this._resultItems[index];
     };
 
-    Game_Composit.prototype.setCategory = function(category) {
+    Game_Composit.prototype.setCategory = function (category) {
         this._category = category;
     };
 
-    Game_Composit.prototype.setRank = function(rank) {
+    Game_Composit.prototype.setRank = function (rank) {
         this._rank = rank;
     };
 
-    Game_Composit.prototype.setDataClass = function(dataClass) {
+    Game_Composit.prototype.setDataClass = function (dataClass) {
         this._dataClass = dataClass;
     };
 
-    Game_Composit.prototype.addRecipe = function(recipe) {
+    Game_Composit.prototype.addRecipe = function (recipe) {
         this._recipes.push(recipe);
     };
 
-    Game_Composit.prototype.addResultItems = function(results) {
+    Game_Composit.prototype.addResultItems = function (results) {
         this._resultItems.push(results);
     };
 
-    Game_Composit.prototype.hasRecipe = function() {
+    Game_Composit.prototype.hasRecipe = function () {
         return this.recipe(0) && this.recipe(0).materials().length;
     };
 
-    Game_Composit.prototype.hasResultItem = function() {
+    Game_Composit.prototype.hasResultItem = function () {
         return this.resultItem(0) && this.resultItem(0).materials().length;
     };
 
-    Game_Composit.prototype.hasResultItemGreat = function() {
-        return this.resultItems().some(function(item){
+    Game_Composit.prototype.hasResultItemGreat = function () {
+        return this.resultItems().some(function (item) {
             return item.result() === 'great';
         });
     }
 
-    Game_Composit.prototype.hasResultItemSuccess = function() {
-        return this.resultItems().some(function(item){
+    Game_Composit.prototype.hasResultItemSuccess = function () {
+        return this.resultItems().some(function (item) {
             return item.result() === 'success';
         });
     }
 
-    Game_Composit.prototype.hasResultItemFailure = function() {
-        return this.resultItems().some(function(item){
+    Game_Composit.prototype.hasResultItemFailure = function () {
+        return this.resultItems().some(function (item) {
             return item.result() === 'failure';
         });
     }
@@ -1939,7 +2788,7 @@ function Game_IcsRecipeBook() {
     // Game_IcsRecipe
     //=============================================================================
 
-    Game_IcsRecipe.prototype.initialize = function() {
+    Game_IcsRecipe.prototype.initialize = function () {
         this._required = '';
         this._materials = [];
         this._number = 0;
@@ -1950,48 +2799,48 @@ function Game_IcsRecipeBook() {
         this.setDefault();
     };
 
-    Game_IcsRecipe.prototype.setDefault = function() {
+    Game_IcsRecipe.prototype.setDefault = function () {
         this._number = 1;
         this.setDifficulty(FTKR.ICS.success.defDiff.split(',').num());
     };
 
-    Game_IcsRecipe.prototype.setDifficulty = function(datas) {
+    Game_IcsRecipe.prototype.setDifficulty = function (datas) {
         this._difficulty = {
-            great:datas[0],
-            success:datas[1],
-            failure:datas[2],
+            great: datas[0],
+            success: datas[1],
+            failure: datas[2],
         };
     };
 
-    Game_IcsRecipe.prototype.addMaterial = function(material) {
+    Game_IcsRecipe.prototype.addMaterial = function (material) {
         this._materials.push(material);
     };
 
-    Game_IcsRecipe.prototype.required = function() {
+    Game_IcsRecipe.prototype.required = function () {
         return this._required;
     };
 
-    Game_IcsRecipe.prototype.materials = function() {
+    Game_IcsRecipe.prototype.materials = function () {
         return this._materials;
     };
 
-    Game_IcsRecipe.prototype.number = function() {
+    Game_IcsRecipe.prototype.number = function () {
         return this._number;
     };
 
-    Game_IcsRecipe.prototype.great = function() {
+    Game_IcsRecipe.prototype.great = function () {
         return this._great;
     };
 
-    Game_IcsRecipe.prototype.failure = function() {
+    Game_IcsRecipe.prototype.failure = function () {
         return this._failure;
     };
 
-    Game_IcsRecipe.prototype.difficulty = function() {
+    Game_IcsRecipe.prototype.difficulty = function () {
         return this._difficulty;
     };
 
-    Game_IcsRecipe.prototype.successBonus = function(judg) {
+    Game_IcsRecipe.prototype.successBonus = function (judg) {
         if (judg === 'great') {
             return this._successBonus.great || this._successBonus.success;
         } else if (judg === 'success') {
@@ -2004,13 +2853,13 @@ function Game_IcsRecipeBook() {
     // Game_IcsResults
     //=============================================================================
 
-    Game_IcsResults.prototype.initialize = function(result) {
+    Game_IcsResults.prototype.initialize = function (result) {
         this._materials = [];
         this.setResult(result);
     };
 
-    Game_IcsResults.prototype.setResult = function(result) {
-        switch((result + '').toUpperCase()) {
+    Game_IcsResults.prototype.setResult = function (result) {
+        switch ((result + '').toUpperCase()) {
             case '大成功':
             case 'GREAT':
                 this._result = 'great';
@@ -2027,15 +2876,15 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Game_IcsResults.prototype.addMaterial = function(material) {
+    Game_IcsResults.prototype.addMaterial = function (material) {
         this._materials.push(material);
     };
 
-    Game_IcsResults.prototype.result = function() {
+    Game_IcsResults.prototype.result = function () {
         return this._result;
     };
 
-    Game_IcsResults.prototype.materials = function() {
+    Game_IcsResults.prototype.materials = function () {
         return this._materials;
     };
 
@@ -2043,49 +2892,49 @@ function Game_IcsRecipeBook() {
     // Game_Material
     //=============================================================================
 
-    Game_Material.prototype.initialize = function(category, dataClass, itemId, number) {
+    Game_Material.prototype.initialize = function (category, dataClass, itemId, number) {
         this._category = category || '';
         this._dataClass = dataClass || '';
         this._itemId = itemId || 0;
         this._number = number || 0;
     };
 
-    Game_Material.prototype.category = function() {
+    Game_Material.prototype.category = function () {
         return this._category;
     };
 
-    Game_Material.prototype.dataClass = function() {
+    Game_Material.prototype.dataClass = function () {
         return this._dataClass;
     };
 
-    Game_Material.prototype.itemId = function() {
+    Game_Material.prototype.itemId = function () {
         return this._itemId;
     };
 
-    Game_Material.prototype.number = function() {
+    Game_Material.prototype.number = function () {
         return this._number;
     };
 
-    Game_Material.prototype.item = function() {
+    Game_Material.prototype.item = function () {
         var item = DataManager.convertItem(this.dataClass(), this.itemId());
         if (item) return item;
         return this.category() ? $gameParty.matchCategoryItem(this) : null;
     };
 
-    Game_Material.prototype.matchMaterial = function(material) {
+    Game_Material.prototype.matchMaterial = function (material) {
         return (this.category() && this.matchMaterialCategory(material)) ||
             (!this.category() && this.matchDataClass(material) && this.matchItemId(material));
     };
 
-    Game_Material.prototype.lowerMaterialNumber = function(material) {
+    Game_Material.prototype.lowerMaterialNumber = function (material) {
         return this.matchMaterial(material) && this.number() <= material.number();
     };
 
-    Game_Material.prototype.matchMaterialCategory = function(material) {
+    Game_Material.prototype.matchMaterialCategory = function (material) {
         return this.matchCategory(material.dataClass(), material.category());
     };
 
-    Game_Material.prototype.matchCategory = function(dataClass, category) {
+    Game_Material.prototype.matchCategory = function (dataClass, category) {
         var arg = this.category();
         switch ((arg + '').toUpperCase()) {
             case 'ITEM':
@@ -2102,11 +2951,11 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Game_Material.prototype.matchDataClass = function(material) {
+    Game_Material.prototype.matchDataClass = function (material) {
         return this.dataClass() === material.dataClass();
     };
 
-    Game_Material.prototype.matchItemId = function(material) {
+    Game_Material.prototype.matchItemId = function (material) {
         return this.itemId() === material.itemId();
     };
 
@@ -2114,29 +2963,29 @@ function Game_IcsRecipeBook() {
     // Game_IcsRecipeBook
     //=============================================================================
 
-    Game_IcsRecipeBook.prototype.initialize = function(dataClass, itemId, typeId) {
+    Game_IcsRecipeBook.prototype.initialize = function (dataClass, itemId, typeId) {
         this._dataClass = dataClass || '';
         this._itemId = itemId || 0;
         this._typeId = typeId || 0;
     };
 
-    Game_IcsRecipeBook.prototype.dataClass = function() {
+    Game_IcsRecipeBook.prototype.dataClass = function () {
         return this._dataClass;
     };
 
-    Game_IcsRecipeBook.prototype.itemId = function() {
+    Game_IcsRecipeBook.prototype.itemId = function () {
         return this._itemId;
     };
 
-    Game_IcsRecipeBook.prototype.typeId = function() {
+    Game_IcsRecipeBook.prototype.typeId = function () {
         return this._typeId;
     };
 
-    Game_IcsRecipeBook.prototype.item = function() {
+    Game_IcsRecipeBook.prototype.item = function () {
         return DataManager.convertItem(this.dataClass(), this.itemId());
     };
 
-    Game_IcsRecipeBook.prototype.matchRecipe = function(dataClass, itemId, typeId) {
+    Game_IcsRecipeBook.prototype.matchRecipe = function (dataClass, itemId, typeId) {
         return this._dataClass === dataClass && this._itemId === itemId && this._typeId === typeId;
     };
 
@@ -2145,39 +2994,39 @@ function Game_IcsRecipeBook() {
     //=============================================================================
 
     FTKR.ICS.Game_Party_initialize = Game_Party.prototype.initialize;
-    Game_Party.prototype.initialize = function() {
+    Game_Party.prototype.initialize = function () {
         FTKR.ICS.Game_Party_initialize.call(this);
         this._recipes = [];
         this._recipes.push(null);
     };
 
-    Game_Party.prototype.recipes = function() {
+    Game_Party.prototype.recipes = function () {
         return this._recipes;
     };
 
     //レシピを覚えていたら、レシピ番号を返す
-    Game_Party.prototype.hasRecipe = function(dataClass, itemId, typeId) {
+    Game_Party.prototype.hasRecipe = function (dataClass, itemId, typeId) {
         return this._recipes.findIndex(function (recipe) {
             return recipe && recipe.matchRecipe(dataClass, itemId, typeId);
         });
     };
 
     //レシピを追加する
-    Game_Party.prototype.addRecipe = function(dataClass, itemId, typeId) {
+    Game_Party.prototype.addRecipe = function (dataClass, itemId, typeId) {
         if (this.hasRecipe(dataClass, itemId, typeId) < 0) {
             this._recipes.push(new Game_IcsRecipeBook(dataClass, itemId, typeId));
         }
     };
 
     //レシピを削除する
-    Game_Party.prototype.reduceRecipe = function(dataClass, itemId, typeId) {
+    Game_Party.prototype.reduceRecipe = function (dataClass, itemId, typeId) {
         var index = this.hasRecipe(dataClass, itemId, typeId);
         if (index > 0) this._recipes.splice(index, 1);
     };
 
     //指定した素材とカテゴリーが同じ手持ちアイテムのリストを返す
-    Game_Party.prototype.someCategoryAllItems = function(material) {
-        return this.allItems().filter( function(item) {
+    Game_Party.prototype.someCategoryAllItems = function (material) {
+        return this.allItems().filter(function (item) {
             var notComp = hasObjectMeta(item, ['ICS 合成アイテム', 'ICS COMPOSIT_ITEM']);
             return !notComp && material.matchCategory(DataManager.itemDataClass(item), item.ics.category());
         });
@@ -2185,26 +3034,26 @@ function Game_IcsRecipeBook() {
 
     //指定した素材を必要数以上もっているか
     //持っている場合、そのアイテムデータを返す
-    Game_Party.prototype.matchCategoryItem = function(material) {
-        return this.someCategoryAllItems(material).find( function(item) {
+    Game_Party.prototype.matchCategoryItem = function (material) {
+        return this.someCategoryAllItems(material).find(function (item) {
             return this.numItems(item) >= material.number();
-        },this);
+        }, this);
     };
 
     //指定したレシピと製作員数に必要なアイテムを持っているか
-    Game_Party.prototype.hasAllMaterials = function(recipe, number) {
-        return recipe.materials().every( function(material) {
+    Game_Party.prototype.hasAllMaterials = function (recipe, number) {
+        return recipe.materials().every(function (material) {
             return material && this.hasMaterial(material, number);
-        },this);
+        }, this);
     };
 
     //指定した素材と製作員数に必要なアイテムを持っているか
-    Game_Party.prototype.hasMaterial = function(material, number) {
+    Game_Party.prototype.hasMaterial = function (material, number) {
         return this.hasCategoryMaterial(material, number) || this.hasNonCategoryMaterial(material, number);
     };
 
     //カテゴリ指定の素材と製作員数に必要なアイテムを持っているか
-    Game_Party.prototype.hasCategoryMaterial = function(material, number) {
+    Game_Party.prototype.hasCategoryMaterial = function (material, number) {
         return material.category() && this.numCategoryItem(material.category()) >= number;
         /*
         return material.category() && this.someCategoryAllItems(material).some( function(item) {
@@ -2213,48 +3062,48 @@ function Game_IcsRecipeBook() {
     };
 
     //指定したカテゴリのアイテムの合計所持数
-    Game_Party.prototype.numCategoryItem = function(category) {
+    Game_Party.prototype.numCategoryItem = function (category) {
         var numItem = 0;
-        this.allItems().forEach(function(item){
+        this.allItems().forEach(function (item) {
             if (item && item.ics.category() == category) numItem += this.numItems(item);
-        },this);
+        }, this);
         return numItem;
     };
 
     //カテゴリ指定ではない素材と製作員数に必要なアイテムを持っているか
-    Game_Party.prototype.hasNonCategoryMaterial = function(material, number) {
+    Game_Party.prototype.hasNonCategoryMaterial = function (material, number) {
         return !material.category() && this.numItems(material.item()) >= material.number() * number;
     };
 
     //指定したアイテムと製作員数に必要なアイテムを持っているか
-    Game_Party.prototype.hasRequiredRecipeMaterials = function(item, number) {
+    Game_Party.prototype.hasRequiredRecipeMaterials = function (item, number) {
         number = number || 1;
-        return item && item.ics.recipes().some( function(recipe) {
+        return item && item.ics.recipes().some(function (recipe) {
             return this.hasAllMaterials(recipe, number);
-        },this);
+        }, this);
     };
 
     //指定したレシピIDで、アイテムと製作員数に必要なアイテムを持っているか
-    Game_Party.prototype.hasRequiredRecipeIDMaterials = function(item, typeId, number) {
+    Game_Party.prototype.hasRequiredRecipeIDMaterials = function (item, typeId, number) {
         number = number || 1;
         typeId = typeId || 0;
         return item && this.hasAllMaterials(item.ics.recipes()[typeId], number);
     };
 
     //指定したアイテムを最大で何個まで製作できるか
-    Game_Party.prototype.hasMaxRequiredRecipeMaterials = function(item) {
+    Game_Party.prototype.hasMaxRequiredRecipeMaterials = function (item) {
         var number = 1;
-        while(this.hasRequiredRecipeMaterials(item, number)) {
+        while (this.hasRequiredRecipeMaterials(item, number)) {
             number++;
         }
         return number - 1;
     };
 
     //指定したレシピIDで、アイテムを最大で何個まで製作できるか
-    Game_Party.prototype.hasMaxRequiredRecipeIDMaterials = function(item, typeId) {
+    Game_Party.prototype.hasMaxRequiredRecipeIDMaterials = function (item, typeId) {
         var number = 1;
         typeId = typeId || 0;
-        while(this.hasRequiredRecipeIDMaterials(item, typeId, number)) {
+        while (this.hasRequiredRecipeIDMaterials(item, typeId, number)) {
             number++;
         }
         return number - 1;
@@ -2264,13 +3113,13 @@ function Game_IcsRecipeBook() {
     // Window_Base
     //=============================================================================
 
-    Window_Base.prototype.drawTextExAlignIndex = function(text, x, y, alignIndex) {
+    Window_Base.prototype.drawTextExAlignIndex = function (text, x, y, alignIndex) {
         var textWidth = convertTextWidth(text);
         var diff = alignIndex * (this.contentsWidth() - textWidth) / 2;
         this.drawTextEx(text, x + diff, y);
     };
 
-    Window_Selectable.prototype.actSelect = function(index) {
+    Window_Selectable.prototype.actSelect = function (index) {
         if (index === -1) index = this.index();
         this.activate();
         this.select(index);
@@ -2283,16 +3132,16 @@ function Game_IcsRecipeBook() {
 
     FTKR.ICS.Window_MenuCommand_addOriginalCommands =
         Window_MenuCommand.prototype.addOriginalCommands;
-    Window_MenuCommand.prototype.addOriginalCommands = function() {
+    Window_MenuCommand.prototype.addOriginalCommands = function () {
         FTKR.ICS.Window_MenuCommand_addOriginalCommands.call(this);
-        FTKR.ICS.basic.menuCmd.forEach(function(cmd, i){
+        FTKR.ICS.basic.menuCmd.forEach(function (cmd, i) {
             if (this.isEnabledCompositionCmd(i)) {
                 this.addCommand(cmd.name, 'composition', true, i);
             }
-        },this);
+        }, this);
     };
 
-    Window_MenuCommand.prototype.isEnabledCompositionCmd = function(ext) {
+    Window_MenuCommand.prototype.isEnabledCompositionCmd = function (ext) {
         var cmd = FTKR.ICS.basic.menuCmd[ext];
         return cmd.enabled === 1 && cmd.switchId === 0 || cmd.switchId > 0 && $gameSwitches.value(cmd.switchId);
     };
@@ -2308,44 +3157,44 @@ function Game_IcsRecipeBook() {
     Window_IcsCompsiTitle.prototype = Object.create(Window_Base.prototype);
     Window_IcsCompsiTitle.prototype.constructor = Window_IcsCompsiTitle;
 
-    Window_IcsCompsiTitle.prototype.initialize = function(x, y, width, height) {
+    Window_IcsCompsiTitle.prototype.initialize = function (x, y, width, height) {
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.refresh();
     };
 
-    Window_IcsCompsiTitle.prototype.refresh = function() {
+    Window_IcsCompsiTitle.prototype.refresh = function () {
         this.contents.clear();
         var text = FTKR.ICS.windowText.title || FTKR.ICS.compositTitle.format.icsType();
         var alignIndex = FTKR.ICS.compositTitle.align;
         this.drawTextExAlignIndex(text, 0, 0, alignIndex);
-//        this.drawTextEx(text, 0, 0);
+        //        this.drawTextEx(text, 0, 0);
     };
 
-    Window_IcsCompsiTitle.prototype.standardBackOpacity = function() {
+    Window_IcsCompsiTitle.prototype.standardBackOpacity = function () {
         return FTKR.ICS.compositTitle.opacity;
     };
 
-    Window_IcsCompsiTitle.prototype._refreshFrame = function() {
+    Window_IcsCompsiTitle.prototype._refreshFrame = function () {
         if (FTKR.ICS.compositTitle.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
+
     //=============================================================================
     // Window_IcsCommand
     //=============================================================================
 
     function Window_IcsCommand() {
-      this.initialize.apply(this, arguments);
+        this.initialize.apply(this, arguments);
     }
 
     Window_IcsCommand.prototype = Object.create(Window_Command.prototype);
     Window_IcsCommand.prototype.constructor = Window_IcsCommand;
 
-    Window_IcsCommand.prototype.initialize = function(x, y) {
+    Window_IcsCommand.prototype.initialize = function (x, y) {
         Window_Command.prototype.initialize.call(this, x, y);
         this.clearWindow();
     };
 
-    Window_IcsCommand.prototype.clearWindow = function() {
+    Window_IcsCommand.prototype.clearWindow = function () {
         this._cmdId = null;
         this._itemCount = 0;
         this._showResipe = false;
@@ -2353,56 +3202,56 @@ function Game_IcsRecipeBook() {
         this.refresh();
     };
 
-    Window_IcsCommand.prototype.windowWidth = function() {
+    Window_IcsCommand.prototype.windowWidth = function () {
         return 240;
     };
 
-    Window_IcsCommand.prototype.numVisibleRows = function() {
+    Window_IcsCommand.prototype.numVisibleRows = function () {
         return 5;
     };
 
-    Window_IcsCommand.prototype.standardBackOpacity = function() {
+    Window_IcsCommand.prototype.standardBackOpacity = function () {
         return FTKR.ICS.command.opacity;
     };
 
-    Window_IcsCommand.prototype.itemTextAlign = function() {
+    Window_IcsCommand.prototype.itemTextAlign = function () {
         return convertAlign(FTKR.ICS.command.align);
     };
 
-    Window_IcsCommand.prototype._refreshFrame = function() {
+    Window_IcsCommand.prototype._refreshFrame = function () {
         if (FTKR.ICS.command.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsCommand.prototype.maxCols = function() {
+
+    Window_IcsCommand.prototype.maxCols = function () {
         return Math.max(FTKR.ICS.command.maxCols, 1);
     };
 
-    Window_IcsCommand.prototype.makeCommandList = function() {
+    Window_IcsCommand.prototype.makeCommandList = function () {
         var commandList = FTKR.ICS.windowText.command || FTKR.ICS.command.list.icsType();
-        commandList.split(',').forEach( function(list) {
-            if(list) this.setCommand(list.replace(' ',''));
-        },this);
+        commandList.split(',').forEach(function (list) {
+            if (list) this.setCommand(list.replace(' ', ''));
+        }, this);
     };
 
-    Window_IcsCommand.prototype.icsCmd = function(cmd) {
+    Window_IcsCommand.prototype.icsCmd = function (cmd) {
         var cmds = cmd.split(';');
         return this._showResipe && cmds.length > 1 ? cmds[1] : cmds[0];
     };
 
-    Window_IcsCommand.prototype.setCommand = function(symbol) {
+    Window_IcsCommand.prototype.setCommand = function (symbol) {
         var format = FTKR.ICS.command.format;
-        switch (symbol){
+        switch (symbol) {
             case 'item':
                 var name = this.icsCmd(format.item.icsType());
-                if (name) this.addCommand(name,   'item');
+                if (name) this.addCommand(name, 'item');
                 break;
             case 'weapon':
                 var name = this.icsCmd(format.weapon.icsType());
-                if (name) this.addCommand(name,   'weapon');
+                if (name) this.addCommand(name, 'weapon');
                 break;
             case 'armor':
                 var name = this.icsCmd(format.armor.icsType());
-                if (name) this.addCommand(name,   'armor');
+                if (name) this.addCommand(name, 'armor');
                 break;
             case 'slot':
                 this.addCommand(format.slot.icsType(), 'slot');
@@ -2412,13 +3261,13 @@ function Game_IcsRecipeBook() {
                 break;
             case 'change':
                 if (this._showResipe) {
-                    this.addCommand(format.material.icsType(),'material');
+                    this.addCommand(format.material.icsType(), 'material');
                 } else {
-                    this.addCommand(format.recipe.icsType(),  'recipe');
+                    this.addCommand(format.recipe.icsType(), 'recipe');
                 }
                 break;
             case 'end':
-                this.addCommand(format.end.icsType(),         'end');
+                this.addCommand(format.end.icsType(), 'end');
                 break;
             default:
                 var match = /custom(\d+)/i.exec(symbol);
@@ -2428,22 +3277,22 @@ function Game_IcsRecipeBook() {
                     if (name) this.addCommand(name, custom.category);
                 }
                 break;
-            }
+        }
     };
 
-    Window_IcsCommand.prototype.update = function() {
+    Window_IcsCommand.prototype.update = function () {
         Window_Command.prototype.update.call(this);
         if (this._itemWindow) {
             this._itemWindow.setCategory(this.currentSymbol());
         }
-  };
+    };
 
-    Window_IcsCommand.prototype.setItemWindow = function(window) {
+    Window_IcsCommand.prototype.setItemWindow = function (window) {
         this._itemWindow = window;
         this.update();
     };
 
-    Window_IcsCommand.prototype.refreshCom = function(materials) {
+    Window_IcsCommand.prototype.refreshCom = function (materials) {
         this._setMaterials = !!materials.length
         Window_Command.prototype.refresh.call(this);
     };
@@ -2459,7 +3308,7 @@ function Game_IcsRecipeBook() {
     Window_IcsItemList.prototype = Object.create(Window_Selectable.prototype);
     Window_IcsItemList.prototype.constructor = Window_IcsItemList;
 
-    Window_IcsItemList.prototype.initialize = function(x, y, width, height) {
+    Window_IcsItemList.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this._category = 'none';
         this._data = [];
@@ -2468,7 +3317,7 @@ function Game_IcsRecipeBook() {
         this._showResipe = false;
     };
 
-    Window_IcsItemList.prototype.setCategory = function(category) {
+    Window_IcsItemList.prototype.setCategory = function (category) {
         if (this._category !== category) {
             this._category = category;
             this.refresh();
@@ -2476,60 +3325,60 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsItemList.prototype.maxCols = function() {
+    Window_IcsItemList.prototype.maxCols = function () {
         return 2;
     };
 
-    Window_IcsItemList.prototype.spacing = function() {
+    Window_IcsItemList.prototype.spacing = function () {
         return 48;
     };
 
-    Window_IcsItemList.prototype.maxItems = function() {
+    Window_IcsItemList.prototype.maxItems = function () {
         return this._data ? this._data.length : 1;
     };
 
-    Window_IcsItemList.prototype.item = function() {
+    Window_IcsItemList.prototype.item = function () {
         var index = this.index();
         return this._data && index >= 0 ? this._data[index] : null;
     };
 
-    Window_IcsItemList.prototype.isCurrentItemEnabled = function() {
+    Window_IcsItemList.prototype.isCurrentItemEnabled = function () {
         return this.isEnabled(this.item(), this._typeId[this.index()]);
     };
 
-    Window_IcsItemList.prototype.standardBackOpacity = function() {
+    Window_IcsItemList.prototype.standardBackOpacity = function () {
         return FTKR.ICS.itemList.opacity;
     };
 
-    Window_IcsItemList.prototype._refreshFrame = function() {
+    Window_IcsItemList.prototype._refreshFrame = function () {
         if (FTKR.ICS.itemList.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsItemList.prototype.isEnabled = function(item, typeId) {
-//        return this._showResipe ? $gameParty.hasRequiredRecipeMaterials(item, typeId) : item;
+
+    Window_IcsItemList.prototype.isEnabled = function (item, typeId) {
+        //        return this._showResipe ? $gameParty.hasRequiredRecipeMaterials(item, typeId) : item;
         return this._showResipe ? $gameParty.hasRequiredRecipeIDMaterials(item, typeId) : item;
     };
 
-    Window_IcsItemList.prototype.typeId = function() {
+    Window_IcsItemList.prototype.typeId = function () {
         return this._typeId[this.index()];
     };
 
-    Window_IcsItemList.prototype.includesBase = function(item) {
+    Window_IcsItemList.prototype.includesBase = function (item) {
         switch (this._category) {
-        case 'item':
-            return DataManager.isItem(item) && item.itypeId === 1;
-        case 'weapon':
-            return DataManager.isWeapon(item);
-        case 'armor':
-            return DataManager.isArmor(item);
-        case 'keyItem':
-            return DataManager.isItem(item) && item.itypeId === 2;
-        default:
-            return false;
+            case 'item':
+                return DataManager.isItem(item) && item.itypeId === 1;
+            case 'weapon':
+                return DataManager.isWeapon(item);
+            case 'armor':
+                return DataManager.isArmor(item);
+            case 'keyItem':
+                return DataManager.isItem(item) && item.itypeId === 2;
+            default:
+                return false;
         }
     };
 
-    Window_IcsItemList.prototype.includes = function(item) {
+    Window_IcsItemList.prototype.includes = function (item) {
         if (item && item.ics.category() === this._category) {
             return true;
         } else {
@@ -2537,12 +3386,12 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsItemList.prototype.needsNumber = function() {
+    Window_IcsItemList.prototype.needsNumber = function () {
         return true;
     };
-  
-    Window_IcsItemList.prototype.makeItemListBase = function() {
-        this._data = $gameParty.allItems().filter(function(item) {
+
+    Window_IcsItemList.prototype.makeItemListBase = function () {
+        this._data = $gameParty.allItems().filter(function (item) {
             return this.includes(item);
         }, this);
         if (this.includes(null)) {
@@ -2550,13 +3399,13 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsItemList.prototype.makeItemList = function() {
+    Window_IcsItemList.prototype.makeItemList = function () {
         if (this._showResipe) {
             this._typeId = [];
-            this._data = this.filterCategory().map( function(recipe) {
+            this._data = this.filterCategory().map(function (recipe) {
                 this._typeId.push(recipe.typeId());
                 return recipe.item();
-            },this);
+            }, this);
             if (this.includes(null)) {
                 this._data.push(null);
             }
@@ -2565,13 +3414,13 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsItemList.prototype.selectLast = function() {
+    Window_IcsItemList.prototype.selectLast = function () {
         var index = this._data.indexOf($gameParty.lastItem());
         this.select(index >= 0 ? index : 0);
     };
 
-    Window_IcsItemList.prototype.filterCategory = function() {
-        return $gameParty.recipes().filter(function(recipe) {
+    Window_IcsItemList.prototype.filterCategory = function () {
+        return $gameParty.recipes().filter(function (recipe) {
             if (!recipe) return false;
             var item = recipe.item();
             return DataManager.isIcsCategory(item) ?
@@ -2582,21 +3431,21 @@ function Game_IcsRecipeBook() {
         }, this);
     };
 
-    Window_IcsItemList.prototype.drawItem = function(index) {
+    Window_IcsItemList.prototype.drawItem = function (index) {
         var item = this._data[index];
         if (item) {
             var rect = this.itemRect(index);
             rect.width -= this.textPadding();
-//            this.changePaintOpacity(this.isEnabled(item));
+            //            this.changePaintOpacity(this.isEnabled(item));
             var typeId = this._showResipe && item.ics.recipes().length > 1 ? this._typeId[index] + 1 : '';
-            this.changePaintOpacity(this.isEnabled(item,this._typeId[index]));
+            this.changePaintOpacity(this.isEnabled(item, this._typeId[index]));
             this.drawItemName(item, rect.x, rect.y, rect.width - this.numberWidth(), typeId);
             if (!this._showResipe) this.drawItemNumber(item, rect.x, rect.y, rect.width);
             this.changePaintOpacity(1);
         }
     };
 
-    Window_IcsItemList.prototype.drawItemName = function(item, x, y, width, typeId) {
+    Window_IcsItemList.prototype.drawItemName = function (item, x, y, width, typeId) {
         width = width || 312;
         if (item) {
             var iconBoxWidth = Window_Base._iconWidth + 4;
@@ -2606,23 +3455,23 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsItemList.prototype.numberWidth = function() {
+    Window_IcsItemList.prototype.numberWidth = function () {
         return this.textWidth('000');
     };
 
-    Window_IcsItemList.prototype.drawItemNumber = function(item, x, y, width) {
+    Window_IcsItemList.prototype.drawItemNumber = function (item, x, y, width) {
         if (this.needsNumber()) {
             this.drawText(FTKR.ICS.basic.delimiters, x, y, width - this.textWidth('00'), 'right');
             this.drawText($gameParty.numItems(item), x, y, width, 'right');
         }
     };
 
-    Window_IcsItemList.prototype.setCompositioStateWindow = function(window) {
+    Window_IcsItemList.prototype.setCompositioStateWindow = function (window) {
         this._compositionStateWindow = window;
         this.update();
     };
 
-    Window_IcsItemList.prototype.update = function() {
+    Window_IcsItemList.prototype.update = function () {
         Window_Selectable.prototype.update.call(this);
         if (this._showResipe && this._compositionStateWindow) {
             var item = this._data[this._index];
@@ -2630,7 +3479,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsItemList.prototype.refresh = function() {
+    Window_IcsItemList.prototype.refresh = function () {
         this.makeItemList();
         this.createContents();
         this.drawAllItems();
@@ -2647,75 +3496,75 @@ function Game_IcsRecipeBook() {
     Window_IcsCompsiSlotTitle.prototype = Object.create(Window_Base.prototype);
     Window_IcsCompsiSlotTitle.prototype.constructor = Window_IcsCompsiSlotTitle;
 
-    Window_IcsCompsiSlotTitle.prototype.initialize = function(x, y, width, height) {
+    Window_IcsCompsiSlotTitle.prototype.initialize = function (x, y, width, height) {
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.refresh();
     };
 
-    Window_IcsCompsiSlotTitle.prototype.refresh = function() {
+    Window_IcsCompsiSlotTitle.prototype.refresh = function () {
         this.contents.clear();
         var text = FTKR.ICS.windowText.slotTitle || FTKR.ICS.slotTitle.format.icsType();
         var alignIndex = FTKR.ICS.slotTitle.align;
         this.drawTextExAlignIndex(text, 0, 0, alignIndex);
     };
 
-    Window_IcsCompsiSlotTitle.prototype.standardBackOpacity = function() {
+    Window_IcsCompsiSlotTitle.prototype.standardBackOpacity = function () {
         return FTKR.ICS.slotTitle.opacity;
     };
 
-    Window_IcsCompsiSlotTitle.prototype._refreshFrame = function() {
+    Window_IcsCompsiSlotTitle.prototype._refreshFrame = function () {
         if (FTKR.ICS.slotTitle.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
+
     //=============================================================================
     // Window_IcsCompsiSlot
     //=============================================================================
 
     function Window_IcsCompsiSlot() {
-      this.initialize.apply(this, arguments);
+        this.initialize.apply(this, arguments);
     }
 
     Window_IcsCompsiSlot.prototype = Object.create(Window_Selectable.prototype);
     Window_IcsCompsiSlot.prototype.constructor = Window_IcsCompsiSlot;
 
-    Window_IcsCompsiSlot.prototype.initialize = function(x, y, width, height) {
+    Window_IcsCompsiSlot.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this.clearWindow();
     };
 
-    Window_IcsCompsiSlot.prototype.clearWindow = function() {
+    Window_IcsCompsiSlot.prototype.clearWindow = function () {
         this._itemCount = 0;
         this._slots = [];
         this.refresh();
     };
 
-    Window_IcsCompsiSlot.prototype.maxCols = function() {
+    Window_IcsCompsiSlot.prototype.maxCols = function () {
         return 1;
     };
 
-    Window_IcsCompsiSlot.prototype.standardBackOpacity = function() {
+    Window_IcsCompsiSlot.prototype.standardBackOpacity = function () {
         return FTKR.ICS.slot.opacity;
     };
 
-    Window_IcsCompsiSlot.prototype._refreshFrame = function() {
+    Window_IcsCompsiSlot.prototype._refreshFrame = function () {
         if (FTKR.ICS.slot.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsCompsiSlot.prototype.maxItems = function() {
+
+    Window_IcsCompsiSlot.prototype.maxItems = function () {
         return this._data ? this._data.length : 0;
     };
 
-    Window_IcsCompsiSlot.prototype.refresh = function() {
+    Window_IcsCompsiSlot.prototype.refresh = function () {
         this.makeItemList();
         this.createContents();
         this.drawAllItems();
     };
 
-    Window_IcsCompsiSlot.prototype.item = function(index) {
+    Window_IcsCompsiSlot.prototype.item = function (index) {
         return this._data ? this._data[index] : null;
     };
 
-    Window_IcsCompsiSlot.prototype.makeItemList = function() {
+    Window_IcsCompsiSlot.prototype.makeItemList = function () {
         this._data = [];
         var ics = FTKR.ICS.slot;
         for (var i = 0; i < 5; i++) {
@@ -2727,47 +3576,47 @@ function Game_IcsRecipeBook() {
         this._data.push(resetSlot);
     };
 
-    Window_IcsCompsiSlot.prototype.setSlot = function(name, icon, number) {
-        return {name:name, icon:icon, number:number};
+    Window_IcsCompsiSlot.prototype.setSlot = function (name, icon, number) {
+        return { name: name, icon: icon, number: number };
     };
 
-    Window_IcsCompsiSlot.prototype.setSlotItem = function(slot) {
+    Window_IcsCompsiSlot.prototype.setSlotItem = function (slot) {
         return this.setSlot(slot.item().name, slot.item().iconIndex, slot.number());
     };
 
-    Window_IcsCompsiSlot.prototype.drawItem = function(index) {
+    Window_IcsCompsiSlot.prototype.drawItem = function (index) {
         var rect = this.itemRect(index);
         var iw = Window_Base._iconWidth + 4;
         var tw = this.textWidth('0');
         var item = this.item(index);
-        var nw = item.number ? tw*3 : 0;
+        var nw = item.number ? tw * 3 : 0;
         this.changeTextColor(this.textColor(0));
         this.changePaintOpacity(true);
         this.drawIcon(item.icon, rect.x + 2, rect.y + 2);
         this.drawText(item.name, rect.x + iw, rect.y, rect.width - iw - nw);
         if (item.number) {
             this.drawText(FTKR.ICS.basic.delimiters, rect.x + rect.width - nw, rect.y, tw, 'right');
-            this.drawText(item.number, rect.x + rect.width - tw*2, rect.y, tw*2, 'right');
-//            this.drawText(item.number, rect.x + iw, rect.y, rect.width - iw, 'right');
+            this.drawText(item.number, rect.x + rect.width - tw * 2, rect.y, tw * 2, 'right');
+            //            this.drawText(item.number, rect.x + iw, rect.y, rect.width - iw, 'right');
         }
         this.changePaintOpacity(true);
     };
 
-    Window_IcsCompsiSlot.prototype.materials = function() {
-        return this._slots.map( function(slot) {
+    Window_IcsCompsiSlot.prototype.materials = function () {
+        return this._slots.map(function (slot) {
             if (slot.item()) {
                 var item = slot.item();
                 return new Game_Material(item.ics.category(), slot.dataClass(), item.id, slot.number());
-            } 
+            }
         });
-    }; 
+    };
 
-    Window_IcsCompsiSlot.prototype.setCompositioStateWindow = function(window) {
+    Window_IcsCompsiSlot.prototype.setCompositioStateWindow = function (window) {
         this._compositionStateWindow = window;
         this.update();
     };
 
-    Window_IcsCompsiSlot.prototype.update = function() {
+    Window_IcsCompsiSlot.prototype.update = function () {
         Window_Selectable.prototype.update.call(this);
         if (this._compositionStateWindow) this._compositionStateWindow.setItems(this.materials());
     };
@@ -2783,7 +3632,7 @@ function Game_IcsRecipeBook() {
     Window_IcsNumber.prototype = Object.create(Window_ShopNumber.prototype);
     Window_IcsNumber.prototype.constructor = Window_IcsNumber;
 
-    Window_IcsNumber.prototype.initialize = function(x, y, width, height) {
+    Window_IcsNumber.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this._item = null;
         this._typeId = null;
@@ -2793,15 +3642,15 @@ function Game_IcsRecipeBook() {
         this.createButtons();
     };
 
-    Window_IcsNumber.prototype.standardBackOpacity = function() {
+    Window_IcsNumber.prototype.standardBackOpacity = function () {
         return FTKR.ICS.number.opacity;
     };
 
-    Window_IcsNumber.prototype._refreshFrame = function() {
+    Window_IcsNumber.prototype._refreshFrame = function () {
         if (FTKR.ICS.number.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsNumber.prototype.updateButtonsVisiblity = function() {
+
+    Window_IcsNumber.prototype.updateButtonsVisiblity = function () {
         if (FTKR.ICS.number.showButton) {
             this.showButtons();
         } else {
@@ -2809,27 +3658,27 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_Base.prototype.drawResipeMaterials = function(item, typeId, x, y) {
+    Window_Base.prototype.drawResipeMaterials = function (item, typeId, x, y) {
         var materials = item.ics.recipe(typeId).materials();
-        materials.forEach( function(material, i) {
+        materials.forEach(function (material, i) {
             var dy = y + this.lineHeight() * i;
             var width = this.width - this.padding * 2;
             var tw = this.textWidth('0');
             if (material.category()) {
                 var text = FTKR.ICS.basic.category.format(material.category());
-                this.drawText(text, x, dy, width - tw*3);
+                this.drawText(text, x, dy, width - tw * 3);
             } else {
-                this.drawItemName(material.item(), x, dy, width - tw*3);
+                this.drawItemName(material.item(), x, dy, width - tw * 3);
             }
-            this.drawText(':', x + width - tw*3, dy, tw);
-            this.drawText(material.number(), x + width - tw*2, dy, tw*2, 'right');
-        },this);
+            this.drawText(':', x + width - tw * 3, dy, tw);
+            this.drawText(material.number(), x + width - tw * 2, dy, tw * 2, 'right');
+        }, this);
     };
 
-    Window_IcsNumber.prototype.refresh = function() {
+    Window_IcsNumber.prototype.refresh = function () {
         this.contents.clear();
         this.drawItemName(this._item, 0, this.itemY());
-        if(this._showResipe && FTKR.ICS.number.dispMaterials) {
+        if (this._showResipe && FTKR.ICS.number.dispMaterials) {
             var y = this.buttonY() + this.lineHeight();
             this.drawResipeMaterials(this._item, this._typeId, 0, y);
         }
@@ -2842,15 +3691,15 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsNumber.prototype.itemY = function() {
+    Window_IcsNumber.prototype.itemY = function () {
         return 0;
     };
 
-    Window_IcsNumber.prototype.buttonY = function() {
+    Window_IcsNumber.prototype.buttonY = function () {
         return Math.round(this.itemY() + this.lineHeight() * 1.5);
     };
 
-    Window_IcsNumber.prototype.setCompositioStateWindow = function(window) {
+    Window_IcsNumber.prototype.setCompositioStateWindow = function (window) {
         this._compositionStateWindow = window;
     };
 
@@ -2865,26 +3714,26 @@ function Game_IcsRecipeBook() {
     Window_IcsCompsiStateTitle.prototype = Object.create(Window_Base.prototype);
     Window_IcsCompsiStateTitle.prototype.constructor = Window_IcsCompsiStateTitle;
 
-    Window_IcsCompsiStateTitle.prototype.initialize = function(x, y, width, height) {
+    Window_IcsCompsiStateTitle.prototype.initialize = function (x, y, width, height) {
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.refresh();
     };
 
-    Window_IcsCompsiStateTitle.prototype.refresh = function() {
+    Window_IcsCompsiStateTitle.prototype.refresh = function () {
         this.contents.clear();
         var text = FTKR.ICS.windowText.statusTitle || FTKR.ICS.statusTitle.format.icsType();
         var alignIndex = FTKR.ICS.statusTitle.align;
         this.drawTextExAlignIndex(text, 0, 0, alignIndex);
     };
 
-    Window_IcsCompsiStateTitle.prototype.standardBackOpacity = function() {
+    Window_IcsCompsiStateTitle.prototype.standardBackOpacity = function () {
         return FTKR.ICS.statusTitle.opacity;
     };
 
-    Window_IcsCompsiStateTitle.prototype._refreshFrame = function() {
+    Window_IcsCompsiStateTitle.prototype._refreshFrame = function () {
         if (FTKR.ICS.statusTitle.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
+
     //=============================================================================
     // Window_IcsCompsiState
     //=============================================================================
@@ -2896,21 +3745,21 @@ function Game_IcsRecipeBook() {
     Window_IcsCompsiState.prototype = Object.create(Window_Base.prototype);
     Window_IcsCompsiState.prototype.constructor = Window_IcsCompsiState;
 
-    Window_IcsCompsiState.prototype.initialize = function(x, y, width, height) {
+    Window_IcsCompsiState.prototype.initialize = function (x, y, width, height) {
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this._showResipe = false;
         this.clearWindow();
     };
 
-    Window_IcsCompsiState.prototype.standardBackOpacity = function() {
+    Window_IcsCompsiState.prototype.standardBackOpacity = function () {
         return FTKR.ICS.status.opacity;
     };
 
-    Window_IcsCompsiState.prototype._refreshFrame = function() {
+    Window_IcsCompsiState.prototype._refreshFrame = function () {
         if (FTKR.ICS.status.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsCompsiState.prototype.clearWindow = function() {
+
+    Window_IcsCompsiState.prototype.clearWindow = function () {
         this._slotMaterials = [];
         this._comps = [];
         this._comp = {};
@@ -2922,13 +3771,13 @@ function Game_IcsRecipeBook() {
         this.refresh();
     };
 
-    Window_IcsCompsiState.prototype.setItems = function(items) {
+    Window_IcsCompsiState.prototype.setItems = function (items) {
         if (this._slotMaterials === items) return;
         this._slotMaterials = items;
         this.refresh();
     };
 
-    Window_IcsCompsiState.prototype.setRecipe = function(item, typeId) {
+    Window_IcsCompsiState.prototype.setRecipe = function (item, typeId) {
         if (this._resipeItem === item && this._resipeTypeId === typeId) return;
         this._resipeItem = item;
         this._resipeTypeId = typeId;
@@ -2936,27 +3785,27 @@ function Game_IcsRecipeBook() {
         this.refresh();
     };
 
-    Window_IcsCompsiState.prototype.resetRecipe = function() {
+    Window_IcsCompsiState.prototype.resetRecipe = function () {
         this._resipeItem = null;
         this._resipeTypeId = null;
         this._compNum = 1;
         this.refresh();
     };
 
-    Window_IcsCompsiState.prototype.drawDifficulty = function(value, x, y) {
+    Window_IcsCompsiState.prototype.drawDifficulty = function (value, x, y) {
         if (!FTKR.ICS.status.dispDiff) return;
         var text = FTKR.ICS.status.diffFormat.icsType().format(value);
         this.drawTextEx(text, x, y);
     };
 
-    Window_Base.prototype.drawItemNameNumber = function(item, number, x, y, width) {
+    Window_Base.prototype.drawItemNameNumber = function (item, number, x, y, width) {
         var tw = this.textWidth('0');
-        this.drawItemName(item, x, y, width - tw*3);
-        this.drawText(FTKR.ICS.basic.delimiters, x + width - tw*3, y, tw);
-        this.drawText(number, x + width - tw*2, y, tw*2, 'right');
+        this.drawItemName(item, x, y, width - tw * 3);
+        this.drawText(FTKR.ICS.basic.delimiters, x + width - tw * 3, y, tw);
+        this.drawText(number, x + width - tw * 2, y, tw * 2, 'right');
     };
 
-    Window_IcsCompsiState.prototype.refresh = function() {
+    Window_IcsCompsiState.prototype.refresh = function () {
         this.contents.clear();
         var y = this.lineHeight();
         var w = this.width - this.padding * 2;
@@ -2970,26 +3819,26 @@ function Game_IcsRecipeBook() {
                 } else {
                     var recipe = comp.item.ics.recipe(comp.typeId);
                     var difficulty = recipe.difficulty();
-                    this.drawText(FTKR.ICS.result.success.icsType(), 0, 0, w/2);
+                    this.drawText(FTKR.ICS.result.success.icsType(), 0, 0, w / 2);
                     var success = difficulty.success;
                     if (!recipe.great()) success += difficulty.great;
-                    this.drawDifficulty(success, w/2, 0);
-//                    this.drawText(comp.item.name, 0, y, w);
- //                   this.drawText(number, 0, y, w, 'right');
+                    this.drawDifficulty(success, w / 2, 0);
+                    //                    this.drawText(comp.item.name, 0, y, w);
+                    //                   this.drawText(number, 0, y, w, 'right');
                     this.drawItemNameNumber(comp.item, number, 0, y, w);
                     var dy = 0;
                     if (recipe.great()) {
-                        this.drawText(FTKR.ICS.result.great.icsType(), 0, y*(2 + dy), w/2);
-                        this.drawDifficulty(difficulty.great, w/2, y*(2 + dy));
+                        this.drawText(FTKR.ICS.result.great.icsType(), 0, y * (2 + dy), w / 2);
+                        this.drawDifficulty(difficulty.great, w / 2, y * (2 + dy));
                         dy += 1;
-                        this.drawText(recipe.great(), 0, y*(2 + dy), w/2);
+                        this.drawText(recipe.great(), 0, y * (2 + dy), w / 2);
                         dy += 1;
                     }
                     if (recipe.failure()) {
-                        this.drawText(FTKR.ICS.result.failure.icsType(), 0, y*(2 + dy), w/2);
-                        this.drawDifficulty(difficulty.failure, w/2, y*(2 + dy));
+                        this.drawText(FTKR.ICS.result.failure.icsType(), 0, y * (2 + dy), w / 2);
+                        this.drawDifficulty(difficulty.failure, w / 2, y * (2 + dy));
                         dy += 1;
-                        this.drawText(recipe.failure(), 0, y*(2 + dy), w/2);
+                        this.drawText(recipe.failure(), 0, y * (2 + dy), w / 2);
                     }
                 }
             } else {
@@ -2998,7 +3847,7 @@ function Game_IcsRecipeBook() {
             }
             var totalRank = 0;
             var rankNum = 0;
-            this._slotMaterials.forEach( function(slotMaterial) {
+            this._slotMaterials.forEach(function (slotMaterial) {
                 var rank = slotMaterial.item().ics.rank();
                 if (rank) {
                     rankNum += 1;
@@ -3023,14 +3872,14 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Window_IcsCompsiState.prototype.setItemNumber = function(number) {
+    Window_IcsCompsiState.prototype.setItemNumber = function (number) {
         this._compNum = number;
         this.refresh();
     };
 
-    Window_IcsCompsiState.prototype.drawResipeMaterials = function(item, typeId, x, y) {
+    Window_IcsCompsiState.prototype.drawResipeMaterials = function (item, typeId, x, y) {
         var materials = item.ics.recipe(typeId).materials();
-        materials.forEach( function(material, i) {
+        materials.forEach(function (material, i) {
             var dy = y + this.lineHeight() * i;
             var width = this.width - this.padding * 2;
             var tw = this.textWidth('0');
@@ -3038,57 +3887,57 @@ function Game_IcsRecipeBook() {
             if (material.category()) {
                 var text = FTKR.ICS.basic.category.format(material.category());
                 var numItem = $gameParty.numCategoryItem(material.category());
-                this.drawText(text, x, dy, width - tw*3);
+                this.drawText(text, x, dy, width - tw * 3);
             } else {
-                this.drawItemName(material.item(), x, dy, width - tw*(1+wc));
+                this.drawItemName(material.item(), x, dy, width - tw * (1 + wc));
                 var numItem = $gameParty.numItems(material.item());
             }
-            this.drawText(':', x + width - tw*(1+wc), dy, tw);
-            var numMat = (FTKR.ICS.status.recipeMaterial.text+'').format(material.number()*this._compNum, numItem);
-            this.drawText(numMat, x + width - tw*wc, dy, tw*wc, 'right');
-        },this);
+            this.drawText(':', x + width - tw * (1 + wc), dy, tw);
+            var numMat = (FTKR.ICS.status.recipeMaterial.text + '').format(material.number() * this._compNum, numItem);
+            this.drawText(numMat, x + width - tw * wc, dy, tw * wc, 'right');
+        }, this);
     };
 
     //投入した材料から合成できるアイテムを取得する
-    Window_IcsCompsiState.prototype.compositionsItem = function() {
+    Window_IcsCompsiState.prototype.compositionsItem = function () {
         var comps = this.checkMaterials($dataItems).concat(
-              this.checkMaterials($dataWeapons), this.checkMaterials($dataArmors));
+            this.checkMaterials($dataWeapons), this.checkMaterials($dataArmors));
         return comps.length ? this.maxRequireMaterials() : null;
     };
 
     //指定したアイテムのリストの中に、合成材料とレシピが合っているアイテムのリストを返す
     //また、合っているアイテムのレシピ情報を this._comps に加える
-    Window_IcsCompsiState.prototype.checkMaterials = function(datas) {
-        return datas.filter( function(item) {
+    Window_IcsCompsiState.prototype.checkMaterials = function (datas) {
+        return datas.filter(function (item) {
             if (item && item.ics.hasRecipe()) {
                 var result = this.matchRecipeMaterials(item);
                 if (result) this._comps.push(result);
                 return result;
             }
             return false;
-        },this);
+        }, this);
     };
 
     //指定したアイテムのレシピと合成材料が合っているか判定し
     //合っていれば、アイテムと合致したレシピとそのレシピのIDを返す
     //合っていなければ null を返す
-    Window_IcsCompsiState.prototype.matchRecipeMaterials = function(item) {
+    Window_IcsCompsiState.prototype.matchRecipeMaterials = function (item) {
         var typeId = 0;
-        var recipes = item.ics.recipes().filter( function(recipe, t) {
+        var recipes = item.ics.recipes().filter(function (recipe, t) {
             var result = this.hasMaterials(recipe.materials());
             if (result) {
                 typeId = t;
                 return result;
             }
-        },this);
-        return recipes.length ? {item:item, recipe:recipes[0], typeId:typeId,} : null;
+        }, this);
+        return recipes.length ? { item: item, recipe: recipes[0], typeId: typeId, } : null;
     };
 
     //指定したアイテムのレシピの中で、合成素材と合っているものがあるか判定
-    Window_IcsCompsiState.prototype.hasMaterials = function(materials) {
+    Window_IcsCompsiState.prototype.hasMaterials = function (materials) {
         var slotMaterials = this._slotMaterials.clone();
         if (FTKR.ICS.basic.match && materials.length !== slotMaterials.length) return false;
-        var result = materials.every(function(material) {
+        var result = materials.every(function (material) {
             var index = this.hasMaterial(material, slotMaterials);
             if (index > -1) {
                 slotMaterials.splice(index, 1);
@@ -3096,63 +3945,63 @@ function Game_IcsRecipeBook() {
             } else {
                 return false;
             }
-        },this);
+        }, this);
         return result;
     };
 
     //指定したレシピ素材と合成素材が合っているか判定
-    Window_IcsCompsiState.prototype.hasMaterial = function(material, slotMaterials) {
-        return slotMaterials.findIndex( function(slotMaterial) {
+    Window_IcsCompsiState.prototype.hasMaterial = function (material, slotMaterials) {
+        return slotMaterials.findIndex(function (slotMaterial) {
             return material.lowerMaterialNumber(slotMaterial);
-        },this);
+        }, this);
     };
 
     //生成できるアイテムの中から必要材料数が一番多いアイテムを選ぶ
-    Window_IcsCompsiState.prototype.maxRequireMaterials = function() {
+    Window_IcsCompsiState.prototype.maxRequireMaterials = function () {
         if (!this._comps.length) return null;
         var item = null;
         var materialNumber = 0;
-        this._comps.forEach(function(comp) {
+        this._comps.forEach(function (comp) {
             var value = 0;
-            comp.recipe.materials().forEach( function(material) {
+            comp.recipe.materials().forEach(function (material) {
                 value += material.number();
             });
             if (materialNumber <= value) {
                 materialNumber = value;
                 item = comp;
             }
-        },this);
+        }, this);
         return item;
     };
 
     //投入した材料から合成できるアイテムの最大生成数を取得する
-    Window_IcsCompsiState.prototype.compositionNumber = function(composit) {
+    Window_IcsCompsiState.prototype.compositionNumber = function (composit) {
         var rates = [];
         var rate = 0;
         var recipe = composit.item.ics.recipe(composit.typeId);
-        recipe.materials().forEach( function(material, i) {
+        recipe.materials().forEach(function (material, i) {
             rates[i] = 0;
-            this._slotMaterials.forEach( function(slotMaterial) {
+            this._slotMaterials.forEach(function (slotMaterial) {
                 if (material.matchMaterial(slotMaterial))
                     rates[i] = Math.floor(slotMaterial.number() / material.number());
-            },this);
+            }, this);
             if (rates[i] > 0) {
-                rate = i > 0 ? Math.min(rates[i], rates[i-1]) : rates[i];
+                rate = i > 0 ? Math.min(rates[i], rates[i - 1]) : rates[i];
             }
-        },this);
+        }, this);
         return recipe.number() * rate;
     };
 
     //投入した材料と合成できるアイテムの材料数が一致するか
-    Window_IcsCompsiState.prototype.matchComposition = function(item) {
-        return item.ics.recipes().some( function(recipe) {
-            return recipe.materials().every( function(material) {
-                return this._slotMaterials.some( function(slotMaterial) {
+    Window_IcsCompsiState.prototype.matchComposition = function (item) {
+        return item.ics.recipes().some(function (recipe) {
+            return recipe.materials().every(function (material) {
+                return this._slotMaterials.some(function (slotMaterial) {
                     if (material.matchMaterial(slotMaterial))
                         return slotMaterial.number() === material.number();
-                },this);
-            },this);
-        },this);
+                }, this);
+            }, this);
+        }, this);
     };
 
 
@@ -3167,7 +4016,7 @@ function Game_IcsRecipeBook() {
     Window_IcsConfTitle.prototype = Object.create(Window_Base.prototype);
     Window_IcsConfTitle.prototype.constructor = Window_IcsConfTitle;
 
-    Window_IcsConfTitle.prototype.initialize = function(x, y, width, height) {
+    Window_IcsConfTitle.prototype.initialize = function (x, y, width, height) {
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.refresh();
     };
@@ -3177,17 +4026,17 @@ function Game_IcsRecipeBook() {
         var text = FTKR.ICS.confTitle.format.icsType();
         var alignIndex = FTKR.ICS.confTitle.align;
         this.drawTextExAlignIndex(text, 0, 0, alignIndex);
-//        this.drawTextEx(FTKR.ICS.confTitle.format.icsType(), 0, 0);
+        //        this.drawTextEx(FTKR.ICS.confTitle.format.icsType(), 0, 0);
     };
 
-    Window_IcsConfTitle.prototype.standardBackOpacity = function() {
+    Window_IcsConfTitle.prototype.standardBackOpacity = function () {
         return FTKR.ICS.conf.opacity;
     };
 
-    Window_IcsConfTitle.prototype._refreshFrame = function() {
+    Window_IcsConfTitle.prototype._refreshFrame = function () {
         if (FTKR.ICS.conf.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
+
     //=============================================================================
     // Window_IcsConf
     //=============================================================================
@@ -3199,7 +4048,7 @@ function Game_IcsRecipeBook() {
     Window_IcsConf.prototype = Object.create(Window_Selectable.prototype);
     Window_IcsConf.prototype.constructor = Window_IcsConf;
 
-    Window_IcsConf.prototype.initialize = function(x, y, width, height) {
+    Window_IcsConf.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this._data = [];
         this._enabled = false;
@@ -3207,48 +4056,48 @@ function Game_IcsRecipeBook() {
         this.refresh();
     };
 
-    Window_IcsConf.prototype.maxCols = function() {
+    Window_IcsConf.prototype.maxCols = function () {
         return 2;
     };
 
-    Window_IcsConf.prototype.standardBackOpacity = function() {
+    Window_IcsConf.prototype.standardBackOpacity = function () {
         return FTKR.ICS.conf.opacity;
     };
 
-    Window_IcsConf.prototype._refreshFrame = function() {
+    Window_IcsConf.prototype._refreshFrame = function () {
         if (FTKR.ICS.conf.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsConf.prototype.maxItems = function() {
+
+    Window_IcsConf.prototype.maxItems = function () {
         return this._data ? this._data.length : 1;
     };
 
-    Window_IcsConf.prototype.item = function() {
+    Window_IcsConf.prototype.item = function () {
         return this._data && this.index() >= 0 ? this._data[this.index()] : null;
     };
 
-    Window_IcsConf.prototype.makeItemList = function() {
+    Window_IcsConf.prototype.makeItemList = function () {
         this._data = [
-            {dicision:true, disp:FTKR.ICS.conf.okFormat.icsType()},
-            {dicision:false, disp:FTKR.ICS.conf.cancelFormat.icsType()}
+            { dicision: true, disp: FTKR.ICS.conf.okFormat.icsType() },
+            { dicision: false, disp: FTKR.ICS.conf.cancelFormat.icsType() }
         ];
     };
 
-    Window_IcsConf.prototype.refresh = function() {
+    Window_IcsConf.prototype.refresh = function () {
         this.makeItemList();
         this.createContents();
         this.drawAllItems();
     };
 
-    Window_IcsConf.prototype.isEnabled = function(index) {
+    Window_IcsConf.prototype.isEnabled = function (index) {
         return this._enabled || index > 0;
     };
 
-    Window_IcsConf.prototype.isCurrentItemEnabled = function() {
+    Window_IcsConf.prototype.isCurrentItemEnabled = function () {
         return this.isEnabled(this.index());
     };
 
-    Window_IcsConf.prototype.drawItem = function(index) {
+    Window_IcsConf.prototype.drawItem = function (index) {
         var rect = this.itemRect(index);
         this.changePaintOpacity(this.isEnabled(index));
         var align = convertAlign(FTKR.ICS.conf.align);
@@ -3256,7 +4105,7 @@ function Game_IcsRecipeBook() {
         this.changePaintOpacity(1);
     };
 
-    Window_IcsConf.prototype.setEnabled = function(enabled) {
+    Window_IcsConf.prototype.setEnabled = function (enabled) {
         if (this._enabled === enabled) return;
         this._enabled = enabled;
         this.refresh();
@@ -3273,7 +4122,7 @@ function Game_IcsRecipeBook() {
     Window_IcsEndConfTitle.prototype = Object.create(Window_Base.prototype);
     Window_IcsEndConfTitle.prototype.constructor = Window_IcsEndConfTitle;
 
-    Window_IcsEndConfTitle.prototype.initialize = function(x, y, width, height) {
+    Window_IcsEndConfTitle.prototype.initialize = function (x, y, width, height) {
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.refresh();
     };
@@ -3283,17 +4132,17 @@ function Game_IcsRecipeBook() {
         var text = FTKR.ICS.endConf.format.icsType();
         var alignIndex = FTKR.ICS.endConf.titleAlign;
         this.drawTextExAlignIndex(text, 0, 0, alignIndex);
-//        this.drawTextEx(FTKR.ICS.endConf.format.icsType(), 0, 0);
+        //        this.drawTextEx(FTKR.ICS.endConf.format.icsType(), 0, 0);
     };
 
-    Window_IcsEndConfTitle.prototype.standardBackOpacity = function() {
+    Window_IcsEndConfTitle.prototype.standardBackOpacity = function () {
         return FTKR.ICS.endConf.opacity;
     };
 
-    Window_IcsEndConfTitle.prototype._refreshFrame = function() {
+    Window_IcsEndConfTitle.prototype._refreshFrame = function () {
         if (FTKR.ICS.endConf.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
+
     //=============================================================================
     // Window_IcsEndConf
     //=============================================================================
@@ -3305,7 +4154,7 @@ function Game_IcsRecipeBook() {
     Window_IcsEndConf.prototype = Object.create(Window_Selectable.prototype);
     Window_IcsEndConf.prototype.constructor = Window_IcsEndConf;
 
-    Window_IcsEndConf.prototype.initialize = function(x, y, width, height) {
+    Window_IcsEndConf.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this._data = [];
         this._enabled = false;
@@ -3313,48 +4162,48 @@ function Game_IcsRecipeBook() {
         this.refresh();
     };
 
-    Window_IcsEndConf.prototype.maxCols = function() {
+    Window_IcsEndConf.prototype.maxCols = function () {
         return 2;
     };
 
-    Window_IcsEndConf.prototype.standardBackOpacity = function() {
+    Window_IcsEndConf.prototype.standardBackOpacity = function () {
         return FTKR.ICS.endConf.opacity;
     };
 
-    Window_IcsEndConf.prototype._refreshFrame = function() {
+    Window_IcsEndConf.prototype._refreshFrame = function () {
         if (FTKR.ICS.endConf.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsEndConf.prototype.maxItems = function() {
+
+    Window_IcsEndConf.prototype.maxItems = function () {
         return this._data ? this._data.length : 1;
     };
 
-    Window_IcsEndConf.prototype.item = function() {
+    Window_IcsEndConf.prototype.item = function () {
         return this._data && this.index() >= 0 ? this._data[this.index()] : null;
     };
 
-    Window_IcsEndConf.prototype.makeItemList = function() {
+    Window_IcsEndConf.prototype.makeItemList = function () {
         this._data = [
-            {dicision:true, disp:FTKR.ICS.endConf.okFormat.icsType()},
-            {dicision:false, disp:FTKR.ICS.endConf.cancelFormat.icsType()}
+            { dicision: true, disp: FTKR.ICS.endConf.okFormat.icsType() },
+            { dicision: false, disp: FTKR.ICS.endConf.cancelFormat.icsType() }
         ];
     };
 
-    Window_IcsEndConf.prototype.refresh = function() {
+    Window_IcsEndConf.prototype.refresh = function () {
         this.makeItemList();
         this.createContents();
         this.drawAllItems();
     };
 
-    Window_IcsEndConf.prototype.isEnabled = function() {
+    Window_IcsEndConf.prototype.isEnabled = function () {
         return true;
     };
 
-    Window_IcsEndConf.prototype.isCurrentItemEnabled = function() {
+    Window_IcsEndConf.prototype.isCurrentItemEnabled = function () {
         return this.isEnabled();
     };
 
-    Window_IcsEndConf.prototype.drawItem = function(index) {
+    Window_IcsEndConf.prototype.drawItem = function (index) {
         var rect = this.itemRect(index);
         this.changePaintOpacity(this.isEnabled());
         var align = convertAlign(FTKR.ICS.endConf.cmdAlign);
@@ -3373,23 +4222,23 @@ function Game_IcsRecipeBook() {
     Window_IcsResult.prototype = Object.create(Window_Base.prototype);
     Window_IcsResult.prototype.constructor = Window_IcsResult;
 
-    Window_IcsResult.prototype.initialize = function(x, y, width, height) {
+    Window_IcsResult.prototype.initialize = function (x, y, width, height) {
         Window_Base.prototype.initialize.call(this, x, y, width, height);
         this.clearWindow();
     };
 
-    Window_IcsResult.prototype.setConfWindow = function(confWindow) {
+    Window_IcsResult.prototype.setConfWindow = function (confWindow) {
         this._confWindow = confWindow;
     }
 
-    Window_IcsResult.prototype.standardBackOpacity = function() {
+    Window_IcsResult.prototype.standardBackOpacity = function () {
         return FTKR.ICS.result.opacity;
     };
 
-    Window_IcsResult.prototype._refreshFrame = function() {
+    Window_IcsResult.prototype._refreshFrame = function () {
         if (FTKR.ICS.result.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
+
     Window_IcsResult.prototype.clearWindow = function () {
         this._item = null;
         this._resultItems = null;
@@ -3405,25 +4254,25 @@ function Game_IcsRecipeBook() {
         var text = FTKR.ICS.result.format.icsType();
         var alignIndex = FTKR.ICS.result.align;
         this.drawTextExAlignIndex(text, 0, 0, alignIndex);
-//        this.drawTextEx(FTKR.ICS.result.format.icsType(), 0, 0);
+        //        this.drawTextEx(FTKR.ICS.result.format.icsType(), 0, 0);
         this.drawTextEx(this.resultText(), 0, y);
         if (this._item && this._number) {
-//            this.drawText(this._item.name, 0, y*2, w);
-//            this.drawText(this._number, 0, y*2, w, 'right');
-            this.drawItemNameNumber(this._item, this._number, 0, y*2, w);
+            //            this.drawText(this._item.name, 0, y*2, w);
+            //            this.drawText(this._number, 0, y*2, w, 'right');
+            this.drawItemNameNumber(this._item, this._number, 0, y * 2, w);
         }
         if (this._resultItems) {
-            this._resultItems.forEach(function(item, i){
-//                this.drawText(item.item.name, 0, y*(2 + i), w);
-//                this.drawText(item.number, 0, y*(2 + i), w, 'right');
-                this.drawItemNameNumber(item.item, item.number, 0, y*(2 + i), w);
-            },this);
+            this._resultItems.forEach(function (item, i) {
+                //                this.drawText(item.item.name, 0, y*(2 + i), w);
+                //                this.drawText(item.number, 0, y*(2 + i), w, 'right');
+                this.drawItemNameNumber(item.item, item.number, 0, y * (2 + i), w);
+            }, this);
         }
     };
 
     Window_IcsResult.prototype.resultText = function () {
         var result = FTKR.ICS.result;
-        switch(this._result) {
+        switch (this._result) {
             case 'great':
                 return result.great.icsType();
             case 'success':
@@ -3478,53 +4327,53 @@ function Game_IcsRecipeBook() {
     Window_IcsResultConf.prototype = Object.create(Window_Selectable.prototype);
     Window_IcsResultConf.prototype.constructor = Window_IcsResultConf;
 
-    Window_IcsResultConf.prototype.initialize = function(x, y, width, height) {
+    Window_IcsResultConf.prototype.initialize = function (x, y, width, height) {
         Window_Selectable.prototype.initialize.call(this, x, y, width, height);
         this._data = [];
         this.refresh();
     };
 
-    Window_IcsResultConf.prototype.maxCols = function() {
+    Window_IcsResultConf.prototype.maxCols = function () {
         return 1;
     };
 
-    Window_IcsResultConf.prototype.standardBackOpacity = function() {
+    Window_IcsResultConf.prototype.standardBackOpacity = function () {
         return FTKR.ICS.result.opacity;
     };
 
-    Window_IcsResultConf.prototype._refreshFrame = function() {
+    Window_IcsResultConf.prototype._refreshFrame = function () {
         if (FTKR.ICS.result.frame === '表示する(show)') Window.prototype._refreshFrame.call(this);
     };
-  
-    Window_IcsResultConf.prototype.maxItems = function() {
+
+    Window_IcsResultConf.prototype.maxItems = function () {
         return this._data ? this._data.length : 1;
     };
 
-    Window_IcsResultConf.prototype.item = function() {
+    Window_IcsResultConf.prototype.item = function () {
         return this._data && this.index() >= 0 ? this._data[this.index()] : null;
     };
 
-    Window_IcsResultConf.prototype.makeItemList = function() {
+    Window_IcsResultConf.prototype.makeItemList = function () {
         this._data = [
-            {dicision:true, disp:FTKR.ICS.result.okFormat.icsType()},
+            { dicision: true, disp: FTKR.ICS.result.okFormat.icsType() },
         ];
     };
 
-    Window_IcsResultConf.prototype.refresh = function() {
+    Window_IcsResultConf.prototype.refresh = function () {
         this.makeItemList();
         this.createContents();
         this.drawAllItems();
     };
 
-    Window_IcsResultConf.prototype.isEnabled = function(index) {
+    Window_IcsResultConf.prototype.isEnabled = function (index) {
         return true;
     };
 
-    Window_IcsResultConf.prototype.isCurrentItemEnabled = function() {
+    Window_IcsResultConf.prototype.isCurrentItemEnabled = function () {
         return this.isEnabled(this.index());
     };
 
-    Window_IcsResultConf.prototype.drawItem = function(index) {
+    Window_IcsResultConf.prototype.drawItem = function (index) {
         var rect = this.itemRect(index);
         this.changePaintOpacity(this.isEnabled(index));
         this.drawText(this._data[index].disp, rect.x, rect.y, rect.width, 'center');
@@ -3537,20 +4386,20 @@ function Game_IcsRecipeBook() {
 
     FTKR.ICS.Scene_Menu_createCommandWindow =
         Scene_Menu.prototype.createCommandWindow;
-    Scene_Menu.prototype.createCommandWindow = function() {
+    Scene_Menu.prototype.createCommandWindow = function () {
         FTKR.ICS.Scene_Menu_createCommandWindow.call(this);
-        if (this.isIcsShowCommand()){
+        if (this.isIcsShowCommand()) {
             this._commandWindow.setHandler('composition', this.commandIcs.bind(this));
         };
     };
 
-    Scene_Menu.prototype.isIcsShowCommand = function() {
-        return FTKR.ICS.basic.menuCmd.some( function(cmd){
+    Scene_Menu.prototype.isIcsShowCommand = function () {
+        return FTKR.ICS.basic.menuCmd.some(function (cmd) {
             return cmd.enabled;
         });
     };
 
-    Scene_Menu.prototype.commandIcs = function() {
+    Scene_Menu.prototype.commandIcs = function () {
         FTKR.ICS.openType = 1 + Number(this._commandWindow.currentExt());
         SceneManager.push(Scene_ICS);
     };
@@ -3566,11 +4415,11 @@ function Game_IcsRecipeBook() {
     Scene_ICS.prototype = Object.create(Scene_ItemBase.prototype);
     Scene_ICS.prototype.constructor = Scene_ICS;
 
-    Scene_ICS.prototype.initialize = function() {
+    Scene_ICS.prototype.initialize = function () {
         Scene_ItemBase.prototype.initialize.call(this);
     };
 
-    Scene_ICS.prototype.createBackground = function() {
+    Scene_ICS.prototype.createBackground = function () {
         this._backgroundSprite = new Sprite();
         var bgiName = this.loadBackGroundImage();
         this._backgroundSprite.bitmap = bgiName ?
@@ -3578,11 +4427,11 @@ function Game_IcsRecipeBook() {
         this.addChild(this._backgroundSprite);
     };
 
-    Scene_ICS.prototype.loadBackGroundImage = function() {
+    Scene_ICS.prototype.loadBackGroundImage = function () {
         return FTKR.ICS.windowText.background || FTKR.ICS.background.name.icsType();
     };
 
-    Scene_ICS.prototype.create = function() {
+    Scene_ICS.prototype.create = function () {
         Scene_ItemBase.prototype.create.call(this);
         this.createHelpWindow();
         this._helpWindow.hide();
@@ -3606,47 +4455,47 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Scene_ICS.prototype.createCompositionTitleWindow = function() {
+    Scene_ICS.prototype.createCompositionTitleWindow = function () {
         var ww = Graphics.boxWidth;
         var wh = this._helpWindow.fittingHeight(1);
         this._compositionTitleWindow = new Window_IcsCompsiTitle(0, 0, ww, wh);
         this.addWindow(this._compositionTitleWindow);
     };
 
-    Scene_ICS.prototype.createCategoryWindow = function() {
+    Scene_ICS.prototype.createCategoryWindow = function () {
         var wy = this._compositionTitleWindow.height;
         this._categoryWindow = new Window_IcsCommand(0, wy);
         var window = this._categoryWindow;
         window.setHelpWindow(this._helpWindow);
-        window.setHandler('ok',       this.onCategoryOk.bind(this));
-        window.setHandler('cancel',   this.onCategoryCancel.bind(this));
+        window.setHandler('ok', this.onCategoryOk.bind(this));
+        window.setHandler('cancel', this.onCategoryCancel.bind(this));
         this.addWindow(window);
     };
 
-    Scene_ICS.prototype.createItemWindow = function() {
+    Scene_ICS.prototype.createItemWindow = function () {
         var wx = this._categoryWindow.width;
         var wy = this._categoryWindow.y;
         var ww = Graphics.boxWidth - wx;
         var wh = this._categoryWindow.height;
         this._itemWindow = new Window_IcsItemList(wx, wy, ww, wh);
         this._itemWindow.setHelpWindow(this._helpWindow);
-        this._itemWindow.setHandler('ok',     this.onItemOk.bind(this));
+        this._itemWindow.setHandler('ok', this.onItemOk.bind(this));
         this._itemWindow.setHandler('cancel', this.onItemCancel.bind(this));
         this.addWindow(this._itemWindow);
         this._categoryWindow.setItemWindow(this._itemWindow);
     };
 
-    Scene_ICS.prototype.onItemOk = function() {
+    Scene_ICS.prototype.onItemOk = function () {
         $gameParty.setLastItem(this.item());
         this.determineItem();
     };
 
-    Scene_ICS.prototype.onItemCancel = function() {
+    Scene_ICS.prototype.onItemCancel = function () {
         this._itemWindow.deselect();
         this._categoryWindow.activate();
     };
 
-    Scene_ICS.prototype.createCompositionSlotTitleWindow = function() {
+    Scene_ICS.prototype.createCompositionSlotTitleWindow = function () {
         var wy = this._categoryWindow.y + this._categoryWindow.height;
         var ww = Graphics.boxWidth / 2;
         var wh = this._helpWindow.fittingHeight(1);
@@ -3654,19 +4503,19 @@ function Game_IcsRecipeBook() {
         this.addWindow(this._compositionSlotTitleWindow);
     };
 
-    Scene_ICS.prototype.createCompositionSlotWindow = function() {
+    Scene_ICS.prototype.createCompositionSlotWindow = function () {
         var wy = this._compositionSlotTitleWindow.y + this._compositionSlotTitleWindow.height;
         var ww = Graphics.boxWidth / 2;
         var wh = Graphics.boxHeight - wy;
         this._compositionSlotWindow = new Window_IcsCompsiSlot(0, wy, ww, wh);
         var window = this._compositionSlotWindow;
         window.setHelpWindow(this._helpWindow);
-        window.setHandler('ok',       this.onIcsSlotOk.bind(this));
-        window.setHandler('cancel',   this.onIcsSlotCancel.bind(this));
+        window.setHandler('ok', this.onIcsSlotOk.bind(this));
+        window.setHandler('cancel', this.onIcsSlotCancel.bind(this));
         this.addWindow(window);
     };
 
-    Scene_ICS.prototype.createCompositionStateTitleWindow = function() {
+    Scene_ICS.prototype.createCompositionStateTitleWindow = function () {
         var wx = this._compositionSlotWindow.width;
         var wy = this._categoryWindow.y + this._categoryWindow.height;
         var ww = Graphics.boxWidth / 2;
@@ -3675,7 +4524,7 @@ function Game_IcsRecipeBook() {
         this.addWindow(this._compositionStateTitleWindow);
     };
 
-    Scene_ICS.prototype.createCompositionStateWindow = function() {
+    Scene_ICS.prototype.createCompositionStateWindow = function () {
         var wx = this._compositionSlotWindow.width;
         var wy = this._compositionStateTitleWindow.y + this._compositionStateTitleWindow.height;
         var ww = Graphics.boxWidth / 2;
@@ -3685,20 +4534,20 @@ function Game_IcsRecipeBook() {
         this.addWindow(this._compositionStateWindow);
     };
 
-    Scene_ICS.prototype.createNumberWindow = function() {
+    Scene_ICS.prototype.createNumberWindow = function () {
         var wx = this._categoryWindow.width;
         var wy = this._categoryWindow.y;
         var ww = Graphics.boxWidth - wx;
         var wh = this._categoryWindow.height;
         this._numberWindow = new Window_IcsNumber(wx, wy, ww, wh);
         this._numberWindow.hide();
-        this._numberWindow.setHandler('ok',     this.onNumberOk.bind(this));
+        this._numberWindow.setHandler('ok', this.onNumberOk.bind(this));
         this._numberWindow.setHandler('cancel', this.onNumberCancel.bind(this));
         this._numberWindow.setCompositioStateWindow(this._compositionStateWindow);
         this.addWindow(this._numberWindow);
     };
 
-    Scene_ICS.prototype.createConfTitleWindow = function() {
+    Scene_ICS.prototype.createConfTitleWindow = function () {
         var wx = Graphics.boxWidth / 4;
         var wh = this._helpWindow.fittingHeight(1);
         var ww = Graphics.boxWidth / 2;
@@ -3708,7 +4557,7 @@ function Game_IcsRecipeBook() {
         this._stsConfTitleWindow.hide();
     };
 
-    Scene_ICS.prototype.createConfWindow = function() {
+    Scene_ICS.prototype.createConfWindow = function () {
         var ctw = this._stsConfTitleWindow;
         var wx = ctw.x;
         var wy = ctw.y + ctw.height;
@@ -3722,7 +4571,7 @@ function Game_IcsRecipeBook() {
         window.hide();
     };
 
-    Scene_ICS.prototype.createResultWindow = function() {
+    Scene_ICS.prototype.createResultWindow = function () {
         var wx = Graphics.boxWidth / 4;
         var wh = this._helpWindow.fittingHeight(3);
         var ww = Graphics.boxWidth / 2;
@@ -3732,7 +4581,7 @@ function Game_IcsRecipeBook() {
         this._resultWindow.hide();
     };
 
-    Scene_ICS.prototype.createResultConfWindow = function() {
+    Scene_ICS.prototype.createResultConfWindow = function () {
         var ctw = this._resultWindow;
         var wx = ctw.x;
         var wy = ctw.y + ctw.height;
@@ -3747,7 +4596,7 @@ function Game_IcsRecipeBook() {
         window.hide();
     };
 
-    Scene_ICS.prototype.createEndConfTitleWindow = function() {
+    Scene_ICS.prototype.createEndConfTitleWindow = function () {
         var wx = Graphics.boxWidth / 4;
         var wh = this._helpWindow.fittingHeight(1);
         var ww = Graphics.boxWidth / 2;
@@ -3757,7 +4606,7 @@ function Game_IcsRecipeBook() {
         this._stsEndConfTitleWindow.hide();
     };
 
-    Scene_ICS.prototype.createEndConfWindow = function() {
+    Scene_ICS.prototype.createEndConfWindow = function () {
         var ctw = this._stsEndConfTitleWindow;
         var wx = ctw.x;
         var wy = ctw.y + ctw.height;
@@ -3771,7 +4620,7 @@ function Game_IcsRecipeBook() {
         window.hide();
     };
 
-    Scene_ICS.prototype.slotsClear = function() {
+    Scene_ICS.prototype.slotsClear = function () {
         this._itemWindow.refresh();
         this._compositionSlotWindow.clearWindow();
         this._compositionStateWindow.clearWindow();
@@ -3779,24 +4628,24 @@ function Game_IcsRecipeBook() {
         this._resultWindow.clearWindow();
     }
 
-    Scene_ICS.prototype.resetItems = function() {
-        this._compositionSlotWindow._slots.forEach( function(slot, i) {
-            if(slot) $gameParty.gainItem(slot.item(), slot.number());
+    Scene_ICS.prototype.resetItems = function () {
+        this._compositionSlotWindow._slots.forEach(function (slot, i) {
+            if (slot) $gameParty.gainItem(slot.item(), slot.number());
         });
     };
 
-    Scene_ICS.prototype.slotsReset = function() {
+    Scene_ICS.prototype.slotsReset = function () {
         this.resetItems();
         this.slotsClear();
-      };
+    };
 
-    Scene_ICS.prototype.onCompositionEnd = function() {
+    Scene_ICS.prototype.onCompositionEnd = function () {
         this.slotsReset();
         FTKR.ICS.windowText = {};
         this.popScene();
     };
-    
-    Scene_ICS.prototype.onCategoryCancel = function() {
+
+    Scene_ICS.prototype.onCategoryCancel = function () {
         if (FTKR.ICS.basic.enableEndConf) {
             this.stsEndConfShow();
             this._stsEndConfWindow.actSelect(0);
@@ -3808,8 +4657,8 @@ function Game_IcsRecipeBook() {
         this.popScene();*/
     };
 
-    Scene_ICS.prototype.onCategoryOk = function() {
-        switch(this._categoryWindow.currentSymbol()) {
+    Scene_ICS.prototype.onCategoryOk = function () {
+        switch (this._categoryWindow.currentSymbol()) {
             case 'slot':
                 this._compositionSlotWindow.actSelect(0);
                 break;
@@ -3852,10 +4701,10 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Scene_ICS.prototype.onItemOk = function() {
-        if(this._compositionSlotWindow._itemCount < 5) {
+    Scene_ICS.prototype.onItemOk = function () {
+        if (this._compositionSlotWindow._itemCount < 5) {
             if (this._itemWindow._showResipe) {
-//                var max = $gameParty.hasMaxRequiredRecipeMaterials(this.item());
+                //                var max = $gameParty.hasMaxRequiredRecipeMaterials(this.item());
                 var max = $gameParty.hasMaxRequiredRecipeIDMaterials(this.item(), this._itemWindow.typeId());
                 this._numberWindow._showResipe = this._itemWindow._showResipe;
                 this._numberWindow._typeId = this._itemWindow.typeId();
@@ -3876,7 +4725,7 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Scene_ICS.prototype.onNumberOk = function() {
+    Scene_ICS.prototype.onNumberOk = function () {
         SoundManager.playOk();
         var number = this._numberWindow.number();
         if (this._itemWindow._showResipe) {
@@ -3884,12 +4733,12 @@ function Game_IcsRecipeBook() {
             var recipe = this.item().ics.recipe(this._itemWindow.typeId());
             var numbers = [];
             var items = [];
-            recipe.materials().forEach( function(material) {
+            recipe.materials().forEach(function (material) {
                 if (material.category()) {
                     var reqNum = number * material.number();
-                    $gameParty.someCategoryAllItems(material).some(function(item){
+                    $gameParty.someCategoryAllItems(material).some(function (item) {
                         var numItem = $gameParty.numItems(item);
-                        if(reqNum > numItem) {
+                        if (reqNum > numItem) {
                             reqNum -= numItem;
                             numbers.push(numItem);
                             items.push(item);
@@ -3904,10 +4753,10 @@ function Game_IcsRecipeBook() {
                     numbers.push(number * material.number());
                     items.push(material.item());
                 }
-            },this);
-            items.forEach( function(item, i) {
+            }, this);
+            items.forEach(function (item, i) {
                 this.setSlotItem(item, numbers[i]);
-            },this);
+            }, this);
         } else {
             //素材から選ぶ
             this.setSlotItem(this.item(), number);
@@ -3917,11 +4766,11 @@ function Game_IcsRecipeBook() {
         this.refreshWindow();
     };
 
-    Scene_ICS.prototype.setSlotItem = function(item, number) {
+    Scene_ICS.prototype.setSlotItem = function (item, number) {
         var csw = this._compositionSlotWindow;
-        var compsiSlot = csw._slots.filter( function(slot) {
+        var compsiSlot = csw._slots.filter(function (slot) {
             return slot && slot.item() === item;
-        },this);
+        }, this);
         if (compsiSlot.length) {
             compsiSlot[0]._number += number;
         } else {
@@ -3933,20 +4782,20 @@ function Game_IcsRecipeBook() {
         this._categoryWindow.refresh();
     };
 
-    Scene_ICS.prototype.onNumberCancel = function() {
+    Scene_ICS.prototype.onNumberCancel = function () {
         SoundManager.playCancel();
         this._numberWindow.hide();
         this._itemWindow.actSelect(-1);
     };
 
-    Scene_ICS.prototype.onIcsSlotOk = function() {
+    Scene_ICS.prototype.onIcsSlotOk = function () {
         var csw = this._compositionSlotWindow;
         var index = csw.index();
         if (index === 5) {
             this.slotsReset();
         } else {
             var slot = csw._slots[index];
-            if(csw._itemCount && slot) {
+            if (csw._itemCount && slot) {
                 $gameParty.gainItem(slot.item(), slot.number());
                 csw._slots.splice(index, 1);
                 csw._itemCount--;
@@ -3956,19 +4805,19 @@ function Game_IcsRecipeBook() {
         csw.actSelect(-1);
     };
 
-    Scene_ICS.prototype.refreshWindow = function() {
+    Scene_ICS.prototype.refreshWindow = function () {
         this._itemWindow.refresh();
         this._compositionSlotWindow.refresh();
         this._compositionStateWindow.setItems(this._compositionSlotWindow.materials());
         this._categoryWindow.refreshCom(this._compositionSlotWindow.materials());
     };
 
-    Scene_ICS.prototype.onIcsSlotCancel = function() {
+    Scene_ICS.prototype.onIcsSlotCancel = function () {
         this._compositionSlotWindow.deselect();
         this._categoryWindow.actSelect(-1);
     };
 
-    Scene_ICS.prototype.onConfirmationOk = function() {
+    Scene_ICS.prototype.onConfirmationOk = function () {
         var cfw = this._stsConfWindow;
         if (cfw.item().dicision) {
             cfw.deselect();
@@ -3979,21 +4828,21 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Scene_ICS.prototype.isSpecialComp = function(item) {
+    Scene_ICS.prototype.isSpecialComp = function (item) {
         return item && item.wtypeId === FTKR.ICS.basic.categoryId &&
             hasObjectMeta(item, ['ICS 特殊合成', 'ICS SPECIAL_COMPOSITION']);
     }
 
     //合成実行処理
-    Scene_ICS.prototype.composition = function(sound) {
+    Scene_ICS.prototype.composition = function (sound) {
         var composit = this._compositionStateWindow;
         var comp = composit._comp;
         var item = comp.item;
         var typeId = comp.typeId;
         if (item) {
             var getItem = {
-                item:this.convertCategoryItem(comp),
-                number:composit._number,
+                item: this.convertCategoryItem(comp),
+                number: composit._number,
             };
             var judg = this.successJudg(item, typeId);
             if (this.successApply(judg, getItem, item.ics.recipe(typeId), sound) && composit._learnRecipe) {
@@ -4006,14 +4855,14 @@ function Game_IcsRecipeBook() {
                 var number = getItem.number;
                 var newItem = copyObject(baseItem);
                 newItem.ics = new Game_Composit();
-                if(!newItem.compositCount) newItem.baseName = newItem.name;
+                if (!newItem.compositCount) newItem.baseName = newItem.name;
                 newItem.compositCount += 1 + addItem.compositCount;
                 newItem.name = newItem.baseName + '(+' + newItem.compositCount + ')';
-                if(DataManager.isWeapon(baseItem)) {
+                if (DataManager.isWeapon(baseItem)) {
                     newItem.id = $dataWeapons.length;
                     this.setItemTraits(newItem, addItem, number);
                     $dataWeapons.push(newItem);
-                } else if (DataManager.isArmor(baseItem)){
+                } else if (DataManager.isArmor(baseItem)) {
                     newItem.id = $dataArmors.length;
                     this.setItemTraits(newItem, addItem, number);
                     $dataArmors.push(newItem);
@@ -4040,13 +4889,13 @@ function Game_IcsRecipeBook() {
             //合成アイテム入手
             if (comp.item.ics.hasResultItem()) {
                 var results = [];
-                comp.item.ics.resultItems().some(function(resultItem){
+                comp.item.ics.resultItems().some(function (resultItem) {
                     if (resultItem && resultItem.result() === judg) {
-                        resultItem.materials().forEach(function(material){
+                        resultItem.materials().forEach(function (material) {
                             if (material) {
                                 var item = material.item();
                                 var number = material.number() * composit._number;
-                                results.push({item:item, number:number});
+                                results.push({ item: item, number: number });
                                 $gameParty.gainItem(item, number);
                             }
                         });
@@ -4075,16 +4924,16 @@ function Game_IcsRecipeBook() {
         this._resultConfWindow.actSelect(0);
     };
 
-    Scene_ICS.prototype.setItemTraits = function(baseItem, addItem, number) {
-        var traits = addItem.params.map(function(param, i){
-            return {type:'param', data:{id:i, value:param}};
-        }).filter(function(trait) {
+    Scene_ICS.prototype.setItemTraits = function (baseItem, addItem, number) {
+        var traits = addItem.params.map(function (param, i) {
+            return { type: 'param', data: { id: i, value: param } };
+        }).filter(function (trait) {
             return trait.data.value;
         });
-        traits = traits.concat(addItem.traits.map(function(trait) {
-            if(trait) return {type:'trait', data:trait};
+        traits = traits.concat(addItem.traits.map(function (trait) {
+            if (trait) return { type: 'trait', data: trait };
         }));
-        for(var i = 0; i < number; i++) {
+        for (var i = 0; i < number; i++) {
             var num = Math.floor(Math.random() * (traits.length - 1));
             var add = traits[num];
             if (add.type === 'param') {
@@ -4097,14 +4946,14 @@ function Game_IcsRecipeBook() {
         return baseItem;
     };
 
-    Scene_ICS.prototype.convertCategoryItem = function(composit) {
+    Scene_ICS.prototype.convertCategoryItem = function (composit) {
         return DataManager.convertCategoryItem(composit.item, composit.rank);
     };
 
-    Scene_ICS.prototype.successApply = function(judg, getItem, recipe, sound) {
+    Scene_ICS.prototype.successApply = function (judg, getItem, recipe, sound) {
         var success = true;
         var correct = {};
-        switch(judg) {
+        switch (judg) {
             case 'success':
                 AudioManager.playStaticSe(sound.success.icsSoundType());
                 break;
@@ -4127,26 +4976,26 @@ function Game_IcsRecipeBook() {
         return success;
     };
 
-    Scene_ICS.prototype.successCorrection = function(success) {
+    Scene_ICS.prototype.successCorrection = function (success) {
         var match = /(.+)\((.+)\)/.exec(success);
-        if (!match) return {code:Window_Base.SUCCESS_CORRECTION_NUMBER, value:0,};
+        if (!match) return { code: Window_Base.SUCCESS_CORRECTION_NUMBER, value: 0, };
         switch (match[1].toUpperCase()) {
             case 'ランク変更':
             case 'CHANGE_RANK':
-                return {code:Window_Base.SUCCESS_CORRECTION_RANK, value:Number(match[2]),};
+                return { code: Window_Base.SUCCESS_CORRECTION_RANK, value: Number(match[2]), };
             case 'カテゴリー変更':
             case 'CHANGE_CATEGORY':
-                return {code:Window_Base.SUCCESS_CORRECTION_CATEGORY, value:match[2],};
+                return { code: Window_Base.SUCCESS_CORRECTION_CATEGORY, value: match[2], };
             case '生成数変更':
             case 'CHANGE_NUMBER':
-                return {code:Window_Base.SUCCESS_CORRECTION_NUMBER, value:Number(match[2]),};
+                return { code: Window_Base.SUCCESS_CORRECTION_NUMBER, value: Number(match[2]), };
             case 'アイテム変更':
             case 'CHANGE_ITEM':
-                return {code:Window_Base.SUCCESS_CORRECTION_ITEM, value:match[2],};
+                return { code: Window_Base.SUCCESS_CORRECTION_ITEM, value: match[2], };
         }
     };
 
-    Scene_ICS.prototype.calcBaseRate = function(difficulty, param) {
+    Scene_ICS.prototype.calcBaseRate = function (difficulty, param) {
         var max = Window_Base.SUCCESS_MAX_RATE;
         var baseRate = FTKR.ICS.success.baseRate.clamp(0, max);
         var upRate = Math.max(FTKR.ICS.success.upRate, 0);
@@ -4159,35 +5008,35 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Scene_ICS.prototype.calcSuccessRate = function(difficulty, param) {
+    Scene_ICS.prototype.calcSuccessRate = function (difficulty, param) {
         var max = Window_Base.SUCCESS_MAX_RATE;
         var success = this.calcBaseRate(difficulty.success, param);
         var great = this.calcBaseRate(difficulty.great, param);
         var failure = this.calcBaseRate(difficulty.failure, param);
         var result = {
-            great:great * success / max,
-            success:(max - great) * success / max,
-            failure:(max - success) * failure / max,
+            great: great * success / max,
+            success: (max - great) * success / max,
+            failure: (max - success) * failure / max,
         };
         return result;
     };
 
-    Scene_ICS.prototype.calcCompositParam = function(item) {
+    Scene_ICS.prototype.calcCompositParam = function (item) {
         return this.calcIcsFormula(item, FTKR.ICS.success.param);
     };
 
-    Scene_ICS.prototype.calcSuccessRequired = function(item, typeId) {
+    Scene_ICS.prototype.calcSuccessRequired = function (item, typeId) {
         var formula = item.ics.recipe(typeId).required();
         return formula ? this.calcIcsFormula(item, formula) : true;
     };
 
-    Scene_ICS.prototype.calcIcsFormula = function(item, formula) {
+    Scene_ICS.prototype.calcIcsFormula = function (item, formula) {
         FTKR.setGameData(null, null, item);
         return Math.max(Math.floor(FTKR.evalFormula(formula)), 0);
     };
 
     //成功失敗判定
-    Scene_ICS.prototype.successJudg = function(item, typeId) {
+    Scene_ICS.prototype.successJudg = function (item, typeId) {
         var max = Window_Base.SUCCESS_MAX_RATE;
         var param = this.calcCompositParam(item);
         var recipe = item.ics.recipe(typeId);
@@ -4200,11 +5049,11 @@ function Game_IcsRecipeBook() {
             great = 0;
             success = 0;
         }
-        if (!recipe.great() && !item.ics.hasResultItemGreat()){
+        if (!recipe.great() && !item.ics.hasResultItemGreat()) {
             success += great;
             great = 0;
         }
-        var failure = recipe.failure() || item.ics.hasResultItemFailure() ? 
+        var failure = recipe.failure() || item.ics.hasResultItemFailure() ?
             rate.failure.clamp(0, max - great - success) : 0;
         var lost = Math.max(max - great - success - failure, 0);
         var rand = Math.random() * max + 1;
@@ -4220,7 +5069,7 @@ function Game_IcsRecipeBook() {
     };
 
     //成功補正処理
-    Scene_ICS.prototype.setCorrection = function(correct, getItem) {
+    Scene_ICS.prototype.setCorrection = function (correct, getItem) {
         if (!correct) return;
         switch (correct.code) {
             case Window_Base.SUCCESS_CORRECTION_RANK:
@@ -4238,29 +5087,29 @@ function Game_IcsRecipeBook() {
         }
     };
 
-    Scene_ICS.prototype.onConfirmationCancel = function() {
+    Scene_ICS.prototype.onConfirmationCancel = function () {
         this._stsConfWindow.deselect();
         var stw = this._categoryWindow;
         stw.actSelect(stw.index());
         this.stsConfHide();
     };
 
-    Scene_ICS.prototype.stsConfHide = function() {
+    Scene_ICS.prototype.stsConfHide = function () {
         this._stsConfWindow.hide();
         this._stsConfTitleWindow.hide();
     };
 
-    Scene_ICS.prototype.stsConfShow = function() {
+    Scene_ICS.prototype.stsConfShow = function () {
         this._stsConfWindow.show();
         this._stsConfTitleWindow.show();
     };
 
-    Scene_ICS.prototype.stsEndConfShow = function() {
+    Scene_ICS.prototype.stsEndConfShow = function () {
         this._stsEndConfWindow.show();
         this._stsEndConfTitleWindow.show();
     };
 
-    Scene_ICS.prototype.onResultOk = function() {
+    Scene_ICS.prototype.onResultOk = function () {
         this._resultConfWindow.deselect();
         this._categoryWindow.actSelect(-1);
         this.slotsClear();
@@ -4268,7 +5117,7 @@ function Game_IcsRecipeBook() {
         this._resultConfWindow.hide();
     };
 
-    Scene_ICS.prototype.onEndConfOk = function() {
+    Scene_ICS.prototype.onEndConfOk = function () {
         var cfw = this._stsEndConfWindow;
         if (cfw.item().dicision) {
             cfw.deselect();
@@ -4277,7 +5126,7 @@ function Game_IcsRecipeBook() {
             this.onEndConfCancel();
         }
     };
-    Scene_ICS.prototype.onEndConfCancel = function() {
+    Scene_ICS.prototype.onEndConfCancel = function () {
         this._stsEndConfWindow.deselect();
         this._stsEndConfWindow.hide();
         this._stsEndConfTitleWindow.hide();

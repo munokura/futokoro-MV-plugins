@@ -16,48 +16,97 @@ FTKR.INS = FTKR.INS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.0 アイテムが範囲なしの場合にパーティーの全メンバーを対象にする。
- * @author フトコロ
- *
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインを有効にすると、アイテムの基本設定「範囲」が「なし」の場合、
- * アクター選択画面を表示せずにパーティーの全メンバーを対象にします。
- * 
- * 
- * ただし、以下のタグを設定したアイテムは本機能を無効にします。
- * <INS 無効>
- * <INS Disable>
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.0 - 2017/04/19 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.0 Targets all party members if the item has no range.
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+When this plugin is enabled, if the item's "Range" basic setting is set to "None," it will target all party members without displaying the actor selection screen.
+
+However, this Traits will be disabled for items with the following tags:
+<INS Disable>
+
+-----------------------------------------------------------------------------
+Setup Method
+----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+---------------------------------------------------------------------------
+Change History
+----------------------------------------------------------------------------
+
+v1.0.0 - April 19, 2017: First version created
+
+----------------------------------------------------------------------------
 */
+
+
+/*:ja
+@plugindesc v1.0.0 アイテムが範囲なしの場合にパーティーの全メンバーを対象にする。
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインを有効にすると、アイテムの基本設定「範囲」が「なし」の場合、
+アクター選択画面を表示せずにパーティーの全メンバーを対象にします。
+
+
+ただし、以下のタグを設定したアイテムは本機能を無効にします。
+<INS 無効>
+<INS Disable>
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.0 - 2017/04/19 : 初版作成
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
 //=============================================================================
@@ -66,11 +115,11 @@ FTKR.INS = FTKR.INS || {};
 FTKR.INS.parameters = PluginManager.parameters('FTKR_ItemNonScope');
 
 if (!Array.prototype.checkMeta) {
-Array.prototype.checkMeta = function(obj) {
-    return obj.meta ? this.some(function(meta) {
-        return obj.meta[meta];
-    }) : false;
-};
+    Array.prototype.checkMeta = function (obj) {
+        return obj.meta ? this.some(function (meta) {
+            return obj.meta[meta];
+        }) : false;
+    };
 }
 
 //=============================================================================
@@ -78,12 +127,12 @@ Array.prototype.checkMeta = function(obj) {
 //=============================================================================
 
 FTKR.INS.Game_Action_makeTargets = Game_Action.prototype.makeTargets;
-Game_Action.prototype.makeTargets = function() {
+Game_Action.prototype.makeTargets = function () {
     var targets = [];
     if (!this._forcing && this.subject().isConfused()) {
         targets = [this.confusionTarget()];
-    // 範囲なしの場合に、全パーティーメンバーをターゲットにする
-    } else if (!['INS 無効','INS DISABLE'].checkMeta(this.item()) && this.checkItemScope([0])) {
+        // 範囲なしの場合に、全パーティーメンバーをターゲットにする
+    } else if (!['INS 無効', 'INS DISABLE'].checkMeta(this.item()) && this.checkItemScope([0])) {
         targets = $gameParty.members();
     } else {
         targets = FTKR.INS.Game_Action_makeTargets.call(this);
@@ -95,14 +144,13 @@ Game_Action.prototype.makeTargets = function() {
 // メニュー画面でアイテム使用時の対象選択処理
 //=============================================================================
 FTKR.INS.Scene_ItemBase_itemTargetActors = Scene_ItemBase.prototype.itemTargetActors;
-Scene_ItemBase.prototype.itemTargetActors = function() {
+Scene_ItemBase.prototype.itemTargetActors = function () {
     var action = new Game_Action(this.user());
     action.setItemObject(this.item());
     // 範囲なしの場合に、全パーティーメンバーをターゲットにする
-    if (!['INS 無効','INS DISABLE'].checkMeta(this.item()) && action.checkItemScope([0])) {
+    if (!['INS 無効', 'INS DISABLE'].checkMeta(this.item()) && action.checkItemScope([0])) {
         return $gameParty.members();
     } else {
         return FTKR.INS.Scene_ItemBase_itemTargetActors.call(this);
     }
 };
-

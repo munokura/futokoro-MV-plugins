@@ -16,66 +16,129 @@ FTKR.PSP = FTKR.PSP || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.0 ポーズサインの表示位置を変更するプラグイン
- * @author フトコロ
- *
- * @param Posi Offset X
- * @desc ポーズサインの表示位置をX方向右側にずらす値を指定します。
- * 負の値で、左側にずれます。
- * @default 0
- * @type number
- * @min -10000
- * @max 10000
- *
- * @param Posi Offset Y
- * @desc ポーズサインの表示位置をY方向下側にずらす値を指定します。
- * 負の値で、上側にずれます。
- * @default 0
- * @type number
- * @min -10000
- * @max 10000
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * メッセージウィンドウで表示するポーズサインの表示位置を調整できます。
- * 
- * プラグインパラメータに標準の位置からずらしたい値を入力してください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2018 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.0 - 2018/04/15 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.0 Plugin to change the display position of the pause sign
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+You can adjust the display position of the pause sign in the message window.
+
+Enter the desired offset from the default position in the plugin parameters.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin Publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.0 - 2018/04/15: First version created
+
+-----------------------------------------------------------------------------
+
+@param Posi Offset X
+@desc Specifies the value to shift the pause sign display position to the right in the X direction. A negative value shifts it to the left.
+@default 0
+@type number
+@min -10000
+@max 10000
+
+@param Posi Offset Y
+@desc Specifies the value to shift the pause sign display position downward in the Y direction. A negative value shifts it upward.
+@default 0
+@type number
+@min -10000
+@max 10000
 */
+
+/*:ja
+@plugindesc v1.0.0 ポーズサインの表示位置を変更するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+メッセージウィンドウで表示するポーズサインの表示位置を調整できます。
+
+プラグインパラメータに標準の位置からずらしたい値を入力してください。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2018 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.0 - 2018/04/15 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Posi Offset X
+@desc ポーズサインの表示位置をX方向右側にずらす値を指定します。 負の値で、左側にずれます。
+@default 0
+@type number
+@min -10000
+@max 10000
+
+@param Posi Offset Y
+@desc ポーズサインの表示位置をY方向下側にずらす値を指定します。 負の値で、上側にずれます。
+@default 0
+@type number
+@min -10000
+@max 10000
+*/
+
 //=============================================================================
 
-(function() {
+(function () {
 
     //=============================================================================
     // プラグイン パラメータ
@@ -83,8 +146,8 @@ FTKR.PSP = FTKR.PSP || {};
     var parameters = PluginManager.parameters('FTKR_PauseSignPosition');
 
     FTKR.PSP = {
-        offsetX : Number(parameters['Posi Offset X'] || 0),
-        offsetY : Number(parameters['Posi Offset Y'] || 0),
+        offsetX: Number(parameters['Posi Offset X'] || 0),
+        offsetY: Number(parameters['Posi Offset Y'] || 0),
     };
 
     /**
@@ -92,8 +155,8 @@ FTKR.PSP = FTKR.PSP || {};
      * @private
      */
     var _PSP_Window_refreshPauseSign = Window.prototype._refreshPauseSign;
-    Window.prototype._refreshPauseSign = function() {
-         _PSP_Window_refreshPauseSign.call(this);
+    Window.prototype._refreshPauseSign = function () {
+        _PSP_Window_refreshPauseSign.call(this);
         this._windowPauseSignSprite.move(
             this._width / 2 + FTKR.PSP.offsetX,
             this._height + FTKR.PSP.offsetY
