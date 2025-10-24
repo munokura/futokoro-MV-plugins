@@ -15,737 +15,1248 @@ FTKR.SUS = FTKR.SUS || {};
 
 //=============================================================================
 /*:
- * @plugindesc v2.0.0 スキル強化システムを実装するプラグイン(v2)
- * @author フトコロ
- * 
- * @param ---Skill Name Format---
- * @default
- *
- * @param Skill Name Format
- * @desc 強化したスキルの表示名を変更します。
- *  %1 - スキル名,  %2 - 強化レベルの合計
- * @default %1(+%2)
- *
- * @param ---Show Command---
- * @default
- * 
- * @param Show Skill Command
- * @desc メニュー欄のどこにスキル強化コマンドを追加するか。
- *  1 - メニュー欄, 2 - スキルメニュー欄, 3 - サブコマンド欄
- * @default 1
- *
- * @param Upgrade Skill Command Name
- * @desc スキル強化コマンドのコマンド名を設定します。
- * @default スキル強化
- *
- * @param Skill Menu Switch ID
- * @desc メニュー欄の表示のON/OFFを制御するスイッチIDを指定します。
- * @default 0
- *
- * @param Upgrade Disable Confirmation
- * @desc スキル強化実行時に確認画面で実行確認するか。
- *  1 - 確認する, 0 - 確認しない(コストが常に表示)
- * @default 1
- *
- * @param Always Display Cost
- * @desc 強化コストに常に表示するか。
- *  1 - 表示する, 0 - 表示しない
- * @default 0
- *
- * @param How Show NonUg Item
- * @desc 強化できないパラメータを薄く表示するか指定します。
- *  0 - 変更しない, 1 -薄く表示する
- * @default 0
- *
- * @param Hide Not Upgrade Item
- * @desc 強化不可設定のパラメータを非表示にするか指定します。
- *  1 - 表示しない, 0 - 表示する
- * @default 0
- *
- * @param Hide Cannot Pay Item
- * @desc 強化コスト不足のパラメータを非表示にするか指定します。
- *  1 - 表示しない, 0 - 表示する
- * @default 0
- *
- * @param Hide Limit Upgrade Item
- * @desc 最大強化レベルに達したパラメータを非表示にするか指定します。
- *  1 - 表示しない, 0 - 表示する
- * @default 0
- * 
- * @param --Skill List Window--
- * @default
- * 
- * @param Skill List Width
- * @desc スキルリストウィンドウの幅を指定します。
- *  デフォルトは 240
- * @default 240
- *
- * @param --Skill Status Title Window--
- * @default
- * 
- * @param Skill Status Title Format
- * @desc タイトルの表示内容を文字列で記述します。
- *  %1 - アクター名, %2 - スキル名
- * @default [%2]のスキル情報\c[16]
- *
- * @param Discription Lines
- * @desc スキルの説明文の行数を設定します。
- * @default 2
- *
- * @param --Skill Status Window--
- * @default
- *
- * @param Skill Status Text1 Format
- * @desc スキルステータスのテキスト1の表示内容を記述します。
- *  詳細はヘルプ参照のこと
- * @default %1
- *
- * @param Skill Status Text2 Format
- * @desc スキルステータスのテキスト2の表示内容を記述します。
- *  詳細はヘルプ参照のこと
- * @default LV\sb[60]\l[2]\n%2\lR[2]\n/\c[17]\nMAX\sb[60]\c[17]\n%3\lR[2]\c[17]
- *
- * @param Skill Status Text3 Format
- * @desc スキルステータスのテキスト3の表示内容を記述します。
- *  詳細はヘルプ参照のこと
- * @default %4
- *
- * @param Skill Status Width Rate
- * @desc テキスト1～3を表示するテキスト幅の比率
- *  カンマ(,)で区切って表示すること
- * @default 1,1,1
- * 
- * @param Skill Status Line Color1
- * @desc ラインの色1を指定します。
- *  -1 を設定した場合は、ラインは非表示
- * @default 17
- * 
- * @param Skill Status Line Color2
- * @desc ラインの色2を指定します。
- *  -1 を設定した場合は、ラインは非表示
- * @default 17
- *
- * @param Skill Status Line Gauge
- * @desc スキルレベルの差により、ラインをゲージとして使用するか。
- *  1 - ゲージにする, 0 - ゲージにしない
- * @default 0
- *
- * @param Skill Status Max Cols
- * @desc 1行に表示するステータスの数を指定します。
- *  (最小値 1, 最大値 3)
- * @default 1
- * 
- * @param Skill Status Item Heigth
- * @desc 1つのステータスを表示する行数を指定します。
- *  (最小値 1, 最大値 3)
- * @default 1
- * 
- * @param --Upgrade Param Window--
- * @default
- *
- * @param Upgrade Param Title Format
- * @desc タイトルの表示内容を文字列で記述します。
- *  %1 - スキル名, %2 - 強化タイプ名
- * @default [%2]の情報\c[16]
- *
- * @param Upgrade Param SubTitle Format
- * @desc パラメータタイトルの表示内容を文字列で記述します。
- * @default 強化値：\c[16]
- *
- * @param Upgrade Param Text Format
- * @desc 表示内容を文字列で記述します。
- *  フォーマットのパラメータはヘルプ参照
- * @default \l[2]\nLV\n%1\lR[2]\n:\n%2\lR[6]\n⇒\l[2]\C\nLV\n%3\lR[2]\n:\n%4\lR[6]
- *
- * @param Upgrade Param CostTitle Format
- * @desc コストタイトルの表示内容を文字列で記述します。
- * @default コスト：\c[16]
- *
- * @param Upgrade Param CostItem Format
- * @desc コストの表示内容を文字列で記述します。
- *  %1 - コスト名, %2 - コスト数量, %3 - コストの手持ち量
- * @default %1\l[16]\n%2\lR[3]\c[17]\n%3\c[17]\lR[5]
- *
- * @param Upgrade Param MaxLv Message
- * @desc 最大強化レベルに達した時の表示内容を文字列で記述します。
- * @default \l[2]\nこれ以上強化できません
- *
- * @param Upgrade Param Cost Lines
- * @desc 3つのコストを並べ方を指定します。
- * parallel - 3行に並べる, series - 1行にまとめる,
- * @default parallel
- *
- * @param --Confirmation Window--
- * @default
- *
- * @param Confirmation Title Format
- * @desc スキル強化実行時の確認内容を記述します。
- *  %1 - アクター名, %2 - スキル名
- * @default スキル強化の確認
- *
- * @param Confirmation Ok Format
- * @desc 確認コマンドの「実行する」の表示内容を記述します。
- * @default 実行する
- *
- * @param Confirmation Cancel Format
- * @desc 確認コマンドの「実行しない」の表示内容を記述します。
- * @default 実行しない
- *
- * @param ---Default Param---
- * @default
- *
- * @param Upgrade Default Name
- * @desc 強化項目のデフォルト名を設定します。
- *  %1 - 強化タイプのスキルステータス名
- * @default %1強化
- *
- * @param Upgrade Default Limit
- * @desc 最大強化レベルのデフォルト値を設定します。
- * @default 99
- *
- * @param Upgrade Default Value
- * @desc 強化時の上昇量のデフォルト値を設定します。
- * @default 1
- *
- * @param Upgrade Default Cost Type
- * @desc 強化に必要なコストタイプのデフォルト値を設定します。
- *  1 - gold, 2 - item, 3 - 変数
- * @default 1
- *
- * @param Upgrade Default Cost Id
- * @desc コストタイプをアイテムか変数にした場合のIDを設定します。
- * @default 
- *
- * @param Upgrade Default Cost Value
- * @desc 強化に必要なコスト数量のデフォルト値を設定します。
- * @default 1
- *
- * @param Upgrade Default Icon
- * @desc 強化項目リストに表示するアイコンのデフォルト値を設定します。
- * @default 73
- *
- * @param Upgrade Default Format
- * @desc 強化時のデフォルトの計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default %1+(%2*%3)
- *
- * @param ---Upgrade Type 1---
- * @default
- *
- * @param Upgrade Type 1 Type
- * @desc タイプ1の強化項目のタイプを設定します。
- * @default damages
- *
- * @param Upgrade Type 1 Icon
- * @desc タイプ1の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 1 Limit
- * @desc タイプ1の強化項目の最大強化レベルを設定します。
- * @default 
- *
- * @param Upgrade Type 1 Value
- * @desc タイプ1の強化項目の上昇量を設定します。
- * @default 
- *
- * @param Upgrade Type 1 Cost Value
- * @desc タイプ1の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 1 Cost Type
- * @desc タイプ1の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 1 Cost Id
- * @desc タイプ1の強化項目のタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 1 Format
- * @desc タイプ1の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default 
- *
- * @param ---Upgrade Type 2---
- * @default
- *
- * @param Upgrade Type 2 Type
- * @desc タイプ2の強化項目のタイプを設定します。
- * @default mpCost
- *
- * @param Upgrade Type 2 Icon
- * @desc タイプ2の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 2 Limit
- * @desc タイプ2の強化項目の最大強化レベルを設定します。
- * @default 
- *
- * @param Upgrade Type 2 Value
- * @desc タイプ2の強化項目の上昇量を設定します。
- * @default -1
- *
- * @param Upgrade Type 2 Cost Value
- * @desc タイプ2の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 2 Cost Type
- * @desc タイプ2の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 2 Cost Id
- * @desc タイプ2の強化項目のコストIDを設定します。
- * @default 
- *
- * @param Upgrade Type 2 Format
- * @desc タイプ2の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default 
- *
- * @param ---Upgrade Type 3---
- * @default
- *
- * @param Upgrade Type 3 Type
- * @desc タイプ3の強化項目のタイプを設定します。
- * @default tpCost
- *
- * @param Upgrade Type 3 Icon
- * @desc タイプ3の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 3 Limit
- * @desc タイプ3の強化項目の最大強化レベルを設定します。
- * @default 
- *
- * @param Upgrade Type 3 Value
- * @desc タイプ3の強化項目の上昇量を設定します。
- * @default -1
- *
- * @param Upgrade Type 3 Cost Value
- * @desc タイプ3の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 3 Cost Type
- * @desc タイプ3の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 3 Cost Id
- * @desc タイプ3の強化項目のコストIDを設定します。
- * @default 
- *
- * @param Upgrade Type 3 Format
- * @desc タイプ3の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default 
- *
- * @param ---Upgrade Type 4---
- * @default
- *
- * @param Upgrade Type 4 Type
- * @desc タイプ4の強化項目のタイプを設定します。
- * @default speed
- *
- * @param Upgrade Type 4 Icon
- * @desc タイプ4の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 4 Limit
- * @desc タイプ4の強化項目の最大強化レベルを設定します。
- * @default 
- *
- * @param Upgrade Type 4 Value
- * @desc タイプ4の強化項目の上昇量を設定します。
- * @default 
- *
- * @param Upgrade Type 4 Cost Value
- * @desc タイプ4の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 4 Cost Type
- * @desc タイプ4の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 4 Cost Id
- * @desc タイプ4の強化項目のコストIDを設定します。
- * @default 
- *
- * @param Upgrade Type 4 Format
- * @desc タイプ4の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default 
- *
- * @param ---Upgrade Type 5---
- * @default
- *
- * @param Upgrade Type 5 Type
- * @desc タイプ5の強化項目のタイプを設定します。
- * @default tpGain
- *
- * @param Upgrade Type 5 Icon
- * @desc タイプ5の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 5 Limit
- * @desc タイプ5の強化項目の最大強化レベルを設定します。
- * @default 
- *
- * @param Upgrade Type 5 Value
- * @desc タイプ5の強化項目の上昇量を設定します。
- * @default 
- *
- * @param Upgrade Type 5 Cost Value
- * @desc タイプ5の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 5 Cost Type
- * @desc タイプ5の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 5 Cost Id
- * @desc タイプ5の強化項目のコストIDを設定します。
- * @default 
- *
- * @param Upgrade Type 5 Format
- * @desc タイプ5の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default 
- *
- * @param ---Upgrade Type 6---
- * @default
- *
- * @param Upgrade Type 6 Type
- * @desc タイプ6の強化項目のタイプを設定します。
- * @default repeats
- *
- * @param Upgrade Type 6 Icon
- * @desc タイプ6の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 6 Limit
- * @desc タイプ6の強化項目の最大強化レベルを設定します。
- * @default 
- *
- * @param Upgrade Type 6 Value
- * @desc タイプ6の強化項目の上昇量を設定します。
- * @default 
- *
- * @param Upgrade Type 6 Cost Value
- * @desc タイプ6の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 6 Cost Type
- * @desc タイプ6の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 6 Cost Id
- * @desc タイプ6の強化項目のコストIDを設定します。
- * @default 
- *
- * @param Upgrade Type 6 Format
- * @desc タイプ6の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default 
- *
- * @param ---Upgrade Type 7---
- * @default
- *
- * @param Upgrade Type 7 Type
- * @desc タイプ7の強化項目のタイプを設定します。
- * @default scope
- *
- * @param Upgrade Type 7 Icon
- * @desc タイプ7の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 7 Limit
- * @desc タイプ7の強化項目の最大強化レベルを設定します。
- * @default 1
- *
- * @param Upgrade Type 7 Value
- * @desc タイプ7の強化項目の上昇量を設定します。
- * @default 1
- *
- * @param Upgrade Type 7 Cost Value
- * @desc タイプ7の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 7 Cost Type
- * @desc タイプ7の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 7 Cost Id
- * @desc タイプ7の強化項目のコストIDを設定します。
- * @default 
- *
- * @param Upgrade Type 7 Format
- * @desc タイプ7の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default %1+%3
- *
- * @param ---Upgrade Type 8---
- * @default
- *
- * @param Upgrade Type 8 Type
- * @desc タイプ8の強化項目のタイプを設定します。
- * @default effects
- *
- * @param Upgrade Type 8 Icon
- * @desc タイプ8の強化項目のアイコンを設定します。
- * @default 
- *
- * @param Upgrade Type 8 Limit
- * @desc タイプ8の強化項目の最大強化レベルを設定します。
- * @default 
- *
- * @param Upgrade Type 8 Value
- * @desc タイプ8の強化項目の上昇量を設定します。
- * @default 1
- *
- * @param Upgrade Type 8 Cost Value
- * @desc タイプ8の強化項目のコスト数値を設定します。
- * @default 
- *
- * @param Upgrade Type 8 Cost Type
- * @desc タイプ8の強化項目のコストタイプを設定します。
- * @default 
- *
- * @param Upgrade Type 8 Cost Id
- * @desc タイプ8の強化項目のコストIDを設定します。
- * @default 
- *
- * @param Upgrade Type 8 Format
- * @desc タイプ8の強化項目の強化時の計算式を設定します。
- *  %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
- * @default 
- *
- * @param --Upgrade SE--
- * @default
- * 
- * @param Upgrade SE Name
- * @desc 強化実行時に鳴らすSEの名前を指定します。
- * @default Sound2
- *
- * @param Upgrade SE Volume
- * @desc 強化実行時に鳴らすSEの音量を指定します。
- * @default 90
- *
- * @param Upgrade SE Pitch
- * @desc 強化実行時に鳴らすSEのピッチを指定します。
- * @default 100
- *
- * @param Upgrade SE Pan
- * @desc 強化実行時に鳴らすSEの位相を指定します。
- * @default 0
- *
- * @param --Cost Icon--
- * @default
- *
- * @param Cost Gold Icon
- * @desc コストをお金に設定した場合に表示するアイコンを指定します。
- * @default 314
- *
- * @param Cost Variables Icon
- * @desc コストを変数に設定した場合に表示するアイコンを指定します。
- * @default 307
- *
- * @param ---Parameter Name---
- * @default
- *
- * @param Main damage Name
- * @desc ダメージID 0 の表示名
- *  %1 - ダメージ倍率
- * @default 通常%1%
- *
- * @param No damage Type Name
- * @desc ダメージタイプの「なし」の表示名
- * @default ダメージなし
- *
- * @param HP damage Name
- * @desc ダメージタイプの「HPダメージ」の表示名
- * @default HPダメージ
- *
- * @param MP damage Name
- * @desc ダメージタイプの「MPダメージ」の表示名
- * @default MPダメージ
- *
- * @param HP recovery Name
- * @desc ダメージタイプの「HP回復」の表示名
- * @default HP回復
- *
- * @param MP recovery Name
- * @desc ダメージタイプの「MP回復」の表示名
- * @default MP回復
- *
- * @param HP absorption Name
- * @desc ダメージタイプの「HP吸収」の表示名
- * @default HP吸収
- *
- * @param MP absorption Name
- * @desc ダメージタイプの「MP吸収」の表示名
- * @default MP吸収
- *
- * @param MP cost Name
- * @desc スキルパラメータの「MP消費」の表示名
- * @default MP消費
- *
- * @param TP cost Name
- * @desc スキルパラメータの「TP消費」の表示名
- * @default TP消費
- *
- * @param Scope Name
- * @desc スキルパラメータの「範囲」の表示名
- * @default 範囲
- *
- * @param Speed Name
- * @desc スキルパラメータの「速度補正」の表示名
- * @default 速度補正
- *
- * @param TP gain Name
- * @desc スキルパラメータの「得TP」の表示名
- * @default 得TP
- *
- * @param Repeats Name
- * @desc スキルパラメータの「連続回数」の表示名
- * @default 連続回数
- *
- * @param Effects Name
- * @desc スキルパラメータの「使用効果」の表示名
- * @default 使用効果
- *
- * @param Scope One Enemy Name
- * @desc 範囲の「敵単体」の表示名
- * @default 敵単体
- *
- * @param Scope All Enemies Name
- * @desc 範囲の「敵全体」の表示名
- * @default 敵全体
- *
- * @param Scope Random Enemies Name
- * @desc 範囲の「敵x体ランダム」の表示名
- *  %1 - 敵X体の X 
- * @default 敵%1体ランダム
- * 
- * @param Scope One Friend Name
- * @desc 範囲の「味方単体」の表示名
- * @default 味方単体
- *
- * @param Scope All Friends Name
- * @desc 範囲の「味方全体」の表示名
- * @default 味方全体
- *
- * @param Scope One Dead Name
- * @desc 範囲の「味方単体(戦闘不能)」の表示名
- * @default 味方単体(戦闘不能)
- *
- * @param Scope All Deads Name
- * @desc 範囲の「味方全体(戦闘不能)」の表示名
- * @default 味方全体(戦闘不能)
- *
- * @param Scope User Name
- * @desc 範囲の「使用者」の表示名
- * @default 使用者
- *
- * @param Scope Non Name
- * @desc 範囲の「なし」の表示名
- * @default なし
- *
- * @param Effects Non Name
- * @desc 使用効果の「なし」の表示名
- * @default なし
- *
- * @param Effects Add Name
- * @desc 使用効果の、ステートまたは強化/弱体を付加する場合の表示名
- *  実際の表示内容は、ステート名 + この文字列 + 数値
- * @default 付加
- *
- * @param Effects Remove Name
- * @desc 使用効果の、ステートまたは強化/弱体を解除する場合の表示名
- *  実際の表示内容は、ステート名 + この文字列 + 数値
- * @default 解除
- *
- * @param Effects Buff Name
- * @desc 使用効果の「強化」の表示名
- *  実際の表示内容は、ステータス名 + この文字列 + ターン数
- * @default 強化
- *
- * @param Effects Debuff Name
- * @desc 使用効果の「弱体」の表示名
- *  実際の表示内容は、ステータス名 + この文字列 + ターン数
- * @default 弱体
- *
- * @param Elements Name
- * @desc スキルパラメータの「属性」の表示名
- * @default 属性
- *
- * @param Normal Attack Elm Name
- * @desc 属性の「通常攻撃」の表示名
- * @default 通常攻撃
- *
- * @param Non Element Name
- * @desc 属性の「なし」の表示名
- * @default なし
- * 
- * @param --- Default Param ---
- * @desc 
- * 
- * @param Damage Rate
- * @desc デフォルトのダメージ倍率(%)
- * @default 100
- *
- * @param Critical Rate
- * @desc デフォルトのクリティカルダメージ倍率(%)
- * @default 300
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインを実装することで、習得したスキルの性能を強化する
- * スキル強化システムを利用することができます。
- *
- * スキル強化コマンドを実行することで、スキルのダメージ量や、MP消費量といった
- * スキルの性能を、ゲームの中で変化(強化)させることができます。
- * 
- * スキルの強化は、習得しているスキルの性能自体を変化させます。また、スキルの
- * 強化状態はアクター毎に記録しており、強化できる項目もアクター毎に別のものに
- * することができます。
- * 
- * このため、魔法が得意なキャラのみが強化できる魔法や、ダメージは強化できるが
- * MP消費は強化できないアクター、MP消費は強化できるがダメージは強化できない
- * アクターなど、表現することができます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- * 2. 本プラグインは以下のプラグインと組み合わせて使用できません。
- *    FTKR_SkillExpansion.js
- *    FTKR_SEP_ShowSkillStatus.js
- *    FTKR_SkillUpgradeSystem_Core.js
- *    FTKR_SkillUpgradeSystem_Window.js
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v2.0.0 - 2017/08/05 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v2.0.0 Skill enhancement system implementation plugin (v2)
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+By implementing this plugin, you can use the skill enhancement system to enhance the performance of acquired skills.
+
+By executing the skill enhancement command, you can change (enhance) skill performance, such as skill damage and MP consumption, in the game.
+
+Skill enhancement changes the performance of the acquired skill itself. Furthermore, the skill enhancement status is recorded for each actor, and the enhancement items can be different for each actor.
+
+This allows you to create magic that can only be enhanced by characters who are skilled in magic, actors whose damage can be enhanced but whose MP consumption cannot, and actors whose MP consumption can be enhanced but whose damage cannot.
+
+-----------------------------------------------------------------------------
+Setup
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. This plugin cannot be used in conjunction with the following plugins:
+FTKR_SkillExpansion.js
+FTKR_SEP_ShowSkillStatus.js
+FTKR_SkillUpgradeSystem_Core.js
+FTKR_SkillUpgradeSystem_Window.js
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v2.0.0 - August 5, 2017: First version created
+
+-----------------------------------------------------------------------------
+
+@param ---Skill Name Format---
+
+@param Skill Name Format
+@desc Change the display name of the enhanced skill. %1 - Skill name, %2 - Total enhanced level
+@default %1(+%2)
+
+@param ---Show Command---
+
+@param Show Skill Command
+@desc Where in the menu bar should the skill enhancement command be added? 1 - Menu bar, 2 - Skill menu bar, 3 - Subcommand bar
+@default 1
+
+@param Upgrade Skill Command Name
+@desc Set the command name for the skill enhancement command.
+@default Upgrade Skill
+
+@param Skill Menu Switch ID
+@desc Specify the switch ID that controls whether the menu column display is on or off.
+@default 0
+
+@param Upgrade Disable Confirmation
+@desc When executing a skill enhancement, whether to confirm the execution on the confirmation screen. 1 - Confirm, 0 - Do not confirm (cost is always displayed)
+@default 1
+
+@param Always Display Cost
+@desc Always show reinforcement cost. 1 - Show, 0 - Don't show
+@default 0
+
+@param How Show NonUg Item
+@desc Specifies whether to dim parameters that cannot be enhanced. 0 - Do not change, 1 - Dim
+@default 0
+
+@param Hide Not Upgrade Item
+@desc Specifies whether to hide parameters that cannot be enhanced. 1 - Do not display, 0 - Display
+@default 0
+
+@param Hide Cannot Pay Item
+@desc Specifies whether to hide parameters with insufficient reinforcement cost. 1 - Do not display, 0 - Display
+@default 0
+
+@param Hide Limit Upgrade Item
+@desc Specifies whether to hide parameters that have reached the maximum enhancement level. 1 - Do not display, 0 - Display
+@default 0
+
+@param --Skill List Window--
+
+@param Skill List Width
+@desc Specifies the width of the skill list window. Default is 240
+@default 240
+
+@param --Skill Status Title Window--
+
+@param Skill Status Title Format
+@desc Describe the title display content as a string. %1 - Actor name, %2 - Skill name
+@default Skill information for [%2]\c[16]
+
+@param Discription Lines
+@desc Set the number of lines for the skill description.
+@default 2
+
+@param --Skill Status Window--
+
+@param Skill Status Text1 Format
+@desc Describes the display content of Text 1 of the skill status. See the help for details.
+@default %1
+
+@param Skill Status Text2 Format
+@desc Describes the display content of Text 2 of the skill status. See the help for details.
+@default LV\sb[60]\l[2]\n%2\lR[2]\n/\c[17]\nMAX\sb[60]\c[17]\n%3\lR[2]\c[17]
+
+@param Skill Status Text3 Format
+@desc Describes the display content of Text 3 of the skill status. See Help for details.
+@default %4
+
+@param Skill Status Width Rate
+@desc The ratio of the text width to Show Text 1 to 3. Separate them with a comma (,)
+@default 1,1,1
+
+@param Skill Status Line Color1
+@desc Specifies the line color 1. If you set it to -1, the line will not be displayed.
+@default 17
+
+@param Skill Status Line Color2
+@desc Specifies the line color 2. If you set it to -1, the line will not be displayed.
+@default 17
+
+@param Skill Status Line Gauge
+@desc Whether to use the line as a gauge depending on skill level. 1 - Gauge, 0 - Do not use a gauge
+@default 0
+
+@param Skill Status Max Cols
+@desc Specify the number of statuses to display per line (minimum 1, maximum 3).
+@default 1
+
+@param Skill Status Item Heigth
+@desc Specify the number of lines to display one status (minimum 1, maximum 3).
+@default 1
+
+@param --Upgrade Param Window--
+
+@param Upgrade Param Title Format
+@desc Describe the title display content as a string. %1 - Skill name, %2 - Enhancement type name
+@default Information about [%2]\c[16]
+
+@param Upgrade Param SubTitle Format
+@desc Describe the display content of the parameter title as a string.
+@default 強化値：\c[16]
+
+@param Upgrade Param Text Format
+@desc Describe the display content as a string. See the help for format parameters.
+@default \l[2]\nLV\n%1\lR[2]\n:\n%2\lR[6]\n⇒\l[2]\C\nLV\n%3\lR[2]\n:\n%4\lR[6]
+
+@param Upgrade Param CostTitle Format
+@desc Enter the cost title to be displayed as a string.
+@default Cost:\c[16]
+
+@param Upgrade Param CostItem Format
+@desc Describe the cost display content as a string. %1 - Cost name, %2 - Cost quantity, %3 - Cost on hand
+@default %1\l[16]\n%2\lR[3]\c[17]\n%3\c[17]\lR[5]
+
+@param Upgrade Param MaxLv Message
+@desc Describes the content to be displayed when the maximum enhancement level is reached.
+@default \l[2]\nIt cannot be further strengthened
+
+@param Upgrade Param Cost Lines
+@desc Specify how to arrange the three costs: parallel - arrange them in three lines, series - combine them into one line,
+@default parallel
+
+@param --Confirmation Window--
+
+@param Confirmation Title Format
+@desc Describes the confirmation content when skill enhancement is executed. %1 - Actor name, %2 - Skill name
+@default Checking skill enhancement
+
+@param Confirmation Ok Format
+@desc Describes what will be displayed when you click "Execute" in the confirmation command.
+@default Ok
+
+@param Confirmation Cancel Format
+@desc Describes the display content of the confirmation command "Do not execute."
+@default Cancel
+
+@param ---Default Param---
+
+@param Upgrade Default Name
+@desc Sets the default name of the enhancement item. %1 - Enhancement type skill status name
+@default Upgrade %1
+
+@param Upgrade Default Limit
+@desc Sets the default maximum reinforcement level.
+@default 99
+
+@param Upgrade Default Value
+@desc Sets the default value for the increase amount when strengthening.
+@default 1
+
+@param Upgrade Default Cost Type
+@desc Sets the default cost type for enhancement: 1 - gold, 2 - item, 3 - variable
+@default 1
+
+@param Upgrade Default Cost Id
+@desc Set the ID when the cost type is an item or variable.
+
+@param Upgrade Default Cost Value
+@desc Sets the default cost amount for reinforcement.
+@default 1
+
+@param Upgrade Default Icon
+@desc Set the default value for the icon displayed in the enhancement list.
+@default 73
+
+@param Upgrade Default Format
+@desc Set the default formula for strengthening. %1 - original parameters, %2 - increase amount when strengthening, %3 - strengthening level
+@default %1+(%2*%3)
+
+@param ---Upgrade Type 1---
+
+@param Upgrade Type 1 Type
+@desc Set the type of Type 1 enhancement item.
+@default damages
+
+@param Upgrade Type 1 Icon
+@desc Sets the icon for Type 1 enhancement items.
+
+@param Upgrade Type 1 Limit
+@desc Sets the maximum enhancement level for Type 1 enhancement items.
+
+@param Upgrade Type 1 Value
+@desc Sets the increase amount for Type 1 enhancement items.
+
+@param Upgrade Type 1 Cost Value
+@desc Set the cost value for Type 1 enhancement items.
+
+@param Upgrade Type 1 Cost Type
+@desc Sets the cost type for Type 1 enhancement items.
+
+@param Upgrade Type 1 Cost Id
+@desc Set the type of Type 1 enhancement item.
+
+@param Upgrade Type 1 Format
+@desc Set the formula for enhancing Type 1 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+
+@param ---Upgrade Type 2---
+
+@param Upgrade Type 2 Type
+@desc Set the type of Type 2 enhancement item.
+@default mpCost
+
+@param Upgrade Type 2 Icon
+@desc Sets the icon for Type 2 enhancement items.
+
+@param Upgrade Type 2 Limit
+@desc Sets the maximum enhancement level for Type 2 enhancement items.
+
+@param Upgrade Type 2 Value
+@desc Sets the increase amount for Type 2 enhancement items.
+@default -1
+
+@param Upgrade Type 2 Cost Value
+@desc Set the cost value for Type 2 enhancement items.
+
+@param Upgrade Type 2 Cost Type
+@desc Sets the cost type for Type 2 enhancement items.
+
+@param Upgrade Type 2 Cost Id
+@desc Set the cost ID for Type 2 enhancement items.
+
+@param Upgrade Type 2 Format
+@desc Set the formula for enhancing Type 2 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+
+@param ---Upgrade Type 3---
+
+@param Upgrade Type 3 Type
+@desc Set the type of Type 3 enhancement item.
+@default tpCost
+
+@param Upgrade Type 3 Icon
+@desc Sets the icon for Type 3 enhancement items.
+
+@param Upgrade Type 3 Limit
+@desc Sets the maximum enhancement level for Type 3 enhancement items.
+
+@param Upgrade Type 3 Value
+@desc Sets the increase amount for Type 3 enhancement items.
+@default -1
+
+@param Upgrade Type 3 Cost Value
+@desc Set the cost value for Type 3 enhancement items.
+
+@param Upgrade Type 3 Cost Type
+@desc Sets the cost type for Type 3 enhancement items.
+
+@param Upgrade Type 3 Cost Id
+@desc Set the cost ID for Type 3 enhancement items.
+
+@param Upgrade Type 3 Format
+@desc Set the formula for enhancing Type 3 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+
+@param ---Upgrade Type 4---
+
+@param Upgrade Type 4 Type
+@desc Set the type of Type 4 enhancement item.
+@default speed
+
+@param Upgrade Type 4 Icon
+@desc Sets the icon for Type 4 enhancement items.
+
+@param Upgrade Type 4 Limit
+@desc Sets the maximum enhancement level for Type 4 enhancement items.
+
+@param Upgrade Type 4 Value
+@desc Sets the increase amount for Type 4 enhancement items.
+
+@param Upgrade Type 4 Cost Value
+@desc Set the cost value for Type 4 enhancement items.
+
+@param Upgrade Type 4 Cost Type
+@desc Sets the cost type for Type 4 enhancement items.
+
+@param Upgrade Type 4 Cost Id
+@desc Set the cost ID for Type 4 enhancement items.
+
+@param Upgrade Type 4 Format
+@desc Set the formula for enhancing Type 4 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+
+@param ---Upgrade Type 5---
+
+@param Upgrade Type 5 Type
+@desc Set the type of Type 5 enhancement item.
+@default tpGain
+
+@param Upgrade Type 5 Icon
+@desc Sets the icon for Type 5 enhancement items.
+
+@param Upgrade Type 5 Limit
+@desc Sets the maximum enhancement level for Type 5 enhancement items.
+
+@param Upgrade Type 5 Value
+@desc Sets the increase amount for Type 5 enhancement items.
+
+@param Upgrade Type 5 Cost Value
+@desc Set the cost value for Type 5 enhancement items.
+
+@param Upgrade Type 5 Cost Type
+@desc Sets the cost type for Type 5 enhancement items.
+
+@param Upgrade Type 5 Cost Id
+@desc Set the cost ID for Type 5 enhancement items.
+
+@param Upgrade Type 5 Format
+@desc Set the formula for enhancing Type 5 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+
+@param ---Upgrade Type 6---
+
+@param Upgrade Type 6 Type
+@desc Set the type of Type 6 enhancement item.
+@default repeats
+
+@param Upgrade Type 6 Icon
+@desc Sets the icon for Type 6 enhancement items.
+
+@param Upgrade Type 6 Limit
+@desc Sets the maximum enhancement level for Type 6 enhancement items.
+
+@param Upgrade Type 6 Value
+@desc Sets the increase amount for Type 6 enhancement items.
+
+@param Upgrade Type 6 Cost Value
+@desc Set the cost value for Type 6 enhancement items.
+
+@param Upgrade Type 6 Cost Type
+@desc Sets the cost type for Type 6 enhancement items.
+
+@param Upgrade Type 6 Cost Id
+@desc Set the cost ID for Type 6 enhancement items.
+
+@param Upgrade Type 6 Format
+@desc Set the formula for enhancing Type 6 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+
+@param ---Upgrade Type 7---
+
+@param Upgrade Type 7 Type
+@desc Set the type of Type 7 enhancement item.
+@default scope
+
+@param Upgrade Type 7 Icon
+@desc Sets the icon for Type 7 enhancement items.
+
+@param Upgrade Type 7 Limit
+@desc Sets the maximum enhancement level for Type 7 enhancement items.
+@default 1
+
+@param Upgrade Type 7 Value
+@desc Sets the increase amount for Type 7 enhancement items.
+@default 1
+
+@param Upgrade Type 7 Cost Value
+@desc Set the cost value for Type 7 enhancement items.
+
+@param Upgrade Type 7 Cost Type
+@desc Sets the cost type for Type 7 enhancement items.
+
+@param Upgrade Type 7 Cost Id
+@desc Set the cost ID for type 7 enhancement items.
+
+@param Upgrade Type 7 Format
+@desc Set the formula for enhancing Type 7 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+@default %1+%3
+
+@param ---Upgrade Type 8---
+
+@param Upgrade Type 8 Type
+@desc Set the type of Type 8 enhancement item.
+@default effects
+
+@param Upgrade Type 8 Icon
+@desc Sets the icon for type 8 enhancement items.
+
+@param Upgrade Type 8 Limit
+@desc Sets the maximum enhancement level for Type 8 enhancement items.
+
+@param Upgrade Type 8 Value
+@desc Sets the increase amount for Type 8 enhancement items.
+@default 1
+
+@param Upgrade Type 8 Cost Value
+@desc Set the cost value for Type 8 enhancement items.
+
+@param Upgrade Type 8 Cost Type
+@desc Sets the cost type for Type 8 enhancement items.
+
+@param Upgrade Type 8 Cost Id
+@desc Set the cost ID for type 8 enhancement items.
+
+@param Upgrade Type 8 Format
+@desc Set the formula for enhancing type 8 enhancement items. %1 - original parameters, %2 - increase amount when enhanced, %3 - enhancement level
+
+@param --Upgrade SE--
+
+@param Upgrade SE Name
+@desc Specify the name of the sound effect to be played when the enhancement is executed.
+@default Sound2
+
+@param Upgrade SE Volume
+@desc Specifies the volume of the sound effect that will be played when the enhancement is performed.
+@default 90
+
+@param Upgrade SE Pitch
+@desc Specifies the pitch of the sound effect that will be played when the enhancement is performed.
+@default 100
+
+@param Upgrade SE Pan
+@desc Specifies the phase of the sound effect that will be played when the enhancement is executed.
+@default 0
+
+@param --Cost Icon--
+
+@param Cost Gold Icon
+@desc Specifies the icon to display when the cost is set to Gold.
+@default 314
+
+@param Cost Variables Icon
+@desc Specifies the icon to display when the cost is set as a variable.
+@default 307
+
+@param ---Parameter Name---
+
+@param Main damage Name
+@desc Damage ID 0 Display Name %1 - Damage Multiplier
+@default 通常%1%
+
+@param No damage Type Name
+@desc Display name for damage type "None"
+@default No damage
+
+@param HP damage Name
+@desc Display name for damage type "HP Damage"
+@default HP damage
+
+@param MP damage Name
+@desc Display name for damage type "MP Damage"
+@default MP damage
+
+@param HP recovery Name
+@desc Display name for damage type "HP Recover"
+@default HP recovery
+
+@param MP recovery Name
+@desc Display name of damage type "MP Recover"
+@default MP recovery
+
+@param HP absorption Name
+@desc Display name of damage type "HP Drain"
+@default HP absorption
+
+@param MP absorption Name
+@desc Display name of damage type "MP Drain"
+@default MP absorption
+
+@param MP cost Name
+@desc Display name of skill parameter "MP consumption"
+@default MP cost
+
+@param TP cost Name
+@desc Display name of the skill parameter "TP Consumption"
+@default TP cost
+
+@param Scope Name
+@desc Skill parameter "Range" display name
+@default Range
+
+@param Speed Name
+@desc Display name of the skill parameter "Speed Correction"
+@default Speed Correction
+
+@param TP gain Name
+@desc Display name of the skill parameter "TP Gain"
+@default TP Gain
+
+@param Repeats Name
+@desc Display name of the skill parameter "Repeat"
+@default Repeat
+
+@param Effects Name
+@desc Display name of "Effect" of skill parameter
+@default Effect
+
+@param Scope One Enemy Name
+@desc Display name of "1 Enemy" in range
+@default 1 Enemy
+
+@param Scope All Enemies Name
+@desc Display name of "All Enemy" range
+@default All Enemy
+
+@param Scope Random Enemies Name
+@desc Display name of "x Randam Enemy" in range %1 - X of X enemies
+@default %1 Randam Enemy
+
+@param Scope One Friend Name
+@desc Display name of "1 Ally" in range
+@default 1 Ally
+
+@param Scope All Friends Name
+@desc Display name of "All Allies" range
+@default All Allies
+
+@param Scope One Dead Name
+@desc Display name of "1 Ally (Dead)" in the range
+@default 1 Ally (Dead)
+
+@param Scope All Deads Name
+@desc Display name of "All Allies (Dead)" in the range
+@default All Allies (Dead)
+
+@param Scope User Name
+@desc Display name of the "The User" of the range
+@default The User
+
+@param Scope Non Name
+@desc Display name for range "None"
+@default None
+
+@param Effects Non Name
+@desc Display name for "None" effect
+@default None
+
+@param Effects Add Name
+@desc Display name when adding a state or strengthening/weakening effect. The actual display content is the state name + this string + number.
+@default Add
+
+@param Effects Remove Name
+@desc Display name when removing a state or strengthening/weakening effect. The actual display content is the state name + this string + number.
+@default Remove
+
+@param Effects Buff Name
+@desc Display name of "Enhance" effect used The actual display content is the status name + this string + number of turns
+@default Buff
+
+@param Effects Debuff Name
+@desc Display name of "Weak" effect used The actual display content is the status name + this string + number of turns
+@default Debuff
+
+@param Elements Name
+@desc Display name of the "Elements" of the skill parameter
+@default Elements
+
+@param Normal Attack Elm Name
+@desc Display name of the Elements "Normal Attack"
+@default Normal Attack
+
+@param Non Element Name
+@desc Elements "None" display name
+@default None
+
+@param --- Default Param ---
+
+@param Damage Rate
+@desc Default Damage Multiplier (%)
+@default 100
+
+@param Critical Rate
+@desc Default Critical Damage Multiplier (%)
+@default 300
 */
+
+/*:ja
+@plugindesc v2.0.0 スキル強化システムを実装するプラグイン(v2)
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインを実装することで、習得したスキルの性能を強化する
+スキル強化システムを利用することができます。
+
+スキル強化コマンドを実行することで、スキルのダメージ量や、MP消費量といった
+スキルの性能を、ゲームの中で変化(強化)させることができます。
+
+スキルの強化は、習得しているスキルの性能自体を変化させます。また、スキルの
+強化状態はアクター毎に記録しており、強化できる項目もアクター毎に別のものに
+することができます。
+
+このため、魔法が得意なキャラのみが強化できる魔法や、ダメージは強化できるが
+MP消費は強化できないアクター、MP消費は強化できるがダメージは強化できない
+アクターなど、表現することができます。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+2. 本プラグインは以下のプラグインと組み合わせて使用できません。
+   FTKR_SkillExpansion.js
+   FTKR_SEP_ShowSkillStatus.js
+   FTKR_SkillUpgradeSystem_Core.js
+   FTKR_SkillUpgradeSystem_Window.js
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v2.0.0 - 2017/08/05 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param ---Skill Name Format---
+
+@param Skill Name Format
+@desc 強化したスキルの表示名を変更します。 %1 - スキル名, %2 - 強化レベルの合計
+@default %1(+%2)
+
+@param ---Show Command---
+
+@param Show Skill Command
+@desc メニュー欄のどこにスキル強化コマンドを追加するか。 1 - メニュー欄, 2 - スキルメニュー欄, 3 - サブコマンド欄
+@default 1
+
+@param Upgrade Skill Command Name
+@desc スキル強化コマンドのコマンド名を設定します。
+@default スキル強化
+
+@param Skill Menu Switch ID
+@desc メニュー欄の表示のON/OFFを制御するスイッチIDを指定します。
+@default 0
+
+@param Upgrade Disable Confirmation
+@desc スキル強化実行時に確認画面で実行確認するか。 1 - 確認する, 0 - 確認しない(コストが常に表示)
+@default 1
+
+@param Always Display Cost
+@desc 強化コストに常に表示するか。 1 - 表示する, 0 - 表示しない
+@default 0
+
+@param How Show NonUg Item
+@desc 強化できないパラメータを薄く表示するか指定します。 0 - 変更しない, 1 -薄く表示する
+@default 0
+
+@param Hide Not Upgrade Item
+@desc 強化不可設定のパラメータを非表示にするか指定します。 1 - 表示しない, 0 - 表示する
+@default 0
+
+@param Hide Cannot Pay Item
+@desc 強化コスト不足のパラメータを非表示にするか指定します。 1 - 表示しない, 0 - 表示する
+@default 0
+
+@param Hide Limit Upgrade Item
+@desc 最大強化レベルに達したパラメータを非表示にするか指定します。 1 - 表示しない, 0 - 表示する
+@default 0
+
+@param --Skill List Window--
+
+@param Skill List Width
+@desc スキルリストウィンドウの幅を指定します。 デフォルトは 240
+@default 240
+
+@param --Skill Status Title Window--
+
+@param Skill Status Title Format
+@desc タイトルの表示内容を文字列で記述します。 %1 - アクター名, %2 - スキル名
+@default [%2]のスキル情報\c[16]
+
+@param Discription Lines
+@desc スキルの説明文の行数を設定します。
+@default 2
+
+@param --Skill Status Window--
+
+@param Skill Status Text1 Format
+@desc スキルステータスのテキスト1の表示内容を記述します。 詳細はヘルプ参照のこと
+@default %1
+
+@param Skill Status Text2 Format
+@desc スキルステータスのテキスト2の表示内容を記述します。 詳細はヘルプ参照のこと
+@default LV\sb[60]\l[2]\n%2\lR[2]\n/\c[17]\nMAX\sb[60]\c[17]\n%3\lR[2]\c[17]
+
+@param Skill Status Text3 Format
+@desc スキルステータスのテキスト3の表示内容を記述します。 詳細はヘルプ参照のこと
+@default %4
+
+@param Skill Status Width Rate
+@desc テキスト1～3を表示するテキスト幅の比率 カンマ(,)で区切って表示すること
+@default 1,1,1
+
+@param Skill Status Line Color1
+@desc ラインの色1を指定します。 -1 を設定した場合は、ラインは非表示
+@default 17
+
+@param Skill Status Line Color2
+@desc ラインの色2を指定します。 -1 を設定した場合は、ラインは非表示
+@default 17
+
+@param Skill Status Line Gauge
+@desc スキルレベルの差により、ラインをゲージとして使用するか。 1 - ゲージにする, 0 - ゲージにしない
+@default 0
+
+@param Skill Status Max Cols
+@desc 1行に表示するステータスの数を指定します。 (最小値 1, 最大値 3)
+@default 1
+
+@param Skill Status Item Heigth
+@desc 1つのステータスを表示する行数を指定します。 (最小値 1, 最大値 3)
+@default 1
+
+@param --Upgrade Param Window--
+
+@param Upgrade Param Title Format
+@desc タイトルの表示内容を文字列で記述します。 %1 - スキル名, %2 - 強化タイプ名
+@default [%2]の情報\c[16]
+
+@param Upgrade Param SubTitle Format
+@desc パラメータタイトルの表示内容を文字列で記述します。
+@default 強化値：\c[16]
+
+@param Upgrade Param Text Format
+@desc 表示内容を文字列で記述します。 フォーマットのパラメータはヘルプ参照
+@default \l[2]\nLV\n%1\lR[2]\n:\n%2\lR[6]\n⇒\l[2]\C\nLV\n%3\lR[2]\n:\n%4\lR[6]
+
+@param Upgrade Param CostTitle Format
+@desc コストタイトルの表示内容を文字列で記述します。
+@default コスト：\c[16]
+
+@param Upgrade Param CostItem Format
+@desc コストの表示内容を文字列で記述します。 %1 - コスト名, %2 - コスト数量, %3 - コストの手持ち量
+@default %1\l[16]\n%2\lR[3]\c[17]\n%3\c[17]\lR[5]
+
+@param Upgrade Param MaxLv Message
+@desc 最大強化レベルに達した時の表示内容を文字列で記述します。
+@default \l[2]\nこれ以上強化できません
+
+@param Upgrade Param Cost Lines
+@desc 3つのコストを並べ方を指定します。 parallel - 3行に並べる, series - 1行にまとめる,
+@default parallel
+
+@param --Confirmation Window--
+
+@param Confirmation Title Format
+@desc スキル強化実行時の確認内容を記述します。 %1 - アクター名, %2 - スキル名
+@default スキル強化の確認
+
+@param Confirmation Ok Format
+@desc 確認コマンドの「実行する」の表示内容を記述します。
+@default 実行する
+
+@param Confirmation Cancel Format
+@desc 確認コマンドの「実行しない」の表示内容を記述します。
+@default 実行しない
+
+@param ---Default Param---
+
+@param Upgrade Default Name
+@desc 強化項目のデフォルト名を設定します。 %1 - 強化タイプのスキルステータス名
+@default %1強化
+
+@param Upgrade Default Limit
+@desc 最大強化レベルのデフォルト値を設定します。
+@default 99
+
+@param Upgrade Default Value
+@desc 強化時の上昇量のデフォルト値を設定します。
+@default 1
+
+@param Upgrade Default Cost Type
+@desc 強化に必要なコストタイプのデフォルト値を設定します。 1 - gold, 2 - item, 3 - 変数
+@default 1
+
+@param Upgrade Default Cost Id
+@desc コストタイプをアイテムか変数にした場合のIDを設定します。
+
+@param Upgrade Default Cost Value
+@desc 強化に必要なコスト数量のデフォルト値を設定します。
+@default 1
+
+@param Upgrade Default Icon
+@desc 強化項目リストに表示するアイコンのデフォルト値を設定します。
+@default 73
+
+@param Upgrade Default Format
+@desc 強化時のデフォルトの計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+@default %1+(%2*%3)
+
+@param ---Upgrade Type 1---
+
+@param Upgrade Type 1 Type
+@desc タイプ1の強化項目のタイプを設定します。
+@default damages
+
+@param Upgrade Type 1 Icon
+@desc タイプ1の強化項目のアイコンを設定します。
+
+@param Upgrade Type 1 Limit
+@desc タイプ1の強化項目の最大強化レベルを設定します。
+
+@param Upgrade Type 1 Value
+@desc タイプ1の強化項目の上昇量を設定します。
+
+@param Upgrade Type 1 Cost Value
+@desc タイプ1の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 1 Cost Type
+@desc タイプ1の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 1 Cost Id
+@desc タイプ1の強化項目のタイプを設定します。
+
+@param Upgrade Type 1 Format
+@desc タイプ1の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+
+@param ---Upgrade Type 2---
+
+@param Upgrade Type 2 Type
+@desc タイプ2の強化項目のタイプを設定します。
+@default mpCost
+
+@param Upgrade Type 2 Icon
+@desc タイプ2の強化項目のアイコンを設定します。
+
+@param Upgrade Type 2 Limit
+@desc タイプ2の強化項目の最大強化レベルを設定します。
+
+@param Upgrade Type 2 Value
+@desc タイプ2の強化項目の上昇量を設定します。
+@default -1
+
+@param Upgrade Type 2 Cost Value
+@desc タイプ2の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 2 Cost Type
+@desc タイプ2の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 2 Cost Id
+@desc タイプ2の強化項目のコストIDを設定します。
+
+@param Upgrade Type 2 Format
+@desc タイプ2の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+
+@param ---Upgrade Type 3---
+
+@param Upgrade Type 3 Type
+@desc タイプ3の強化項目のタイプを設定します。
+@default tpCost
+
+@param Upgrade Type 3 Icon
+@desc タイプ3の強化項目のアイコンを設定します。
+
+@param Upgrade Type 3 Limit
+@desc タイプ3の強化項目の最大強化レベルを設定します。
+
+@param Upgrade Type 3 Value
+@desc タイプ3の強化項目の上昇量を設定します。
+@default -1
+
+@param Upgrade Type 3 Cost Value
+@desc タイプ3の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 3 Cost Type
+@desc タイプ3の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 3 Cost Id
+@desc タイプ3の強化項目のコストIDを設定します。
+
+@param Upgrade Type 3 Format
+@desc タイプ3の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+
+@param ---Upgrade Type 4---
+
+@param Upgrade Type 4 Type
+@desc タイプ4の強化項目のタイプを設定します。
+@default speed
+
+@param Upgrade Type 4 Icon
+@desc タイプ4の強化項目のアイコンを設定します。
+
+@param Upgrade Type 4 Limit
+@desc タイプ4の強化項目の最大強化レベルを設定します。
+
+@param Upgrade Type 4 Value
+@desc タイプ4の強化項目の上昇量を設定します。
+
+@param Upgrade Type 4 Cost Value
+@desc タイプ4の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 4 Cost Type
+@desc タイプ4の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 4 Cost Id
+@desc タイプ4の強化項目のコストIDを設定します。
+
+@param Upgrade Type 4 Format
+@desc タイプ4の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+
+@param ---Upgrade Type 5---
+
+@param Upgrade Type 5 Type
+@desc タイプ5の強化項目のタイプを設定します。
+@default tpGain
+
+@param Upgrade Type 5 Icon
+@desc タイプ5の強化項目のアイコンを設定します。
+
+@param Upgrade Type 5 Limit
+@desc タイプ5の強化項目の最大強化レベルを設定します。
+
+@param Upgrade Type 5 Value
+@desc タイプ5の強化項目の上昇量を設定します。
+
+@param Upgrade Type 5 Cost Value
+@desc タイプ5の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 5 Cost Type
+@desc タイプ5の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 5 Cost Id
+@desc タイプ5の強化項目のコストIDを設定します。
+
+@param Upgrade Type 5 Format
+@desc タイプ5の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+
+@param ---Upgrade Type 6---
+
+@param Upgrade Type 6 Type
+@desc タイプ6の強化項目のタイプを設定します。
+@default repeats
+
+@param Upgrade Type 6 Icon
+@desc タイプ6の強化項目のアイコンを設定します。
+
+@param Upgrade Type 6 Limit
+@desc タイプ6の強化項目の最大強化レベルを設定します。
+
+@param Upgrade Type 6 Value
+@desc タイプ6の強化項目の上昇量を設定します。
+
+@param Upgrade Type 6 Cost Value
+@desc タイプ6の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 6 Cost Type
+@desc タイプ6の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 6 Cost Id
+@desc タイプ6の強化項目のコストIDを設定します。
+
+@param Upgrade Type 6 Format
+@desc タイプ6の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+
+@param ---Upgrade Type 7---
+
+@param Upgrade Type 7 Type
+@desc タイプ7の強化項目のタイプを設定します。
+@default scope
+
+@param Upgrade Type 7 Icon
+@desc タイプ7の強化項目のアイコンを設定します。
+
+@param Upgrade Type 7 Limit
+@desc タイプ7の強化項目の最大強化レベルを設定します。
+@default 1
+
+@param Upgrade Type 7 Value
+@desc タイプ7の強化項目の上昇量を設定します。
+@default 1
+
+@param Upgrade Type 7 Cost Value
+@desc タイプ7の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 7 Cost Type
+@desc タイプ7の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 7 Cost Id
+@desc タイプ7の強化項目のコストIDを設定します。
+
+@param Upgrade Type 7 Format
+@desc タイプ7の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+@default %1+%3
+
+@param ---Upgrade Type 8---
+
+@param Upgrade Type 8 Type
+@desc タイプ8の強化項目のタイプを設定します。
+@default effects
+
+@param Upgrade Type 8 Icon
+@desc タイプ8の強化項目のアイコンを設定します。
+
+@param Upgrade Type 8 Limit
+@desc タイプ8の強化項目の最大強化レベルを設定します。
+
+@param Upgrade Type 8 Value
+@desc タイプ8の強化項目の上昇量を設定します。
+@default 1
+
+@param Upgrade Type 8 Cost Value
+@desc タイプ8の強化項目のコスト数値を設定します。
+
+@param Upgrade Type 8 Cost Type
+@desc タイプ8の強化項目のコストタイプを設定します。
+
+@param Upgrade Type 8 Cost Id
+@desc タイプ8の強化項目のコストIDを設定します。
+
+@param Upgrade Type 8 Format
+@desc タイプ8の強化項目の強化時の計算式を設定します。 %1 - 元のパラメータ, %2 - 強化時の上昇量, %3 - 強化レベル
+
+@param --Upgrade SE--
+
+@param Upgrade SE Name
+@desc 強化実行時に鳴らすSEの名前を指定します。
+@default Sound2
+
+@param Upgrade SE Volume
+@desc 強化実行時に鳴らすSEの音量を指定します。
+@default 90
+
+@param Upgrade SE Pitch
+@desc 強化実行時に鳴らすSEのピッチを指定します。
+@default 100
+
+@param Upgrade SE Pan
+@desc 強化実行時に鳴らすSEの位相を指定します。
+@default 0
+
+@param --Cost Icon--
+
+@param Cost Gold Icon
+@desc コストをお金に設定した場合に表示するアイコンを指定します。
+@default 314
+
+@param Cost Variables Icon
+@desc コストを変数に設定した場合に表示するアイコンを指定します。
+@default 307
+
+@param ---Parameter Name---
+
+@param Main damage Name
+@desc ダメージID 0 の表示名 %1 - ダメージ倍率
+@default 通常%1%
+
+@param No damage Type Name
+@desc ダメージタイプの「なし」の表示名
+@default ダメージなし
+
+@param HP damage Name
+@desc ダメージタイプの「HPダメージ」の表示名
+@default HPダメージ
+
+@param MP damage Name
+@desc ダメージタイプの「MPダメージ」の表示名
+@default MPダメージ
+
+@param HP recovery Name
+@desc ダメージタイプの「HP回復」の表示名
+@default HP回復
+
+@param MP recovery Name
+@desc ダメージタイプの「MP回復」の表示名
+@default MP回復
+
+@param HP absorption Name
+@desc ダメージタイプの「HP吸収」の表示名
+@default HP吸収
+
+@param MP absorption Name
+@desc ダメージタイプの「MP吸収」の表示名
+@default MP吸収
+
+@param MP cost Name
+@desc スキルパラメータの「MP消費」の表示名
+@default MP消費
+
+@param TP cost Name
+@desc スキルパラメータの「TP消費」の表示名
+@default TP消費
+
+@param Scope Name
+@desc スキルパラメータの「範囲」の表示名
+@default 範囲
+
+@param Speed Name
+@desc スキルパラメータの「速度補正」の表示名
+@default 速度補正
+
+@param TP gain Name
+@desc スキルパラメータの「得TP」の表示名
+@default 得TP
+
+@param Repeats Name
+@desc スキルパラメータの「連続回数」の表示名
+@default 連続回数
+
+@param Effects Name
+@desc スキルパラメータの「使用効果」の表示名
+@default 使用効果
+
+@param Scope One Enemy Name
+@desc 範囲の「敵単体」の表示名
+@default 敵単体
+
+@param Scope All Enemies Name
+@desc 範囲の「敵全体」の表示名
+@default 敵全体
+
+@param Scope Random Enemies Name
+@desc 範囲の「敵x体ランダム」の表示名 %1 - 敵X体の X
+@default 敵%1体ランダム
+
+@param Scope One Friend Name
+@desc 範囲の「味方単体」の表示名
+@default 味方単体
+
+@param Scope All Friends Name
+@desc 範囲の「味方全体」の表示名
+@default 味方全体
+
+@param Scope One Dead Name
+@desc 範囲の「味方単体(戦闘不能)」の表示名
+@default 味方単体(戦闘不能)
+
+@param Scope All Deads Name
+@desc 範囲の「味方全体(戦闘不能)」の表示名
+@default 味方全体(戦闘不能)
+
+@param Scope User Name
+@desc 範囲の「使用者」の表示名
+@default 使用者
+
+@param Scope Non Name
+@desc 範囲の「なし」の表示名
+@default なし
+
+@param Effects Non Name
+@desc 使用効果の「なし」の表示名
+@default なし
+
+@param Effects Add Name
+@desc 使用効果の、ステートまたは強化/弱体を付加する場合の表示名 実際の表示内容は、ステート名 + この文字列 + 数値
+@default 付加
+
+@param Effects Remove Name
+@desc 使用効果の、ステートまたは強化/弱体を解除する場合の表示名 実際の表示内容は、ステート名 + この文字列 + 数値
+@default 解除
+
+@param Effects Buff Name
+@desc 使用効果の「強化」の表示名 実際の表示内容は、ステータス名 + この文字列 + ターン数
+@default 強化
+
+@param Effects Debuff Name
+@desc 使用効果の「弱体」の表示名 実際の表示内容は、ステータス名 + この文字列 + ターン数
+@default 弱体
+
+@param Elements Name
+@desc スキルパラメータの「属性」の表示名
+@default 属性
+
+@param Normal Attack Elm Name
+@desc 属性の「通常攻撃」の表示名
+@default 通常攻撃
+
+@param Non Element Name
+@desc 属性の「なし」の表示名
+@default なし
+
+@param --- Default Param ---
+
+@param Damage Rate
+@desc デフォルトのダメージ倍率(%)
+@default 100
+
+@param Critical Rate
+@desc デフォルトのクリティカルダメージ倍率(%)
+@default 300
+*/
+
 //=============================================================================
 
 //=============================================================================
@@ -781,32 +1292,32 @@ FTKR.SUS.DiscriptionLines = Number(FTKR.SUS.parameters['Discription Lines'] || 2
 
 //強化タイプウィンドウ設定
 FTKR.SUS.utype = {
-    Text1Format:String(FTKR.SUS.parameters['Skill Status Text1 Format'] || ''),
-    Text2Format:String(FTKR.SUS.parameters['Skill Status Text2 Format'] || ''),
-    Text3Format:String(FTKR.SUS.parameters['Skill Status Text3 Format'] || ''),
-    WidthRate:String(FTKR.SUS.parameters['Skill Status Width Rate'] || '1,1,1'),
-    LineColor1:Number(FTKR.SUS.parameters['Skill Status Line Color1'] || -1),
-    LineColor2:Number(FTKR.SUS.parameters['Skill Status Line Color2'] || -1),
-    LineGauge:Number(FTKR.SUS.parameters['Skill Status Line Gauge'] || 0),
-    MaxCols:Number(FTKR.SUS.parameters['Skill Status Max Cols'] || 1),
-    ItemHeigth:Number(FTKR.SUS.parameters['Skill Status Item Heigth'] || 1),
+  Text1Format: String(FTKR.SUS.parameters['Skill Status Text1 Format'] || ''),
+  Text2Format: String(FTKR.SUS.parameters['Skill Status Text2 Format'] || ''),
+  Text3Format: String(FTKR.SUS.parameters['Skill Status Text3 Format'] || ''),
+  WidthRate: String(FTKR.SUS.parameters['Skill Status Width Rate'] || '1,1,1'),
+  LineColor1: Number(FTKR.SUS.parameters['Skill Status Line Color1'] || -1),
+  LineColor2: Number(FTKR.SUS.parameters['Skill Status Line Color2'] || -1),
+  LineGauge: Number(FTKR.SUS.parameters['Skill Status Line Gauge'] || 0),
+  MaxCols: Number(FTKR.SUS.parameters['Skill Status Max Cols'] || 1),
+  ItemHeigth: Number(FTKR.SUS.parameters['Skill Status Item Heigth'] || 1),
 };
 
 //コストウィンドウ設定
 FTKR.SUS.ucost = {
-    TitleFormat:String(FTKR.SUS.parameters['Upgrade Param Title Format'] || ''),
-    SubTitle1Text:String(FTKR.SUS.parameters['Upgrade Param SubTitle Format'] || ''),
-    TextFromat:String(FTKR.SUS.parameters['Upgrade Param Text Format'] || ''),
-    SubTitle2Text:String(FTKR.SUS.parameters['Upgrade Param CostTitle Format'] || ''),
-    ItemFormat:String(FTKR.SUS.parameters['Upgrade Param CostItem Format'] || ''),
-    CostLines:String(FTKR.SUS.parameters['Upgrade Param Cost Lines'] || 'parallel'),
+  TitleFormat: String(FTKR.SUS.parameters['Upgrade Param Title Format'] || ''),
+  SubTitle1Text: String(FTKR.SUS.parameters['Upgrade Param SubTitle Format'] || ''),
+  TextFromat: String(FTKR.SUS.parameters['Upgrade Param Text Format'] || ''),
+  SubTitle2Text: String(FTKR.SUS.parameters['Upgrade Param CostTitle Format'] || ''),
+  ItemFormat: String(FTKR.SUS.parameters['Upgrade Param CostItem Format'] || ''),
+  CostLines: String(FTKR.SUS.parameters['Upgrade Param Cost Lines'] || 'parallel'),
 };
 FTKR.SUS.CannotUpgradeMessage = String(FTKR.SUS.parameters['Upgrade Param MaxLv Message'] || '');
 
 //確認ウィンドウ設定
 FTKR.SUS.confTitleFormat = String(FTKR.SUS.parameters['Confirmation Title Format'] || '');
 FTKR.SUS.confOkFormat = String(FTKR.SUS.parameters['Confirmation Ok Format'] || '');
-FTKR.SUS.confCancelFormat  = String(FTKR.SUS.parameters['Confirmation Cancel Format'] || '');
+FTKR.SUS.confCancelFormat = String(FTKR.SUS.parameters['Confirmation Cancel Format'] || '');
 
 //SE
 FTKR.SUS.susSeName = String(FTKR.SUS.parameters['Upgrade SE Name'] || 'Sound2');
@@ -820,96 +1331,96 @@ FTKR.SUS.costVarIcon = Number(FTKR.SUS.parameters['Cost Variables Icon'] || 0);
 
 //強化項目のデフォルト設定用
 FTKR.SUS.uTypes = [
-    {
-      type:'default',
-      limit:Number(FTKR.SUS.parameters['Upgrade Default Limit'] || 99),
-      value:Number(FTKR.SUS.parameters['Upgrade Default Value'] || 1),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Default Cost Type'] || 1),
-      cost:String(FTKR.SUS.parameters['Upgrade Default Cost Value'] || 1),
-      cid:Number(FTKR.SUS.parameters['Upgrade Default Cost Id'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Default Icon'] || 73),
-      format:String(FTKR.SUS.parameters['Upgrade Default Calc Format'] || '%1+(%2*%3)')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 1 Type'] || 'damages'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 1 Limit'] || 0),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 1 Value'] || 0),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 1 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 1 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 1 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 1 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 1 Format'] || '')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 2 Type'] || 'mpCost'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 2 Limit'] || 0),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 2 Value'] || -1),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 2 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 2 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 2 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 2 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 2 Format'] || '')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 3 Type'] || 'tpCost'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 3 Limit'] || 0),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 3 Value'] || -1),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 3 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 3 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 3 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 3 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 3 Format'] || '')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 4 Type'] || 'spead'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 4 Limit'] || 0),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 4 Value'] || 0),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 4 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 4 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 4 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 4 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 4 Format'] || '')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 5 Type'] || 'tpGain'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 5 Limit'] || 0),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 5 Value'] || 0),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 5 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 5 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 5 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 5 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 5 Format'] || '')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 6 Type'] || 'repeats'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 6 Limit'] || 0),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 6 Value'] || 0),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 6 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 6 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 6 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 6 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 6 Format'] || '')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 7 Type'] || 'scope'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 7 Limit'] || 1),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 7 Value'] || 1),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 7 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 7 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 7 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 7 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 7 Format'] || '')
-    },
-    {
-      type:String(FTKR.SUS.parameters['Upgrade Type 8 Type'] || 'effects'),
-      limit:Number(FTKR.SUS.parameters['Upgrade Type 8 Limit'] || 0),
-      value:Number(FTKR.SUS.parameters['Upgrade Type 8 Value'] || 0),
-      cost:String(FTKR.SUS.parameters['Upgrade Type 8 Cost Value'] || 0),
-      icon:Number(FTKR.SUS.parameters['Upgrade Type 8 Icon'] || 0),
-      ctype:Number(FTKR.SUS.parameters['Upgrade Type 8 Cost type'] || 0),
-      cid:Number(FTKR.SUS.parameters['Upgrade Type 8 Cost Id'] || 0),
-      format:String(FTKR.SUS.parameters['Upgrade Type 8 Format'] || '')
-    },
+  {
+    type: 'default',
+    limit: Number(FTKR.SUS.parameters['Upgrade Default Limit'] || 99),
+    value: Number(FTKR.SUS.parameters['Upgrade Default Value'] || 1),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Default Cost Type'] || 1),
+    cost: String(FTKR.SUS.parameters['Upgrade Default Cost Value'] || 1),
+    cid: Number(FTKR.SUS.parameters['Upgrade Default Cost Id'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Default Icon'] || 73),
+    format: String(FTKR.SUS.parameters['Upgrade Default Calc Format'] || '%1+(%2*%3)')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 1 Type'] || 'damages'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 1 Limit'] || 0),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 1 Value'] || 0),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 1 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 1 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 1 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 1 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 1 Format'] || '')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 2 Type'] || 'mpCost'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 2 Limit'] || 0),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 2 Value'] || -1),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 2 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 2 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 2 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 2 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 2 Format'] || '')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 3 Type'] || 'tpCost'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 3 Limit'] || 0),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 3 Value'] || -1),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 3 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 3 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 3 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 3 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 3 Format'] || '')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 4 Type'] || 'spead'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 4 Limit'] || 0),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 4 Value'] || 0),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 4 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 4 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 4 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 4 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 4 Format'] || '')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 5 Type'] || 'tpGain'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 5 Limit'] || 0),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 5 Value'] || 0),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 5 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 5 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 5 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 5 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 5 Format'] || '')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 6 Type'] || 'repeats'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 6 Limit'] || 0),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 6 Value'] || 0),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 6 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 6 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 6 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 6 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 6 Format'] || '')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 7 Type'] || 'scope'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 7 Limit'] || 1),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 7 Value'] || 1),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 7 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 7 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 7 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 7 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 7 Format'] || '')
+  },
+  {
+    type: String(FTKR.SUS.parameters['Upgrade Type 8 Type'] || 'effects'),
+    limit: Number(FTKR.SUS.parameters['Upgrade Type 8 Limit'] || 0),
+    value: Number(FTKR.SUS.parameters['Upgrade Type 8 Value'] || 0),
+    cost: String(FTKR.SUS.parameters['Upgrade Type 8 Cost Value'] || 0),
+    icon: Number(FTKR.SUS.parameters['Upgrade Type 8 Icon'] || 0),
+    ctype: Number(FTKR.SUS.parameters['Upgrade Type 8 Cost type'] || 0),
+    cid: Number(FTKR.SUS.parameters['Upgrade Type 8 Cost Id'] || 0),
+    format: String(FTKR.SUS.parameters['Upgrade Type 8 Format'] || '')
+  },
 ];
 
 //スキルのパラメータ名
@@ -924,19 +1435,19 @@ FTKR.SUS.damageNames = [
   String(FTKR.SUS.parameters['MP absorption Name'] || '')
 ];
 FTKR.SUS.sepStatusNames = {
-  mpCost:String(FTKR.SUS.parameters['MP cost Name'] || ''),
-  tpCost:String(FTKR.SUS.parameters['TP cost Name'] || ''),
-  speed:String(FTKR.SUS.parameters['Speed Name'] || ''),
-  tpGain:String(FTKR.SUS.parameters['TP gain Name'] || ''),
-  repeats:String(FTKR.SUS.parameters['Repeats Name'] || ''),
-  scope:String(FTKR.SUS.parameters['Scope Name'] || ''),
+  mpCost: String(FTKR.SUS.parameters['MP cost Name'] || ''),
+  tpCost: String(FTKR.SUS.parameters['TP cost Name'] || ''),
+  speed: String(FTKR.SUS.parameters['Speed Name'] || ''),
+  tpGain: String(FTKR.SUS.parameters['TP gain Name'] || ''),
+  repeats: String(FTKR.SUS.parameters['Repeats Name'] || ''),
+  scope: String(FTKR.SUS.parameters['Scope Name'] || ''),
 };
 FTKR.SUS.scopeNames = [
   String(FTKR.SUS.parameters['Scope Non Name'] || ''),
   String(FTKR.SUS.parameters['Scope One Enemy Name'] || ''),
   String(FTKR.SUS.parameters['Scope All Enemies Name'] || ''),
   String(FTKR.SUS.parameters['Scope Random Enemies Name'] || ''),
-  '','','',
+  '', '', '',
   String(FTKR.SUS.parameters['Scope One Friend Name'] || ''),
   String(FTKR.SUS.parameters['Scope All Friends Name'] || ''),
   String(FTKR.SUS.parameters['Scope One Dead Name'] || ''),
@@ -944,60 +1455,60 @@ FTKR.SUS.scopeNames = [
   String(FTKR.SUS.parameters['Scope User Name'] || '')
 ];
 FTKR.SUS.Effects = {
-  Name:String(FTKR.SUS.parameters['Effects Name'] || ''),
-  NonName:String(FTKR.SUS.parameters['Effects Non Name'] || ''),
-  AddName:String(FTKR.SUS.parameters['Effects Add Name'] || ''),
-  RemoveName:String(FTKR.SUS.parameters['Effects Remove Name'] || ''),
-  BuffName:String(FTKR.SUS.parameters['Effects Buff Name'] || ''),
-  DebuffName:String(FTKR.SUS.parameters['Effects Debuff Name'] || ''),
+  Name: String(FTKR.SUS.parameters['Effects Name'] || ''),
+  NonName: String(FTKR.SUS.parameters['Effects Non Name'] || ''),
+  AddName: String(FTKR.SUS.parameters['Effects Add Name'] || ''),
+  RemoveName: String(FTKR.SUS.parameters['Effects Remove Name'] || ''),
+  BuffName: String(FTKR.SUS.parameters['Effects Buff Name'] || ''),
+  DebuffName: String(FTKR.SUS.parameters['Effects Debuff Name'] || ''),
 };
 FTKR.SUS.Elements = {
-  NormalAttackName:String(FTKR.SUS.parameters['Normal Attack Elm Name'] || ''),
-  NonName:String(FTKR.SUS.parameters['Non Element Name'] || ''),
-  Name:String(FTKR.SUS.parameters['Elements Name'] || ''),
+  NormalAttackName: String(FTKR.SUS.parameters['Normal Attack Elm Name'] || ''),
+  NonName: String(FTKR.SUS.parameters['Non Element Name'] || ''),
+  Name: String(FTKR.SUS.parameters['Elements Name'] || ''),
 };
 
 //アクターステータスウィンドウ設定
 FTKR.SUS.actorStatus = {
-  text1:String(FTKR.SUS.parameters['Actor Status Text1'] || ''),
-  text2:String(FTKR.SUS.parameters['Actor Status Text2'] || ''),
-  text3:String(FTKR.SUS.parameters['Actor Status Text3'] || ''),
-  space:String(FTKR.SUS.parameters['Actor Status Space'] || ''),
-  spaceIn:Number(FTKR.SUS.parameters['Actor Status Space In Text'] || 0),
-  widthRate:String(FTKR.SUS.parameters['Actor Status Width Rate'] || ''),
-  faceLine:Number(FTKR.SUS.parameters['Display Face Scale'] || 0),
+  text1: String(FTKR.SUS.parameters['Actor Status Text1'] || ''),
+  text2: String(FTKR.SUS.parameters['Actor Status Text2'] || ''),
+  text3: String(FTKR.SUS.parameters['Actor Status Text3'] || ''),
+  space: String(FTKR.SUS.parameters['Actor Status Space'] || ''),
+  spaceIn: Number(FTKR.SUS.parameters['Actor Status Space In Text'] || 0),
+  widthRate: String(FTKR.SUS.parameters['Actor Status Width Rate'] || ''),
+  faceLine: Number(FTKR.SUS.parameters['Display Face Scale'] || 0),
 };
 
 //フレームオブジェクト
 FTKR.SUS.frame = {
-    //基本設定
-    type:Number(FTKR.SUS.parameters['Display Frame Type'] || 0),
-    whenToDisplay:Number(FTKR.SUS.parameters['When To Display Frame'] || 0),
-    changeOnCursor:Number(FTKR.SUS.parameters['Change Frame On Cursor'] || 0),
-    hideCursor:Number(FTKR.SUS.parameters['Hide Cursor'] || 0),
-    //枠線の設定
-    line:{
-        defColor:Number(FTKR.SUS.parameters['Default Line Color'] || 0),
-        csrColor:Number(FTKR.SUS.parameters['Line Color On Cursor'] || 0),
-        thick:Number(FTKR.SUS.parameters['Line Thick'] || 0),
-        subColor:Number(FTKR.SUS.parameters['Sub Line Color'] || 0),
-        subThick:Number(FTKR.SUS.parameters['Sub Line Thick'] || 0),
-        defInColor:Number(FTKR.SUS.parameters['Default Rect Color'] || 0),
-        csrInColor:Number(FTKR.SUS.parameters['Rect Color On Cursor'] || 0),
-    },
-    //枠画像の設定
-    image:{
-        name:String(FTKR.SUS.parameters['Image Name'] || ''),
-        width:Number(FTKR.SUS.parameters['Image Width'] || 0),
-        height:Number(FTKR.SUS.parameters['Image Height'] || 0),
-        offsetX:Number(FTKR.SUS.parameters['Image Offset X'] || 0),
-        offsetY:Number(FTKR.SUS.parameters['Image Offset Y'] || 0),
-        offsetW:Number(FTKR.SUS.parameters['Image Offset Width'] || 0),
-        offsetH:Number(FTKR.SUS.parameters['Image Offset Height'] || 0),
-        enabledScale:Number(FTKR.SUS.parameters['Enabled Change Scale'] || 0),
-        defIndex:Number(FTKR.SUS.parameters['Default Image Index'] || 0),
-        csrIndex:Number(FTKR.SUS.parameters['Image Index On Cursor'] || 0),
-    },
+  //基本設定
+  type: Number(FTKR.SUS.parameters['Display Frame Type'] || 0),
+  whenToDisplay: Number(FTKR.SUS.parameters['When To Display Frame'] || 0),
+  changeOnCursor: Number(FTKR.SUS.parameters['Change Frame On Cursor'] || 0),
+  hideCursor: Number(FTKR.SUS.parameters['Hide Cursor'] || 0),
+  //枠線の設定
+  line: {
+    defColor: Number(FTKR.SUS.parameters['Default Line Color'] || 0),
+    csrColor: Number(FTKR.SUS.parameters['Line Color On Cursor'] || 0),
+    thick: Number(FTKR.SUS.parameters['Line Thick'] || 0),
+    subColor: Number(FTKR.SUS.parameters['Sub Line Color'] || 0),
+    subThick: Number(FTKR.SUS.parameters['Sub Line Thick'] || 0),
+    defInColor: Number(FTKR.SUS.parameters['Default Rect Color'] || 0),
+    csrInColor: Number(FTKR.SUS.parameters['Rect Color On Cursor'] || 0),
+  },
+  //枠画像の設定
+  image: {
+    name: String(FTKR.SUS.parameters['Image Name'] || ''),
+    width: Number(FTKR.SUS.parameters['Image Width'] || 0),
+    height: Number(FTKR.SUS.parameters['Image Height'] || 0),
+    offsetX: Number(FTKR.SUS.parameters['Image Offset X'] || 0),
+    offsetY: Number(FTKR.SUS.parameters['Image Offset Y'] || 0),
+    offsetW: Number(FTKR.SUS.parameters['Image Offset Width'] || 0),
+    offsetH: Number(FTKR.SUS.parameters['Image Offset Height'] || 0),
+    enabledScale: Number(FTKR.SUS.parameters['Enabled Change Scale'] || 0),
+    defIndex: Number(FTKR.SUS.parameters['Default Image Index'] || 0),
+    csrIndex: Number(FTKR.SUS.parameters['Image Index On Cursor'] || 0),
+  },
 };
 
 //=============================================================================
@@ -1013,13 +1524,13 @@ FTKR.SUS.subUpgradeOk = false;
 // Math
 //=============================================================================
 
-Math._getDec = function(value) {
+Math._getDec = function (value) {
   var list = (value + '').split('.');
   return list[1] !== undefined && list[1].length > 0 ? list[1].length : 0;
 };
 
 // 少数で表現された割合をパーセント表示の整数に変換する (例:0.5 を 50 に変換)
-Math.percent = function(dec) {
+Math.percent = function (dec) {
   var decnum = Math._getDec(dec);
   var int = +(dec + '').replace('.', '');
   var diffdec = 2 - decnum;
@@ -1027,10 +1538,10 @@ Math.percent = function(dec) {
 }
 
 // 配列の要素の合計
-Math.sam = function(arr) {
-    return arr.reduce( function(prev, current, i, arr) {
-        return prev + current;
-    });
+Math.sam = function (arr) {
+  return arr.reduce(function (prev, current, i, arr) {
+    return prev + current;
+  });
 };
 
 //=============================================================================
@@ -1038,9 +1549,9 @@ Math.sam = function(arr) {
 //=============================================================================
 
 //配列の要素を、すべて数値に変換する。
-Array.prototype.num = function() {
-  return this.map(function(elm) {
-      return Number(elm);
+Array.prototype.num = function () {
+  return this.map(function (elm) {
+    return Number(elm);
   });
 }
 
@@ -1049,10 +1560,10 @@ Array.prototype.num = function() {
 //=============================================================================
 
 //1バイト文字は 1 , 2バイト文字は 2 と数えて文字列数を求める
-String.prototype.charCount = function() {
+String.prototype.charCount = function () {
   var len = 0;
   var str = escape(this);
-  for (var i=0; i < str.length ; i++ , len++) {
+  for (var i = 0; i < str.length; i++, len++) {
     if (str.charAt(i) == '%') {
       if (str.charAt(++i) == 'u') {
         i += 3;
@@ -1065,15 +1576,15 @@ String.prototype.charCount = function() {
 };
 
 //文字列からstrを削除する
-String.prototype.del = function(str) {
-    return this.replace(str, '');
+String.prototype.del = function (str) {
+  return this.replace(str, '');
 };
 
 //=============================================================================
 // TextManager
 //=============================================================================
 
-TextManager.skillParam = function(type, skill, dataId) {
+TextManager.skillParam = function (type, skill, dataId) {
   switch (type) {
     case 'damages':
       return TextManager.damage(skill.damages[dataId].type);
@@ -1091,26 +1602,26 @@ TextManager.skillParam = function(type, skill, dataId) {
   }
 };
 
-TextManager.damage = function(dtype) {
+TextManager.damage = function (dtype) {
   return dtype >= 0 && dtype < 7 ? FTKR.SUS.damageNames[dtype] : undefined;
 };
 
-TextManager.damageId = function(skill, dataId) {
+TextManager.damageId = function (skill, dataId) {
   return dataId === 0 ? FTKR.SUS.mainDamageName : $dataSkills[skill.damages[dataId].id].name;
 };
 
-TextManager.scope = function(scope) {
+TextManager.scope = function (scope) {
   if (scope > 2 && scope < 7) return FTKR.SUS.scopeNames[3];
   return scope >= 0 && scope < 12 ? FTKR.SUS.scopeNames[scope] : undefined;
 };
 
-TextManager.effect = function(typename, effect) {
+TextManager.effect = function (typename, effect) {
   if (typename !== 'effects') return '';
   if (effect.display) return effect.display;
   var eff = FTKR.SUS.Effects;
   switch (effect.code) {
     case Game_Action.EFFECT_ADD_STATE:
-      return effect.dataId === 0 ? '通常攻撃' + eff.AddName + '%1':
+      return effect.dataId === 0 ? '通常攻撃' + eff.AddName + '%1' :
         $dataStates[effect.dataId].name + eff.AddName + '%1';
     case Game_Action.EFFECT_REMOVE_STATE:
       return $dataStates[effect.dataId].name + eff.RemoveName + '%1';
@@ -1139,88 +1650,88 @@ TextManager.effect = function(typename, effect) {
 
 FTKR.SUS.DatabaseLoaded = false;
 FTKR.SUS.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-DataManager.isDatabaseLoaded = function() {
-    if (!FTKR.SUS.DataManager_isDatabaseLoaded.call(this)) return false;
-    if (!FTKR.SUS.DatabaseLoaded) {
-        this.susActorNotetags($dataActors);
-        this.susActorNotetags($dataClasses);
-        this.sepSkillNotetags($dataSkills);
-        this.susSkillNotetags($dataSkills);
-        this.susHideNotetags($dataActors);
-        this.susHideNotetags($dataClasses);
-        FTKR.SUS.DatabaseLoaded = true;
-    }
-    return true;
+DataManager.isDatabaseLoaded = function () {
+  if (!FTKR.SUS.DataManager_isDatabaseLoaded.call(this)) return false;
+  if (!FTKR.SUS.DatabaseLoaded) {
+    this.susActorNotetags($dataActors);
+    this.susActorNotetags($dataClasses);
+    this.sepSkillNotetags($dataSkills);
+    this.susSkillNotetags($dataSkills);
+    this.susHideNotetags($dataActors);
+    this.susHideNotetags($dataClasses);
+    FTKR.SUS.DatabaseLoaded = true;
+  }
+  return true;
 };
 
-DataManager.sepSkillNotetags = function(group) {
-    for (var n = 1; n < group.length; n++) {
-        var obj = group[n];
-        var scope = obj.scope;
-        obj.scoperandom = scope > 2 && scope < 7 ? scope - 2 : 0;
-        this.makeSepBase(obj);
-    }
+DataManager.sepSkillNotetags = function (group) {
+  for (var n = 1; n < group.length; n++) {
+    var obj = group[n];
+    var scope = obj.scope;
+    obj.scoperandom = scope > 2 && scope < 7 ? scope - 2 : 0;
+    this.makeSepBase(obj);
+  }
 };
 
-DataManager.makeSepBase = function(skill) {
-    this.makeSepDamagesBase(skill);
-    this.makeSepEffectsBase(skill);
-    skill.sepRepeats = {
-      count:skill.repeats,
-      successRate:'',
-      damageRate:0
-    };
-    skill.required = {
-        wtypeIds:[],
-        logic:'or',
-        etypeIds:[],
-        condition:'',
-        forget:'',
-    };
-    if (skill.requiredWtypeId1) skill.required.wtypeIds.push(skill.requiredWtypeId1);
-    if (skill.requiredWtypeId2) skill.required.wtypeIds.push(skill.requiredWtypeId2);
-    skill.sepCost = {};
-    skill.descs = [];
-    var desc = {};
-    desc.enabled = true;
-    desc.description = skill.description;
-    skill.descs[0] = desc;
+DataManager.makeSepBase = function (skill) {
+  this.makeSepDamagesBase(skill);
+  this.makeSepEffectsBase(skill);
+  skill.sepRepeats = {
+    count: skill.repeats,
+    successRate: '',
+    damageRate: 0
+  };
+  skill.required = {
+    wtypeIds: [],
+    logic: 'or',
+    etypeIds: [],
+    condition: '',
+    forget: '',
+  };
+  if (skill.requiredWtypeId1) skill.required.wtypeIds.push(skill.requiredWtypeId1);
+  if (skill.requiredWtypeId2) skill.required.wtypeIds.push(skill.requiredWtypeId2);
+  skill.sepCost = {};
+  skill.descs = [];
+  var desc = {};
+  desc.enabled = true;
+  desc.description = skill.description;
+  skill.descs[0] = desc;
 };
 
-DataManager.makeSepDamagesBase = function(skill) {
-    skill.damages = [];
-    skill.damages[0] = this.setSepDamage(skill.id);
+DataManager.makeSepDamagesBase = function (skill) {
+  skill.damages = [];
+  skill.damages[0] = this.setSepDamage(skill.id);
 };
 
-DataManager.setSepDamage = function(skillId) {
-    var damage = {};
-    var setSkill = $dataSkills[skillId]
-    var setDamage = setSkill.damage;
-    for (var list in setDamage) {
-        damage[list] = setDamage[list];
-    }
-    damage.rate = FTKR.SUS.defDamageRate;
-    damage.criticalRate = FTKR.SUS.defCriticalRate;
-    damage.hitType = setSkill.hitType;
-    damage.itemElements = [];
-    damage.id = setSkill.id;
-    damage.addElmIds = [];
-    damage.enabled = '';
-    return damage;
+DataManager.setSepDamage = function (skillId) {
+  var damage = {};
+  var setSkill = $dataSkills[skillId]
+  var setDamage = setSkill.damage;
+  for (var list in setDamage) {
+    damage[list] = setDamage[list];
+  }
+  damage.rate = FTKR.SUS.defDamageRate;
+  damage.criticalRate = FTKR.SUS.defCriticalRate;
+  damage.hitType = setSkill.hitType;
+  damage.itemElements = [];
+  damage.id = setSkill.id;
+  damage.addElmIds = [];
+  damage.enabled = '';
+  return damage;
 };
 
-DataManager.makeSepEffectsBase = function(skill) {
-    skill.effects.forEach( function(effect) {
-        effect.target = '';
-        effect.sepValue1 = '';
-        effect.sepValue2 = '';
-        effect.rate = 0;
-        effect.enabled = '';
-        effect.display = '';
-    });
+DataManager.makeSepEffectsBase = function (skill) {
+  skill.effects.forEach(function (effect) {
+    effect.target = '';
+    effect.sepValue1 = '';
+    effect.sepValue2 = '';
+    effect.rate = 0;
+    effect.enabled = '';
+    effect.display = '';
+  });
 };
 
-DataManager.susActorNotetags = function(group) {
+DataManager.susActorNotetags = function (group) {
   var note1 = /<(?:NOT UPGRADE)>/i;
   var note2 = /<(?:NOT UPGRADE SKILLTYPE):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
   var note3 = /<(?:NOT UPGRADE SKILL):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
@@ -1234,11 +1745,11 @@ DataManager.susActorNotetags = function(group) {
     obj.susNotUpgrade = false;
     obj.susNotUpgradeSkillType = [];
     obj.susNotUpgradeSkill = [];
-    obj.susUpgradeLimit  = [];
+    obj.susUpgradeLimit = [];
     obj.susUpgradeValue = [];
 
     for (var t = 0; t < $dataSystem.skillTypes.length; t++) {
-      obj.susNotUpgradeSkillType[t] = false; 
+      obj.susNotUpgradeSkillType[t] = false;
     }
 
     for (var i = 0; i < notedata.length; i++) {
@@ -1247,30 +1758,30 @@ DataManager.susActorNotetags = function(group) {
         obj.susNotUpgrade = true;
       } else if (line.match(note2)) {
         var types = JSON.parse('[' + RegExp.$1.match(/\d+/g) + ']');
-        types.forEach( function(stype) {
-        obj.susNotUpgradeSkillType[stype] = true;
+        types.forEach(function (stype) {
+          obj.susNotUpgradeSkillType[stype] = true;
         });
       } else if (line.match(note3)) {
         var types = JSON.parse('[' + RegExp.$1.match(/\d+/g) + ']');
-        types.forEach( function(skill) {
-        obj.susNotUpgradeSkill.push(skill);
+        types.forEach(function (skill) {
+          obj.susNotUpgradeSkill.push(skill);
         });
       } else if (line.match(note4)) {
         var skill = Number(RegExp.$1);
-        var type  = Number(RegExp.$2);
+        var type = Number(RegExp.$2);
         var limit = Number(RegExp.$3);
-        obj.susUpgradeLimit.push({'skillId':skill, 'typeId':type, 'value':limit});
+        obj.susUpgradeLimit.push({ 'skillId': skill, 'typeId': type, 'value': limit });
       } else if (line.match(note5)) {
         var skill = Number(RegExp.$1);
-        var type  = Number(RegExp.$2);
+        var type = Number(RegExp.$2);
         var value = Number(RegExp.$3);
-        obj.susUpgradeValue.push({'skillId':skill, 'typeId':type, 'value':value});
+        obj.susUpgradeValue.push({ 'skillId': skill, 'typeId': type, 'value': value });
       }
     }
   }
 };
 
-DataManager.susSkillNotetags = function(group) {
+DataManager.susSkillNotetags = function (group) {
   var note1 = /<(?:NOT UPGRADE SKILL)>/i;
   var note2 = /<(?:NOT UPGRADE TYPE):[ ]*(\d+(?:\s*,\s*\d+)*)>/i;
   var note3 = /<(?:SUS UPGRADE TYPE)[ ](\d+)[ ](?:LIMIT):[ ]*(\d+)>/i;
@@ -1288,14 +1799,14 @@ DataManager.susSkillNotetags = function(group) {
 
     var CustomMode = 'none';
     obj.susNotUpgrade = [];
-    obj.susUpgradeLimit  = [];
+    obj.susUpgradeLimit = [];
     obj.susUpgradeValue = [];
     obj.susUpgradeFormat = [];
     obj.susUpgradeCost = '';
     obj.susShowSwitch = [];
 
     for (var t = 0; t < FTKR.SUS.maxUtypeNum + 1; t++) {
-      obj.susNotUpgrade[t] = false; 
+      obj.susNotUpgrade[t] = false;
       obj.susShowSwitch[t] = 0;
     }
 
@@ -1305,31 +1816,31 @@ DataManager.susSkillNotetags = function(group) {
         obj.susNotUpgrade[0] = true;
       } else if (line.match(note2)) {
         var types = JSON.parse('[' + RegExp.$1.match(/\d+/g) + ']');
-        types.forEach( function(type) {
+        types.forEach(function (type) {
           obj.susNotUpgrade[type] = true;
         });
       } else if (line.match(note3)) {
-        var type  = Number(RegExp.$1);
+        var type = Number(RegExp.$1);
         var limit = Number(RegExp.$2);
         obj.susUpgradeLimit[type] = limit;
       } else if (line.match(note4)) {
-        var type  = Number(RegExp.$1);
+        var type = Number(RegExp.$1);
         var value = Number(RegExp.$2);
         obj.susUpgradeValue[type] = value;
       } else if (line.match(note5)) {
-        var type  = Number(RegExp.$1);
+        var type = Number(RegExp.$1);
         var fmt = String(RegExp.$2);
         obj.susUpgradeFormat[type] = fmt;
       } else if (line.match(note6)) {
-        var dataId  = Number(RegExp.$1);
+        var dataId = Number(RegExp.$1);
         var rate = Number(RegExp.$2);
         obj.effects[dataId].rate = rate;
       } else if (line.match(note8)) {
-        var dataId  = Number(RegExp.$1);
+        var dataId = Number(RegExp.$1);
         var display = String(RegExp.$2);
         obj.effects[dataId].display = display;
       } else if (line.match(note7a)) {
-        var type  = Number(RegExp.$1);
+        var type = Number(RegExp.$1);
         CustomMode = 'cost';
       } else if (line.match(note7b)) {
         CustomMode = 'none';
@@ -1338,7 +1849,7 @@ DataManager.susSkillNotetags = function(group) {
       } else if (line.match(note10)) {
         var swId = Number(RegExp.$1);
         var types = JSON.parse('[' + RegExp.$2.match(/\d+/g) + ']');
-        types.forEach( function(type) {
+        types.forEach(function (type) {
           obj.susShowSwitch[type] = swId;
         });
       }
@@ -1346,7 +1857,7 @@ DataManager.susSkillNotetags = function(group) {
   }
 };
 
-DataManager.susHideNotetags = function(group) {
+DataManager.susHideNotetags = function (group) {
   var note = /<(?:SUS COMMAND HIDE)>/i;
 
   for (var n = 1; n < group.length; n++) {
@@ -1363,13 +1874,13 @@ DataManager.susHideNotetags = function(group) {
 };
 
 FTKR.SUS.DataManager_isSkill = DataManager.isSkill;
-DataManager.isSkill = function(item) {
-    return DataManager.isSepSkill(item) ? true :
-        FTKR.SUS.DataManager_isSkill.call(this, item);
+DataManager.isSkill = function (item) {
+  return DataManager.isSepSkill(item) ? true :
+    FTKR.SUS.DataManager_isSkill.call(this, item);
 };
 
-DataManager.isSepSkill = function(skill) {
-    return skill && skill.hasOwnProperty('actorId');
+DataManager.isSepSkill = function (skill) {
+  return skill && skill.hasOwnProperty('actorId');
 };
 
 //=============================================================================
@@ -1377,7 +1888,7 @@ DataManager.isSepSkill = function(skill) {
 //=============================================================================
 
 FTKR.SUS.Game_Actor_initMembers = Game_Actor.prototype.initMembers;
-Game_Actor.prototype.initMembers = function() {
+Game_Actor.prototype.initMembers = function () {
   FTKR.SUS.Game_Actor_initMembers.call(this);
   this._sepIds = [];
   this._sepDataSkills = [];
@@ -1385,191 +1896,191 @@ Game_Actor.prototype.initMembers = function() {
 };
 
 FTKR.SUS.Game_Actor_learnSkill = Game_Actor.prototype.learnSkill;
-Game_Actor.prototype.learnSkill = function(skillId) {
-    FTKR.SUS.Game_Actor_learnSkill.call(this, skillId);
-    if (!this.isMakedSepSkill(skillId)) {
-        this.makeSepSkill(skillId);
-    }
+Game_Actor.prototype.learnSkill = function (skillId) {
+  FTKR.SUS.Game_Actor_learnSkill.call(this, skillId);
+  if (!this.isMakedSepSkill(skillId)) {
+    this.makeSepSkill(skillId);
+  }
 };
 
-Game_Actor.prototype.isMakedSepSkill = function(skillId) {
-    return this._sepIds.contains(skillId);
+Game_Actor.prototype.isMakedSepSkill = function (skillId) {
+  return this._sepIds.contains(skillId);
 };
 
 FTKR.SUS.Game_Actor_skills = Game_Actor.prototype.skills;
-Game_Actor.prototype.skills = function() {
-    var list = FTKR.SUS.Game_Actor_skills.call(this);
-    var newlist = [];
-    list.forEach( function(skill) {
-        if (this.isMakedSepSkill(skill.id)) {
-            newlist.push(this.sepSkill(skill.id));
-        } else {
-            newlist.push(skill);
-        }
-    },this);
-    return newlist;
+Game_Actor.prototype.skills = function () {
+  var list = FTKR.SUS.Game_Actor_skills.call(this);
+  var newlist = [];
+  list.forEach(function (skill) {
+    if (this.isMakedSepSkill(skill.id)) {
+      newlist.push(this.sepSkill(skill.id));
+    } else {
+      newlist.push(skill);
+    }
+  }, this);
+  return newlist;
 };
 
-Game_Actor.prototype.getSkill = function(skillId) {
-    return this.isMakedSepSkill(skillId) ? this.sepSkill(skillId) : $dataSkills[skillId];
+Game_Actor.prototype.getSkill = function (skillId) {
+  return this.isMakedSepSkill(skillId) ? this.sepSkill(skillId) : $dataSkills[skillId];
 }
 
-Game_Actor.prototype.evalEnabledFormula = function(formula, skill) {
-    if (!formula) return true;
-    try {
-        var a = this;
-        var s = $gameSwitches._data;
-        var v = $gameVariables._data;
-        var value = eval(formula);
-        if (isNaN(value)) value = false;
-        return value;
-    } catch (e) {
-        console.log(e);
-        return false;
-    }
+Game_Actor.prototype.evalEnabledFormula = function (formula, skill) {
+  if (!formula) return true;
+  try {
+    var a = this;
+    var s = $gameSwitches._data;
+    var v = $gameVariables._data;
+    var value = eval(formula);
+    if (isNaN(value)) value = false;
+    return value;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 };
 
-Game_Actor.prototype.isRandomScope = function(skill) {
+Game_Actor.prototype.isRandomScope = function (skill) {
   return skill.scope > 2 && skill.scope < 7;
 }
 
 //skillIdからsepskillを返す
-Game_Actor.prototype.sepSkill = function(skillId) {
-    return this._sepDataSkills.filter( function(skill) {
-        return skill.id === skillId;
-    })[0];
+Game_Actor.prototype.sepSkill = function (skillId) {
+  return this._sepDataSkills.filter(function (skill) {
+    return skill.id === skillId;
+  })[0];
 };
 
-Game_Actor.prototype.isSepDataId = function(sepSkill) {
-    var len = this._sepDataSkills.length;
-    for (var i = 0; i < len; i++) {
-        if (sepSkill === this._sepDataSkills[i]) return i; 
-    }
+Game_Actor.prototype.isSepDataId = function (sepSkill) {
+  var len = this._sepDataSkills.length;
+  for (var i = 0; i < len; i++) {
+    if (sepSkill === this._sepDataSkills[i]) return i;
+  }
 };
 
 //sepSkillを作成する
-Game_Actor.prototype.makeSepSkill = function(skillId) {
-    this._sepIds.push(skillId);
-    this._sepDataSkills.push(this.setSepSkill(skillId));
+Game_Actor.prototype.makeSepSkill = function (skillId) {
+  this._sepIds.push(skillId);
+  this._sepDataSkills.push(this.setSepSkill(skillId));
 };
 
 //sepSkillを削除する
-Game_Actor.prototype.eraseSepSkill = function(skillId) {
-    var sepSkill = this.sepSkill(skillId);
-    if (sepSkill) {
-        var index = this.isSepDataId(sepSkill);
-        this._sepIds.splice(index, 1);
-        this._sepDataSkills.splice(index, 1);
-    }
+Game_Actor.prototype.eraseSepSkill = function (skillId) {
+  var sepSkill = this.sepSkill(skillId);
+  if (sepSkill) {
+    var index = this.isSepDataId(sepSkill);
+    this._sepIds.splice(index, 1);
+    this._sepDataSkills.splice(index, 1);
+  }
 };
 
-Game_Actor.prototype.setSepSkill = function(skillId) {
-    var skill = $dataSkills[skillId];
-    var sepSkill = {};
-    for (var prop in skill) {
-        if (prop == 'damage') {
-            sepSkill[prop] = {};
-            var obj = skill[prop];
-            for (var list in obj) {
-                sepSkill[prop][list] = obj[list];
-            }
-        } else if (prop === 'damages') {
-            sepSkill[prop] = [];
-            skill[prop].forEach( function(obj) {
-                var sepObj = {};
-                for (var list in obj) {
-                    sepObj[list] = obj[list];
-                }
-                sepSkill[prop].push(sepObj);
-            });
-        } else if (prop === 'effects') {
-            sepSkill[prop] = [];
-            skill[prop].forEach( function(obj) {
-                var sepObj = {};
-                for (var list in obj) {
-                    sepObj[list] = obj[list];
-                }
-                sepSkill[prop].push(sepObj);
-            });
-        } else if (prop === 'sepRepeats') {
-            sepSkill[prop] = {};
-            var obj = skill[prop];
-            for (var list in obj) {
-                sepSkill[prop][list] = obj[list];
-            }
-        } else if (prop === 'sep') {
-            continue;
-        } else {
-            sepSkill[prop] = skill[prop];
+Game_Actor.prototype.setSepSkill = function (skillId) {
+  var skill = $dataSkills[skillId];
+  var sepSkill = {};
+  for (var prop in skill) {
+    if (prop == 'damage') {
+      sepSkill[prop] = {};
+      var obj = skill[prop];
+      for (var list in obj) {
+        sepSkill[prop][list] = obj[list];
+      }
+    } else if (prop === 'damages') {
+      sepSkill[prop] = [];
+      skill[prop].forEach(function (obj) {
+        var sepObj = {};
+        for (var list in obj) {
+          sepObj[list] = obj[list];
         }
+        sepSkill[prop].push(sepObj);
+      });
+    } else if (prop === 'effects') {
+      sepSkill[prop] = [];
+      skill[prop].forEach(function (obj) {
+        var sepObj = {};
+        for (var list in obj) {
+          sepObj[list] = obj[list];
+        }
+        sepSkill[prop].push(sepObj);
+      });
+    } else if (prop === 'sepRepeats') {
+      sepSkill[prop] = {};
+      var obj = skill[prop];
+      for (var list in obj) {
+        sepSkill[prop][list] = obj[list];
+      }
+    } else if (prop === 'sep') {
+      continue;
+    } else {
+      sepSkill[prop] = skill[prop];
     }
-    sepSkill.actorId = this.actorId();
-    return sepSkill;
+  }
+  sepSkill.actorId = this.actorId();
+  return sepSkill;
 };
 
-Game_Actor.prototype.isSepEnabled = function(skillId, typeId, dataId) {
+Game_Actor.prototype.isSepEnabled = function (skillId, typeId, dataId) {
   var skill = this.getSkill(skillId);
   var prop = skill[FTKR.SUS.uTypes[typeId].type];
   if (!prop.length) return true;
   return this.evalEnabledFormula(prop[dataId].enabled, skill);
 };
 
-Game_Actor.prototype.evalCostValue = function(cost) {
-    if (!cost || !cost.value) return 0;
-    try {
-        var a = this;
-        var s = $gameSwitches._data;
-        var v = $gameVariables._data;
-        var cnt = this.sepSkillsCount(cost);
-        var value = Math.max(eval(cost.value), 0);
-        if (isNaN(value)) value = 0;
-        return value;
-    } catch (e) {
-        return 0;
-    }
+Game_Actor.prototype.evalCostValue = function (cost) {
+  if (!cost || !cost.value) return 0;
+  try {
+    var a = this;
+    var s = $gameSwitches._data;
+    var v = $gameVariables._data;
+    var cnt = this.sepSkillsCount(cost);
+    var value = Math.max(eval(cost.value), 0);
+    if (isNaN(value)) value = 0;
+    return value;
+  } catch (e) {
+    return 0;
+  }
 };
 
-Game_Actor.prototype.sepSkillsCount = function(cost) {
-    return [];
+Game_Actor.prototype.sepSkillsCount = function (cost) {
+  return [];
 };
 
-Game_Actor.prototype.paySepCost = function(cost) {
-    var value = this.evalCostValue(cost);
-    switch (cost.type) {
-        case 'item':
-          return $gameParty.loseItem($dataItems[cost.id], value);
-        case 'var':
-          return $gameVariables.setValue(cost.id, $gameVariables.value(cost.id) - value);
-        case 'gold':
-          return $gameParty.loseGold(value);
-        case 'weapon':
-          return $gameParty.loseItem($dataWeapons[cost.id], value);
-        case 'armor':
-          return $gameParty.loseItem($dataArmors[cost.id], value);
-    }
+Game_Actor.prototype.paySepCost = function (cost) {
+  var value = this.evalCostValue(cost);
+  switch (cost.type) {
+    case 'item':
+      return $gameParty.loseItem($dataItems[cost.id], value);
+    case 'var':
+      return $gameVariables.setValue(cost.id, $gameVariables.value(cost.id) - value);
+    case 'gold':
+      return $gameParty.loseGold(value);
+    case 'weapon':
+      return $gameParty.loseItem($dataWeapons[cost.id], value);
+    case 'armor':
+      return $gameParty.loseItem($dataArmors[cost.id], value);
+  }
 };
 
-Game_Actor.prototype.isPayCostNg = function(cost) {
-    var value = this.evalCostValue(cost);
-    switch (cost.type) {
-      case 'item':
-        return $gameParty.numItems($dataItems[cost.id]) < value;
-      case 'var':
-        return $gameVariables.value(cost.id) < value;
-      case 'gold':
-        return $gameParty.gold() < value;
-      case 'weapon':
-        return $gameParty.numItems($dataWeapons[cost.id]) < value;
-      case 'armor':
-        return $gameParty.numItems($dataArmors[cost.id]) < value;
-    }
+Game_Actor.prototype.isPayCostNg = function (cost) {
+  var value = this.evalCostValue(cost);
+  switch (cost.type) {
+    case 'item':
+      return $gameParty.numItems($dataItems[cost.id]) < value;
+    case 'var':
+      return $gameVariables.value(cost.id) < value;
+    case 'gold':
+      return $gameParty.gold() < value;
+    case 'weapon':
+      return $gameParty.numItems($dataWeapons[cost.id]) < value;
+    case 'armor':
+      return $gameParty.numItems($dataArmors[cost.id]) < value;
+  }
 };
 
-Game_Actor.prototype.isSusHide = function() {
+Game_Actor.prototype.isSusHide = function () {
   return this.actor().susHide || this.currentClass().susHide ? true : false;
 };
 
-Game_Actor.prototype.isRateEffects = function(code) {
+Game_Actor.prototype.isRateEffects = function (code) {
   switch (code) {
     case Game_Action.EFFECT_ADD_STATE:
     case Game_Action.EFFECT_REMOVE_STATE:
@@ -1580,7 +2091,7 @@ Game_Actor.prototype.isRateEffects = function(code) {
   return false;
 };
 
-Game_Actor.prototype.isTurnEffects = function(code) {
+Game_Actor.prototype.isTurnEffects = function (code) {
   switch (code) {
     case Game_Action.EFFECT_ADD_BUFF:
     case Game_Action.EFFECT_ADD_DEBUFF:
@@ -1589,12 +2100,12 @@ Game_Actor.prototype.isTurnEffects = function(code) {
   return false;
 };
 
-Game_Actor.prototype.isUpgradeEffects = function(code) {
+Game_Actor.prototype.isUpgradeEffects = function (code) {
   return this.isRateEffects(code) || this.isTurnEffects(code) ||
     code === Game_Action.EFFECT_GAIN_TP;
 };
 
-Game_Actor.prototype.isUpgradeTypes  = function(typename) {
+Game_Actor.prototype.isUpgradeTypes = function (typename) {
   switch (typename) {
     case 'damages':
       return 1;
@@ -1614,75 +2125,75 @@ Game_Actor.prototype.isUpgradeTypes  = function(typename) {
   return undefined;
 };
 
-Game_Actor.prototype.isUtypeName = function(typeId) {
+Game_Actor.prototype.isUtypeName = function (typeId) {
   return FTKR.SUS.uTypes[typeId].type;
 };
 
-Game_Actor.prototype.isHideSkillStatus = function(typeId, sepSkill, effectNum, dataId) {
+Game_Actor.prototype.isHideSkillStatus = function (typeId, sepSkill, effectNum, dataId) {
   return (this.matchUtype(typeId, 'damages') && !sepSkill.damages[dataId].type) ||
-         (this.matchUtype(typeId, 'effects') &&
-         (!effectNum || !this.isUpgradeEffects(sepSkill.effects[dataId].code)));
+    (this.matchUtype(typeId, 'effects') &&
+      (!effectNum || !this.isUpgradeEffects(sepSkill.effects[dataId].code)));
 };
 
-Game_Actor.prototype.isEnabledSusUpgrade = function(skillId, typeId, dataId) {
+Game_Actor.prototype.isEnabledSusUpgrade = function (skillId, typeId, dataId) {
   var udata = this.getSusUdata(skillId, typeId, dataId);
-  return udata ? !this.isNotUpgrade(udata): false;
+  return udata ? !this.isNotUpgrade(udata) : false;
 };
 
-Game_Actor.prototype.isNotUpgrade = function(udata) {
+Game_Actor.prototype.isNotUpgrade = function (udata) {
   return udata.notupgrade;
 };
 
-Game_Actor.prototype.isUpgradeLimit = function(udata) {
+Game_Actor.prototype.isUpgradeLimit = function (udata) {
   return udata.limit <= udata.count;
 };
 
-Game_Actor.prototype.isSusShowSwitchOn = function(udata) {
+Game_Actor.prototype.isSusShowSwitchOn = function (udata) {
   return udata.sw ? $gameSwitches.value(udata.sw) : true;
 };
 
-Game_Actor.prototype.canSusUpgrade = function(skillId, typeId, dataId) {
+Game_Actor.prototype.canSusUpgrade = function (skillId, typeId, dataId) {
   var udata = this.getSusUdata(skillId, typeId, dataId);
   if (!udata) return false;
   return this.canPayUpgradeCost(udata) && !this.isUpgradeLimit(udata);
 };
 
 FTKR.SUS.Game_Actor_isPayCostNg = Game_Actor.prototype.isPayCostNg;
-Game_Actor.prototype.isPayCostNg = function(cost) {
-    switch (cost.type) {
-        case 'jp': return this.jp(this._classId) < this.evalCostValue(cost);
-    }
-    return FTKR.SUS.Game_Actor_isPayCostNg.call(this, cost);
+Game_Actor.prototype.isPayCostNg = function (cost) {
+  switch (cost.type) {
+    case 'jp': return this.jp(this._classId) < this.evalCostValue(cost);
+  }
+  return FTKR.SUS.Game_Actor_isPayCostNg.call(this, cost);
 };
 
-Game_Actor.prototype.canPayUpgradeCost = function(udata) {
-  return !udata.cost.filter( function(cost) {
+Game_Actor.prototype.canPayUpgradeCost = function (udata) {
+  return !udata.cost.filter(function (cost) {
     return this.isPayCostNg(cost);
-  },this).length;
+  }, this).length;
 };
 
 // 'damages'等の文字列から、該当するtypeIdを取得
-Game_Actor.prototype.getSusTypeId = function(typename) {
+Game_Actor.prototype.getSusTypeId = function (typename) {
   if (!typename) return false;
-  for(var t = 1; t < FTKR.SUS.maxUtypeNum + 1 ; t++) {
+  for (var t = 1; t < FTKR.SUS.maxUtypeNum + 1; t++) {
     if (FTKR.SUS.uTypes[t].type === typename) return t;
   }
 };
 
 // udataを取得
-Game_Actor.prototype.getSusUdata = function(skillId, typeId, dataId) {
+Game_Actor.prototype.getSusUdata = function (skillId, typeId, dataId) {
   var sepSkill = this.sepSkill(skillId);
-  if(!sepSkill) return  undefined;
-  if(!dataId) dataId = 0;
+  if (!sepSkill) return undefined;
+  if (!dataId) dataId = 0;
   if (typeId === 0) return sepSkill.udata[0];
-  var udatas = sepSkill.udata.filter(function(type) {
+  var udatas = sepSkill.udata.filter(function (type) {
     return type.id === typeId;
   });
   return udatas ? udatas[dataId] : undefined;
 };
 
 // skillIdと強化タイプ名('damages'等)から、該当するスキルの強化値(uparam)を取得
-Game_Actor.prototype.getSusUparam = function(skillId, typename, dataId) {
+Game_Actor.prototype.getSusUparam = function (skillId, typename, dataId) {
   var skill = $dataSkills[skillId];
   if (!this.isUpgradeTypes(typename)) return undefined;
   if (typename === 'scope' && (skill.scope === 1 || skill.scope > 6)) {
@@ -1692,7 +2203,7 @@ Game_Actor.prototype.getSusUparam = function(skillId, typename, dataId) {
   }
 };
 
-Game_Actor.prototype.getSusUparamBase = function(skillId, typename, ucount, dataId) {
+Game_Actor.prototype.getSusUparamBase = function (skillId, typename, ucount, dataId) {
   var skill = $dataSkills[skillId];
   if (!skill) return undefined;
   var udata = this.getSusUdata(skillId, this.getSusTypeId(typename), dataId);
@@ -1704,7 +2215,7 @@ Game_Actor.prototype.getSusUparamBase = function(skillId, typename, ucount, data
   return result;
 };
 
-Game_Actor.prototype.getUbasevalue = function(skill, type, dataId) {
+Game_Actor.prototype.getUbasevalue = function (skill, type, dataId) {
   if (type === 'effects') {
     return skill.effects[dataId].rate;
   } else if (type === 'damages') {
@@ -1718,14 +2229,14 @@ Game_Actor.prototype.getUbasevalue = function(skill, type, dataId) {
   }
 };
 
-Game_Actor.prototype.getSusScope = function(skillId) {
+Game_Actor.prototype.getSusScope = function (skillId) {
   var scope = $dataSkills[skillId].scope;
   var typeId = this.getSusTypeId('scope');
   var udata = this.getSusUdata(skillId, typeId);
   return udata ? this.getSusScopeBase(scope, udata.count) : false;
 };
 
-Game_Actor.prototype.getSusScopeBase = function(scope, value) {
+Game_Actor.prototype.getSusScopeBase = function (scope, value) {
   switch (scope) {
     case 1:
     case 7:
@@ -1740,11 +2251,11 @@ Game_Actor.prototype.getSusScopeBase = function(scope, value) {
   return scope;
 };
 
-Game_Actor.prototype.setUcost = function(type, id, value, count) {
-  return {'type':type, 'id':id, 'value':value, 'count':count};
+Game_Actor.prototype.setUcost = function (type, id, value, count) {
+  return { 'type': type, 'id': id, 'value': value, 'count': count };
 };
 
-Game_Actor.prototype.getSusSkillNotetagsCost = function(skill, typeId) {
+Game_Actor.prototype.getSusSkillNotetagsCost = function (skill, typeId) {
   var results = [];
   var type = false;
   var readCost = false;
@@ -1760,37 +2271,37 @@ Game_Actor.prototype.getSusSkillNotetagsCost = function(skill, typeId) {
     var costs = costdata.split(';');
     for (var i = 0; i < costs.length; i++) {
       var cost = costs[i];
-      if(cost.match(case1)) {
+      if (cost.match(case1)) {
         type = Number(RegExp.$1);
         if (type === typeId) {
           readCost = true;
           results.push(this.setUcost('gold', 0, String(RegExp.$2), 0));
         }
-      } else if(cost.match(case2)) {
+      } else if (cost.match(case2)) {
         type = Number(RegExp.$1);
         if (type === typeId) {
           readCost = true;
           results.push(this.setUcost('item', Number(RegExp.$2), String(RegExp.$3), 0));
         }
-      } else if(cost.match(case2a)) {
+      } else if (cost.match(case2a)) {
         type = Number(RegExp.$1);
         if (type === typeId) {
           readCost = true;
           results.push(this.setUcost('weapon', Number(RegExp.$2), String(RegExp.$3), 0));
         }
-      } else if(cost.match(case2b)) {
+      } else if (cost.match(case2b)) {
         type = Number(RegExp.$1);
         if (type === typeId) {
           readCost = true;
           results.push(this.setUcost('armor', Number(RegExp.$2), String(RegExp.$3), 0));
         }
-      } else if(cost.match(case3)) {
+      } else if (cost.match(case3)) {
         type = Number(RegExp.$1);
         if (type === typeId) {
           readCost = true;
           results.push(this.setUcost('var', Number(RegExp.$2), String(RegExp.$3), 0));
         }
-      } else if(cost.match(case4)) {
+      } else if (cost.match(case4)) {
         type = Number(RegExp.$1);
         if (type === typeId) {
           readCost = true;
@@ -1804,7 +2315,7 @@ Game_Actor.prototype.getSusSkillNotetagsCost = function(skill, typeId) {
 
 //sepSkillに強化用のパラメータ(udata)を追加
 FTKR.SUS.Game_Actor_makeSepSkill = Game_Actor.prototype.makeSepSkill;
-Game_Actor.prototype.makeSepSkill = function(skillId) {
+Game_Actor.prototype.makeSepSkill = function (skillId) {
   FTKR.SUS.Game_Actor_makeSepSkill.call(this, skillId);
   var sepSkill = this.sepSkill(skillId);
   var index = this.makeSusUdata(skillId);
@@ -1812,9 +2323,9 @@ Game_Actor.prototype.makeSepSkill = function(skillId) {
 };
 
 // udataの中身(_udatas[index][typeId])を作成し、this._udatas[index]のindexを返す
-Game_Actor.prototype.makeSusUdata = function(skillId) {
+Game_Actor.prototype.makeSusUdata = function (skillId) {
   var udatas = [];
-  for(var t = 0; t < FTKR.SUS.maxUtypeNum + 1 ; t++) {
+  for (var t = 0; t < FTKR.SUS.maxUtypeNum + 1; t++) {
     var flag = this.isUpgradeTypes(this.isUtypeName(t));
     if (flag === 'undefined') continue;
     udatas = udatas.concat(this.setSusUdata(skillId, t));
@@ -1823,11 +2334,11 @@ Game_Actor.prototype.makeSusUdata = function(skillId) {
   return this._udatas.length - 1;
 };
 
-Game_Actor.prototype.setSusUdata = function(skillId, typeId) {
+Game_Actor.prototype.setSusUdata = function (skillId, typeId) {
   if (this.matchUtype(typeId, 'damages')) {
     var udatas = [];
     var damages = $dataSkills[skillId].damages;
-    var len = damages.length ? damages.length : 1; 
+    var len = damages.length ? damages.length : 1;
     for (var i = 0; i < len; i++) {
       var udata = this.setSusUdataBase(skillId, typeId);
       if (!damages[i]) udata.notupgrade = true;
@@ -1837,7 +2348,7 @@ Game_Actor.prototype.setSusUdata = function(skillId, typeId) {
   } else if (this.matchUtype(typeId, 'effects')) {
     var udatas = [];
     var effects = $dataSkills[skillId].effects;
-    var len = effects.length ? effects.length : 1; 
+    var len = effects.length ? effects.length : 1;
     for (var i = 0; i < len; i++) {
       var udata = this.setSusUdataBase(skillId, typeId);
       if (!effects[i]) {
@@ -1853,23 +2364,23 @@ Game_Actor.prototype.setSusUdata = function(skillId, typeId) {
   }
 };
 
-Game_Actor.prototype.setSusUdataBase = function(skillId, typeId, uflag) {
+Game_Actor.prototype.setSusUdataBase = function (skillId, typeId, uflag) {
   var value = this.setUpgradeSkillValue(skillId, typeId);
   var limit = this.setUpgradeSkillLimit(skillId, typeId, value);
   var udata = {
-    'id':typeId,
-    'count':0,
-    'value':value,
-    'limit':limit,
-    'notupgrade':this.setNotUpgradeSkill(skillId, typeId, limit),
-    'cost':this.setUpgradeSkillCost(skillId, typeId),
-    'format':this.setUpgradeSkillFormat(skillId, typeId),
-    'sw':this.setShowSwitch(skillId, typeId)
+    'id': typeId,
+    'count': 0,
+    'value': value,
+    'limit': limit,
+    'notupgrade': this.setNotUpgradeSkill(skillId, typeId, limit),
+    'cost': this.setUpgradeSkillCost(skillId, typeId),
+    'format': this.setUpgradeSkillFormat(skillId, typeId),
+    'sw': this.setShowSwitch(skillId, typeId)
   };
   return udata;
 };
 
-Game_Actor.prototype.setUpgradeSkillBase = function(lists, skillId, typeId) {
+Game_Actor.prototype.setUpgradeSkillBase = function (lists, skillId, typeId) {
   for (var i in lists) {
     var list = lists[i];
     if (list.skillId == skillId && list.typeId == typeId) return list.value;
@@ -1877,7 +2388,7 @@ Game_Actor.prototype.setUpgradeSkillBase = function(lists, skillId, typeId) {
   return NaN;
 };
 
-Game_Actor.prototype.setUpgradeSkillValue = function(skillId, typeId) {
+Game_Actor.prototype.setUpgradeSkillValue = function (skillId, typeId) {
   var result = this.setUpgradeSkillBase(this.actor().susUpgradeValue, skillId, typeId);
   if (result) return result;
   result = this.setUpgradeSkillBase(this.currentClass().susUpgradeValue, skillId, typeId);
@@ -1888,7 +2399,7 @@ Game_Actor.prototype.setUpgradeSkillValue = function(skillId, typeId) {
   return result ? result : FTKR.SUS.uTypes[0].value;
 };
 
-Game_Actor.prototype.setUpgradeSkillLimitBase = function(skillId, typeId) {
+Game_Actor.prototype.setUpgradeSkillLimitBase = function (skillId, typeId) {
   var result = this.setUpgradeSkillBase(this.actor().susUpgradeLimit, skillId, typeId);
   if (result > 0) return result;
   result = this.setUpgradeSkillBase(this.currentClass().susUpgradeLimit, skillId, typeId);
@@ -1899,12 +2410,12 @@ Game_Actor.prototype.setUpgradeSkillLimitBase = function(skillId, typeId) {
   return result > 0 ? result : FTKR.SUS.uTypes[0].limit;
 };
 
-Game_Actor.prototype.setUpgradeSkillLimit = function(skillId, typeId, value) {
+Game_Actor.prototype.setUpgradeSkillLimit = function (skillId, typeId, value) {
   var limit = this.setUpgradeSkillLimitBase(skillId, typeId);
   var skill = $dataSkills[skillId];
   if (skill.susNotUpgrade[typeId]) {
     limit = 0;
-  } else if (this.matchUtype(typeId, 'damages')&& !skill.damages[0].type) {
+  } else if (this.matchUtype(typeId, 'damages') && !skill.damages[0].type) {
     limit = 0;
   } else if (this.matchUtype(typeId, 'mpCost')) {
     var defMpCost = skill.mpCost;
@@ -1913,8 +2424,8 @@ Game_Actor.prototype.setUpgradeSkillLimit = function(skillId, typeId, value) {
     var defTpCost = skill.tpCost;
     if (defTpCost < Math.abs(limit * value)) limit = Math.ceil(defTpCost / Math.abs(value));
   } else if (this.matchUtype(typeId, 'scope')) {
-    if ([1,7,9].contains(skill.scope)) { limit = 1; }
-    else if ([3,4,5,6].contains(skill.scope)) { return limit; }
+    if ([1, 7, 9].contains(skill.scope)) { limit = 1; }
+    else if ([3, 4, 5, 6].contains(skill.scope)) { return limit; }
     else { limit = 0; }
   } else if (this.matchUtype(typeId, 'effects') && !skill.effects[0]) {
     limit = 0;
@@ -1922,23 +2433,23 @@ Game_Actor.prototype.setUpgradeSkillLimit = function(skillId, typeId, value) {
   return limit;
 };
 
-Game_Actor.prototype.setNotUpgradeSkill = function(skillId, typeId, limit) {
+Game_Actor.prototype.setNotUpgradeSkill = function (skillId, typeId, limit) {
   if (limit === 0) return true;
   var skill = $dataSkills[skillId];
   return (this.actor().susNotUpgrade ||
     this.actor().susNotUpgradeSkillType[skill.stypeId] ||
     !this.actor().susNotUpgradeSkill.indexOf(skillId) ||
-    this.currentClass().susNotUpgrade || 
+    this.currentClass().susNotUpgrade ||
     this.currentClass().susNotUpgradeSkillType[skill.stypeId] ||
     !this.currentClass().susNotUpgradeSkill.indexOf(skillId) ||
-    skill.susNotUpgrade[typeId] ) ? true : false;
+    skill.susNotUpgrade[typeId]) ? true : false;
 };
 
-Game_Actor.prototype.setShowSwitch = function(skillId, typeId) {
+Game_Actor.prototype.setShowSwitch = function (skillId, typeId) {
   return $dataSkills[skillId].susShowSwitch[typeId];
 };
 
-Game_Actor.prototype.setUpgradeSkillCost = function(skillId, typeId) {
+Game_Actor.prototype.setUpgradeSkillCost = function (skillId, typeId) {
   var results = [];
   var result = {};
   var skill = $dataSkills[skillId];
@@ -1947,7 +2458,7 @@ Game_Actor.prototype.setUpgradeSkillCost = function(skillId, typeId) {
   var utype = FTKR.SUS.uTypes[typeId];
   if (utype) {
     results = [];
-    result = {value:utype.cost, type:this.convertCtype(utype.ctype), id:utype.cid, count:0};
+    result = { value: utype.cost, type: this.convertCtype(utype.ctype), id: utype.cid, count: 0 };
     if (result.value && result.type) {
       results.push(result);
       return results;
@@ -1955,43 +2466,43 @@ Game_Actor.prototype.setUpgradeSkillCost = function(skillId, typeId) {
   }
   var utype0 = FTKR.SUS.uTypes[0];
   if (!utype0) return false;
-  result = {value:utype0.cost, type:this.convertCtype(utype0.ctype), id:utype0.cid, count:0};
+  result = { value: utype0.cost, type: this.convertCtype(utype0.ctype), id: utype0.cid, count: 0 };
   results.push(result);
   return results;
 };
 
-Game_Actor.prototype.convertCtype = function(ctype) {
-    switch (ctype) {
-      case 1: return 'gold';
-      case 2: return 'item';
-      case 3: return 'var';
-      case 4: return 'jp';
-      case 5: return 'weapon';
-      case 6: return 'armor';
-      default: return '';
-    };
+Game_Actor.prototype.convertCtype = function (ctype) {
+  switch (ctype) {
+    case 1: return 'gold';
+    case 2: return 'item';
+    case 3: return 'var';
+    case 4: return 'jp';
+    case 5: return 'weapon';
+    case 6: return 'armor';
+    default: return '';
+  };
 };
 
-Game_Actor.prototype.setUpgradeSkillFormat = function(skillId, typeId) {
+Game_Actor.prototype.setUpgradeSkillFormat = function (skillId, typeId) {
   var fmt = $dataSkills[skillId].susUpgradeFormat[typeId];
   if (fmt) return fmt;
   fmt = FTKR.SUS.uTypes[typeId].format;
   return fmt ? fmt : FTKR.SUS.uTypes[0].format;
 };
 
-Game_Actor.prototype.upgradeSepSkill = function(skillId, typeId, dataId) {
+Game_Actor.prototype.upgradeSepSkill = function (skillId, typeId, dataId) {
   this.payUpgradeCost(skillId, typeId, dataId);
   return this.susUpgradeSepSkill(skillId, typeId, dataId);
 };
 
 //スキルを強化する
-Game_Actor.prototype.susUpgradeSepSkill = function(skillId, typeId, dataId) {
+Game_Actor.prototype.susUpgradeSepSkill = function (skillId, typeId, dataId) {
   var sepSkill = this.sepSkill(skillId);
   var udata = this.getSusUdata(skillId, typeId, dataId);
   if (!udata) return false;
   udata.count += 1;
-  udata.cost.forEach( function(cost, i) {
-      udata.cost[i].count += 1;
+  udata.cost.forEach(function (cost, i) {
+    udata.cost[i].count += 1;
   });
   var type = FTKR.SUS.uTypes[typeId].type;
   var value = this.getSusUparam(skillId, type, dataId);
@@ -2001,18 +2512,18 @@ Game_Actor.prototype.susUpgradeSepSkill = function(skillId, typeId, dataId) {
   return true;
 };
 
-Game_Actor.prototype.getSusTotalCount = function(sepSkill) {
+Game_Actor.prototype.getSusTotalCount = function (sepSkill) {
   var totalcount = 0;
-  sepSkill.udata.forEach( function(udata) {
+  sepSkill.udata.forEach(function (udata) {
     totalcount += udata.count;
   });
   return totalcount;
 };
 
-Game_Actor.prototype.setUpgradeParam = function(sepSkill, typename, value, dataId) {
+Game_Actor.prototype.setUpgradeParam = function (sepSkill, typename, value, dataId) {
   if (typename == 'damages') {
     sepSkill.damages[dataId].rate = value;
-  } else if (typename === 'scope' && sepSkill.scoperandom){
+  } else if (typename === 'scope' && sepSkill.scoperandom) {
     sepSkill.scoperandom = value;
   } else if (typename === 'effects') {
     sepSkill.effects[dataId].rate = value;
@@ -2024,96 +2535,96 @@ Game_Actor.prototype.setUpgradeParam = function(sepSkill, typename, value, dataI
 };
 
 //書き換え
-Game_Actor.prototype.sepSkillsCount = function(cost) {
-    return cost.count;
+Game_Actor.prototype.sepSkillsCount = function (cost) {
+  return cost.count;
 };
 
 FTKR.SUS.Game_Actor_paySepCost = Game_Actor.prototype.paySepCost;
-Game_Actor.prototype.paySepCost = function(cost) {
-    switch (cost.type) {
-        case 'jp': return this.gainJp(-this.evalCostValue(cost), this._classId);
-    }
-    return FTKR.SUS.Game_Actor_paySepCost.call(this,cost);
+Game_Actor.prototype.paySepCost = function (cost) {
+  switch (cost.type) {
+    case 'jp': return this.gainJp(-this.evalCostValue(cost), this._classId);
+  }
+  return FTKR.SUS.Game_Actor_paySepCost.call(this, cost);
 };
 
-Game_Actor.prototype.payUpgradeCost = function(skillId, typeId, dataId) {
+Game_Actor.prototype.payUpgradeCost = function (skillId, typeId, dataId) {
   var udata = this.getSusUdata(skillId, typeId, dataId);
-  udata.cost.forEach( function(cost){
+  udata.cost.forEach(function (cost) {
     return this.paySepCost(cost);
-  },this);
+  }, this);
   return true;
 };
 
-Game_Actor.prototype.matchUtype = function(typeId, typename) {
+Game_Actor.prototype.matchUtype = function (typeId, typename) {
   return typeId === this.getSusTypeId(typename);
 }
 
 FTKR.SUS.Game_Actor_setup = Game_Actor.prototype.setup;
-Game_Actor.prototype.setup = function(actorId) {
+Game_Actor.prototype.setup = function (actorId) {
   FTKR.SUS.Game_Actor_setup.call(this, actorId);
   ImageManager.loadFace(this.faceName());
 };
 
-Game_Actor.prototype.isNonUpgradeItem = function(skillId, typeId, dataId) {
+Game_Actor.prototype.isNonUpgradeItem = function (skillId, typeId, dataId) {
   var sepSkill = this.sepSkill(skillId);
   var udata = this.getSusUdata(skillId, typeId, dataId);
   if (!udata) return false;
   return (this.isNotUpgrade(udata, skillId, dataId) && FTKR.SUS.hideNotUgItem > 0) ||
-      (!this.canPayUpgradeCost(udata) && FTKR.SUS.hideCantPayItem > 0) ||
-      (this.isUpgradeLimit(udata) && FTKR.SUS.hideLimitUgItem > 0) ||
-      this.isHideSkillStatus(typeId, sepSkill, sepSkill.effects.length, dataId) ||
-      !this.isSusShowSwitchOn(udata);
+    (!this.canPayUpgradeCost(udata) && FTKR.SUS.hideCantPayItem > 0) ||
+    (this.isUpgradeLimit(udata) && FTKR.SUS.hideLimitUgItem > 0) ||
+    this.isHideSkillStatus(typeId, sepSkill, sepSkill.effects.length, dataId) ||
+    !this.isSusShowSwitchOn(udata);
 };
 
-Game_Actor.prototype.isLightUpgradeItem = function(skillId, typeId, dataId) {
+Game_Actor.prototype.isLightUpgradeItem = function (skillId, typeId, dataId) {
   var sepSkill = this.sepSkill(skillId);
   var udata = this.getSusUdata(skillId, typeId, dataId);
   if (!udata) return false;
   return (this.isNotUpgrade(udata, skillId, dataId) ||
-      !this.canPayUpgradeCost(udata) ||
-      this.isUpgradeLimit(udata)) && FTKR.SUS.showNonUgItem;
+    !this.canPayUpgradeCost(udata) ||
+    this.isUpgradeLimit(udata)) && FTKR.SUS.showNonUgItem;
 };
 
 //=============================================================================
 // Game_Enemy
 //=============================================================================
 
-Game_Enemy.prototype.getSkill = function(skillId) {
-    return $dataSkills[skillId];
+Game_Enemy.prototype.getSkill = function (skillId) {
+  return $dataSkills[skillId];
 };
 
-Game_Enemy.prototype.isRandomScope = function(skill) {
+Game_Enemy.prototype.isRandomScope = function (skill) {
   return skill.scope > 2 && skill.scope < 7;
 };
 
-Game_Enemy.prototype.evalEnabledFormula = function(formula, skill) {
-    if (!formula) return true;
-    try {
-        var a = this;
-        var s = $gameSwitches._data;
-        var v = $gameVariables._data;
-        var value = eval(formula);
-        if (isNaN(value)) value = false;
-        return value;
-    } catch (e) {
-        console.log(e);
-        return false;
-    }
+Game_Enemy.prototype.evalEnabledFormula = function (formula, skill) {
+  if (!formula) return true;
+  try {
+    var a = this;
+    var s = $gameSwitches._data;
+    var v = $gameVariables._data;
+    var value = eval(formula);
+    if (isNaN(value)) value = false;
+    return value;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 };
 
 //=============================================================================
 // Window_Base
 //=============================================================================
 
-Window_Base.prototype.drawSusSkillGauge = function(x, y, width, udata) {
+Window_Base.prototype.drawSusSkillGauge = function (x, y, width, udata) {
   if (FTKR.SUS.utype.LineColor1 > -1 && FTKR.SUS.utype.LineColor2 > -1) {
-    var rate = FTKR.SUS.utype.LineGauge && udata.limit ? udata.count/udata.limit : 1;
+    var rate = FTKR.SUS.utype.LineGauge && udata.limit ? udata.count / udata.limit : 1;
     this.drawGauge(x, y, width, rate, this.textColor(FTKR.SUS.utype.LineColor1),
-        this.textColor(FTKR.SUS.utype.LineColor2));
+      this.textColor(FTKR.SUS.utype.LineColor2));
   }
 };
 
-Window_Base.prototype.setSepSkillStatusFormats = function() {
+Window_Base.prototype.setSepSkillStatusFormats = function () {
   return [
     FTKR.SUS.utype.Text1Format,
     FTKR.SUS.utype.Text2Format,
@@ -2121,7 +2632,7 @@ Window_Base.prototype.setSepSkillStatusFormats = function() {
   ];
 };
 
-Window_Base.prototype.setSepSkillStatusParams = function(skill, typeId, dataId) {
+Window_Base.prototype.setSepSkillStatusParams = function (skill, typeId, dataId) {
   var udata = this._actor.getSusUdata(skill.id, typeId, dataId);
   var utype = FTKR.SUS.uTypes[typeId];
   return [
@@ -2132,22 +2643,22 @@ Window_Base.prototype.setSepSkillStatusParams = function(skill, typeId, dataId) 
   ];
 };
 
-Window_Base.prototype.sepTypeWidthRate = function() {
+Window_Base.prototype.sepTypeWidthRate = function () {
   return FTKR.SUS.utype.WidthRate;
 };
 
-Window_Base.prototype.sepTypeItemHeigth = function() {
+Window_Base.prototype.sepTypeItemHeigth = function () {
   return FTKR.SUS.utype.ItemHeigth;
 };
 
-Window_Base.prototype.exchangeFormat = function(format, skill, typeId, dataId) {
+Window_Base.prototype.exchangeFormat = function (format, skill, typeId, dataId) {
   var udata = this._actor.getSusUdata(skill.id, typeId, dataId);
-  if (format.match(/%2|%3/) && !udata.limit) format = ''; 
+  if (format.match(/%2|%3/) && !udata.limit) format = '';
 };
 
-Window_Base.prototype.setSusUparam = function(type, sepSkill, level, dataId, eflag) {
+Window_Base.prototype.setSusUparam = function (type, sepSkill, level, dataId, eflag) {
   var actor = this._actor;
-  var id = this._skillId; 
+  var id = this._skillId;
   var skill = $dataSkills[id];
   if (type === 'scope' && !actor.isRandomScope(sepSkill)) {
     return this.getScopeName(actor, skill, level);
@@ -2166,28 +2677,28 @@ Window_Base.prototype.setSusUparam = function(type, sepSkill, level, dataId, efl
   }
 };
 
-Window_Base.prototype.getScopeName = function(actor, skill, level) {
+Window_Base.prototype.getScopeName = function (actor, skill, level) {
   return TextManager.scope(actor.getSusScopeBase(skill.scope, level));
 };
 
-Window_Base.prototype.setUpgradeSound = function() {
+Window_Base.prototype.setUpgradeSound = function () {
   this._upgradeSound = {
-    name:   FTKR.SUS.susSeName,
+    name: FTKR.SUS.susSeName,
     volume: FTKR.SUS.susSeVolume,
-    pitch:  FTKR.SUS.susSePitch,
-    pan:    FTKR.SUS.susSePan
+    pitch: FTKR.SUS.susSePitch,
+    pan: FTKR.SUS.susSePan
   };
 };
 
 //アクター名、スキル名が使用できるタイトル文を表示する関数
-Window_Base.prototype.drawDescTitle = function(format, x, y, width, skill) {
+Window_Base.prototype.drawDescTitle = function (format, x, y, width, skill) {
   var diff = this.diffPadding();
   var params = [this._actor._name, skill.name];
   this.drawFormatText(format, x + diff, y + diff, params, width);
 };
 
 //スキルの説明文を表示する関数
-Window_Base.prototype.drawDescription = function(x, y, width, skill) {
+Window_Base.prototype.drawDescription = function (x, y, width, skill) {
   var diff = this.diffPadding();
   var desc = this.getDesc(skill);
   var texts = desc.split('\n');
@@ -2199,12 +2710,12 @@ Window_Base.prototype.drawDescription = function(x, y, width, skill) {
 };
 
 //スキルの説明文を取得する関数
-Window_Base.prototype.getDesc = function(skill) {
+Window_Base.prototype.getDesc = function (skill) {
   if (Imported.FTKR_SEP) {
     var actor = $gameActors.actor(skill.actorId);
     if (!actor) return skill.description;
-    var descs = skill.descs.filter( function(desc) {
-        return actor.evalEnabledFormula(desc.enabled, skill);
+    var descs = skill.descs.filter(function (desc) {
+      return actor.evalEnabledFormula(desc.enabled, skill);
     });
     var desc = descs.pop();
     return desc ? desc.description : '';
@@ -2216,7 +2727,7 @@ Window_Base.prototype.getDesc = function(skill) {
 /*-------------------------------------------------------------
   スキルパラメータを表示する関数
 -------------------------------------------------------------*/
-Window_Base.prototype.drawSepSkillStatus = function(tx, ty, tw, rect, typeId, skill, dataId){
+Window_Base.prototype.drawSepSkillStatus = function (tx, ty, tw, rect, typeId, skill, dataId) {
   var formats = this.setSepSkillStatusFormats();
   var params = this.setSepSkillStatusParams(skill, typeId, dataId);
   var txs = []; var tys = []; var tws = [];
@@ -2224,14 +2735,14 @@ Window_Base.prototype.drawSepSkillStatus = function(tx, ty, tw, rect, typeId, sk
   var wr = this.sepTypeWidthRate().split(',').num();
   var wrs = Math.sam(wr);
   for (var i = 0; i < 3; i++) {
-    txs[i] = (i === 0 || (i > 3 - sih)) ? tx : txs[i-1] + tws[i-1];
+    txs[i] = (i === 0 || (i > 3 - sih)) ? tx : txs[i - 1] + tws[i - 1];
     tys[i] = rect.y + ty * (sih - 3 + i).clamp(0, 2);
     switch (sih) {
       case 1:
         tws[i] = tw * wr[i] / wrs; break;
       case 2:
         tws[i] = (i === 2) ? tw * wr[i] / wr[2] :
-                tw * wr[i] / (wr[0] + wr[1]) ; break;
+          tw * wr[i] / (wr[0] + wr[1]); break;
       default:
         tws[i] = tw; break;
     }
@@ -2243,7 +2754,7 @@ Window_Base.prototype.drawSepSkillStatus = function(tx, ty, tw, rect, typeId, sk
 /*-------------------------------------------------------------
   コストデータ(アイコン,名前,必要数,手持ち数)を表示する関数
 -------------------------------------------------------------*/
-Window_Base.prototype.drawSepCost = function(format, cost, x, y, width) {
+Window_Base.prototype.drawSepCost = function (format, cost, x, y, width) {
   var diff = this.diffPadding();
   x += diff;
   y += diff;
@@ -2260,12 +2771,12 @@ Window_Base.prototype.drawSepCost = function(format, cost, x, y, width) {
   }
 };
 
-Window_Base.prototype.setCost = function(icon, name, base) {
-    return {icon:icon, name:name, base:base};
+Window_Base.prototype.setCost = function (icon, name, base) {
+  return { icon: icon, name: name, base: base };
 };
 
-Window_Base.prototype.setSepCost = function(cost) {
-  switch(cost.type) {
+Window_Base.prototype.setSepCost = function (cost) {
+  switch (cost.type) {
     case 'gold':
       return this.setCost(FTKR.SUS.costGoldIcon, $dataSystem.currencyUnit, $gameParty.gold());
     case 'item':
@@ -2285,25 +2796,25 @@ Window_Base.prototype.setSepCost = function(cost) {
 };
 
 //アイコンの表示スケールを指定できる表示関数
-Window_Base.prototype.drawIconCustom = function(iconIndex, x, y, scale) {
-    var bitmap = ImageManager.loadSystem('IconSet');
-    var pw = Window_Base._iconWidth;
-    var ph = Window_Base._iconHeight;
-    var sx = iconIndex % 16 * pw;
-    var sy = Math.floor(iconIndex / 16) * ph;
-    this.contents.blt(bitmap, sx, sy, pw, ph, x, y, pw * scale, ph * scale);
+Window_Base.prototype.drawIconCustom = function (iconIndex, x, y, scale) {
+  var bitmap = ImageManager.loadSystem('IconSet');
+  var pw = Window_Base._iconWidth;
+  var ph = Window_Base._iconHeight;
+  var sx = iconIndex % 16 * pw;
+  var sy = Math.floor(iconIndex / 16) * ph;
+  this.contents.blt(bitmap, sx, sy, pw, ph, x, y, pw * scale, ph * scale);
 };
 
-Window_Base.prototype.drawSepSkillLine = function(x, y, width) {
+Window_Base.prototype.drawSepSkillLine = function (x, y, width) {
   if (FTKR.SUS.sepType.LineColor1 > -1 && FTKR.SUS.sepType.LineColor2 > -1) {
     this.drawGauge(x, y, width, 1, this.textColor(FTKR.SUS.sepType.LineColor1),
-        this.textColor(FTKR.SUS.sepType.LineColor2));
+      this.textColor(FTKR.SUS.sepType.LineColor2));
   }
 };
 
 // 専用の制御文字を使えるテキスト描画関数
 // 詳しくは、ヘルプ参照
-Window_Base.prototype.drawFormatText = function(fmt, x, y, params, width, height) {
+Window_Base.prototype.drawFormatText = function (fmt, x, y, params, width, height) {
   var texts = fmt.split('\\n');
   var cxs = [], cws = [], chs = [], colors = [], sizes = [], fsizes = [], posis = [];
   var tw = this.textWidth('0');
@@ -2325,7 +2836,7 @@ Window_Base.prototype.drawFormatText = function(fmt, x, y, params, width, height
       var text = texts[i];
       var cflag = false;
       var pflag = '';
-      cxs[i] = i > 0 ? cxs[i-1] + cws[i-1] : x;
+      cxs[i] = i > 0 ? cxs[i - 1] + cws[i - 1] : x;
       chs[i] = height || this.lineHeight();
       colors[i] = -1;
       var size = 100;
@@ -2391,9 +2902,9 @@ Window_Base.prototype.drawFormatText = function(fmt, x, y, params, width, height
       var textWidth = Math.sam(cws);
       var diff = width - textWidth;
       if (diff < 0) {
-        for(var i = 0; i < cws.length; i++) {
+        for (var i = 0; i < cws.length; i++) {
           cws[i] *= width / textWidth;
-          cxs[i] = i > 0 ? cxs[i-1] + cws[i-1]: x;
+          cxs[i] = i > 0 ? cxs[i - 1] + cws[i - 1] : x;
         }
       } else if (diff > 0 && pflag === 'right') {
         space = diff;
@@ -2410,21 +2921,21 @@ Window_Base.prototype.drawFormatText = function(fmt, x, y, params, width, height
   return textWidth;
 };
 
-Window_Base.prototype.drawTextCustom = function(text, x, y, w, h ,fontsize, align) {
+Window_Base.prototype.drawTextCustom = function (text, x, y, w, h, fontsize, align) {
   this.contents.fontSize = fontsize;
   this.contents.drawText(text, x, y, w, h, align);
   this.contents.fontSize = this.standardFontSize();
 };
 
-Window_Base.prototype.defaultPadding = function() {
-    return 18;
+Window_Base.prototype.defaultPadding = function () {
+  return 18;
 };
 
-Window_Base.prototype.diffPadding = function() {
-    return this.defaultPadding() - this.standardPadding();
+Window_Base.prototype.diffPadding = function () {
+  return this.defaultPadding() - this.standardPadding();
 };
 
-Window_Base.prototype.setSkillId = function(skillId) {
+Window_Base.prototype.setSkillId = function (skillId) {
   if (this._skillId === skillId) return;
   this._skillId = skillId;
   this.refresh();
@@ -2434,61 +2945,61 @@ Window_Base.prototype.setSkillId = function(skillId) {
 // Window_Selectable
 //=============================================================================
 
-Window_Selectable.prototype.actSelect = function(index) {
+Window_Selectable.prototype.actSelect = function (index) {
   this.activate();
   this.select(index);
   this.refresh();
 };
 
-Window_Selectable.prototype.itemHeightSpace = function() {
-    return 0;
+Window_Selectable.prototype.itemHeightSpace = function () {
+  return 0;
 };
 
-Window_Selectable.prototype.unitHeight = function() {
-    return this.itemHeight() + this.itemHeightSpace();
+Window_Selectable.prototype.unitHeight = function () {
+  return this.itemHeight() + this.itemHeightSpace();
 };
 
-Window_Selectable.prototype.unitWidth = function() {
-    return this.itemWidth() + this.spacing();
-};
-
-//書き換え
-Window_Selectable.prototype.itemWidth = function() {
-    return Math.floor((this.width - (this.padding + this.diffPadding()) * 2 +
-                       this.spacing()) / this.maxCols() - this.spacing());
+Window_Selectable.prototype.unitWidth = function () {
+  return this.itemWidth() + this.spacing();
 };
 
 //書き換え
-Window_Selectable.prototype.maxPageRows = function() {
-    var pageHeight = this.height - (this.padding + this.diffPadding()) * 2;
-    return Math.floor(pageHeight / this.unitHeight());
+Window_Selectable.prototype.itemWidth = function () {
+  return Math.floor((this.width - (this.padding + this.diffPadding()) * 2 +
+    this.spacing()) / this.maxCols() - this.spacing());
 };
 
 //書き換え
-Window_Selectable.prototype.topRow = function() {
-    return Math.floor(this._scrollY / this.unitHeight());
+Window_Selectable.prototype.maxPageRows = function () {
+  var pageHeight = this.height - (this.padding + this.diffPadding()) * 2;
+  return Math.floor(pageHeight / this.unitHeight());
 };
 
 //書き換え
-Window_Selectable.prototype.setTopRow = function(row) {
-    var scrollY = row.clamp(0, this.maxTopRow()) * this.unitHeight();
-    if (this._scrollY !== scrollY) {
-        this._scrollY = scrollY;
-        this.refresh();
-        this.updateCursor();
-    }
+Window_Selectable.prototype.topRow = function () {
+  return Math.floor(this._scrollY / this.unitHeight());
 };
 
 //書き換え
-Window_Selectable.prototype.itemRect = function(index) {
-    var rect = new Rectangle();
-    var maxCols = this.maxCols();
-    var diff = this.diffPadding();
-    rect.width = this.itemWidth();
-    rect.height = this.itemHeight();
-    rect.x = index % maxCols * this.unitWidth() - this._scrollX + diff;
-    rect.y = Math.floor(index / maxCols) * this.unitHeight() - this._scrollY + diff;
-    return rect;
+Window_Selectable.prototype.setTopRow = function (row) {
+  var scrollY = row.clamp(0, this.maxTopRow()) * this.unitHeight();
+  if (this._scrollY !== scrollY) {
+    this._scrollY = scrollY;
+    this.refresh();
+    this.updateCursor();
+  }
+};
+
+//書き換え
+Window_Selectable.prototype.itemRect = function (index) {
+  var rect = new Rectangle();
+  var maxCols = this.maxCols();
+  var diff = this.diffPadding();
+  rect.width = this.itemWidth();
+  rect.height = this.itemHeight();
+  rect.x = index % maxCols * this.unitWidth() - this._scrollX + diff;
+  rect.y = Math.floor(index / maxCols) * this.unitHeight() - this._scrollY + diff;
+  return rect;
 };
 
 //=============================================================================
@@ -2497,7 +3008,7 @@ Window_Selectable.prototype.itemRect = function(index) {
 
 FTKR.SUS.Window_MenuCommand_addOriginalCommands =
   Window_MenuCommand.prototype.addOriginalCommands;
-Window_MenuCommand.prototype.addOriginalCommands = function() {
+Window_MenuCommand.prototype.addOriginalCommands = function () {
   FTKR.SUS.Window_MenuCommand_addOriginalCommands.call(this);
   if (FTKR.SUS.showCommand === 1) {
     if (FTKR.SUS.menuSwitchId === 0) {
@@ -2514,8 +3025,8 @@ Window_MenuCommand.prototype.addOriginalCommands = function() {
 //=============================================================================
 
 FTKR.SUS.Window_SkillType_makeCommandList =
-    Window_SkillType.prototype.makeCommandList;
-Window_SkillType.prototype.makeCommandList = function() {
+  Window_SkillType.prototype.makeCommandList;
+Window_SkillType.prototype.makeCommandList = function () {
   FTKR.SUS.Window_SkillType_makeCommandList.call(this);
   if (this._actor) {
     if (!this._actor.isSusHide() && this.susShowCommand()) {
@@ -2524,46 +3035,46 @@ Window_SkillType.prototype.makeCommandList = function() {
   }
 };
 
-Window_SkillType.prototype.susShowCommand = function() {
+Window_SkillType.prototype.susShowCommand = function () {
   if (FTKR.SUS.showCommand !== 2) return false;
   if (FTKR.SUS.menuSwitchId === 0) return true;
   return $gameSwitches.value(FTKR.SUS.menuSwitchId);
 };
 
-Window_SkillType.prototype.setSusConfTitleWindow = function(window) {
+Window_SkillType.prototype.setSusConfTitleWindow = function (window) {
   this._susConfTitleWindow = window;
   this.update();
 };
 
-Window_SkillType.prototype.setSusCostWindow = function(window) {
+Window_SkillType.prototype.setSusCostWindow = function (window) {
   this._susCostWindow = window;
   this.update();
 };
 
-Window_SkillType.prototype.setSusSkillWindow = function(window) {
+Window_SkillType.prototype.setSusSkillWindow = function (window) {
   this._susSkillListWindow = window;
   this.update();
 };
 
-Window_SkillType.prototype.setSusUpgradeWindow = function(window) {
+Window_SkillType.prototype.setSusUpgradeWindow = function (window) {
   this._susSkillStatusWindow = window;
   this.update();
 };
 
-Window_SkillType.prototype.setSusUpgradeStatusWindow = function(window) {
+Window_SkillType.prototype.setSusUpgradeStatusWindow = function (window) {
   this._susStatusTitleWindow = window;
   this.update();
 };
 
-Window_SkillType.prototype.setSusConfirmationWindow = function(window) {
+Window_SkillType.prototype.setSusConfirmationWindow = function (window) {
   this._susConfWindow = window;
   this.update();
 };
 
 FTKR.SUS.Window_SkillType_update = Window_SkillType.prototype.update;
-Window_SkillType.prototype.update = function() {
+Window_SkillType.prototype.update = function () {
   FTKR.SUS.Window_SkillType_update.call(this);
-  if (this._susSkillListWindow && this._susSkillStatusWindow  && this._susStatusTitleWindow) {
+  if (this._susSkillListWindow && this._susSkillStatusWindow && this._susStatusTitleWindow) {
     this.updateSusShowHide();
   }
   if (this._susConfWindow && this._susConfTitleWindow) {
@@ -2574,7 +3085,7 @@ Window_SkillType.prototype.update = function() {
   }
 };
 
-Window_SkillType.prototype.updateSusShowHide = function() {
+Window_SkillType.prototype.updateSusShowHide = function () {
   if (this.currentSymbol() === 'susUpgrade') {
     this._susSkillListWindow.show();
   } else {
@@ -2589,7 +3100,7 @@ Window_SkillType.prototype.updateSusShowHide = function() {
   }
 };
 
-Window_SkillType.prototype.updateSusConfirmation = function() {
+Window_SkillType.prototype.updateSusConfirmation = function () {
   if (this.upgradeComOk() && this._susConfWindow._active) {
     this._susConfWindow.show();
     this._susConfTitleWindow.show();
@@ -2599,17 +3110,17 @@ Window_SkillType.prototype.updateSusConfirmation = function() {
   }
 };
 
-Window_SkillType.prototype.upgradeSusCost = function() {
+Window_SkillType.prototype.upgradeSusCost = function () {
   var flag = FTKR.SUS.alwaysDispCost;
   if (this.upgradeComOk() &&
-      (!FTKR.SUS.enableConf || (this._susConfWindow._active && !flag) || flag)) {
+    (!FTKR.SUS.enableConf || (this._susConfWindow._active && !flag) || flag)) {
     this._susCostWindow.show();
   } else {
     this._susCostWindow.hide();
   }
 };
 
-Window_SkillType.prototype.upgradeComOk = function() {
+Window_SkillType.prototype.upgradeComOk = function () {
   return this.currentSymbol() === 'susUpgrade' || FTKR.SUS.subUpgradeOk;
 };
 
@@ -2624,56 +3135,56 @@ function Window_UpgradeSkillList() {
 Window_UpgradeSkillList.prototype = Object.create(Window_Selectable.prototype);
 Window_UpgradeSkillList.prototype.constructor = Window_UpgradeSkillList;
 
-Window_UpgradeSkillList.prototype.initialize = function(x, y, width, height) {
+Window_UpgradeSkillList.prototype.initialize = function (x, y, width, height) {
   Window_Selectable.prototype.initialize.call(this, x, y, width, height);
   this._actor = null;
   this._stypeId = 0;
   this.refresh();
 };
 
-Window_UpgradeSkillList.prototype.setActor = function(actor) {
+Window_UpgradeSkillList.prototype.setActor = function (actor) {
   if (this._actor !== actor) {
     this._actor = actor;
     this.refresh();
   }
 };
 
-Window_UpgradeSkillList.prototype.maxItems = function() {
+Window_UpgradeSkillList.prototype.maxItems = function () {
   return this._data ? this._data.length : 0;
 };
 
-Window_UpgradeSkillList.prototype.refresh = function() {
-    this.makeItemList();
-    this.createContents();
-    this.drawAllItems();
+Window_UpgradeSkillList.prototype.refresh = function () {
+  this.makeItemList();
+  this.createContents();
+  this.drawAllItems();
 };
 
-Window_UpgradeSkillList.prototype.isCurrentItemEnabled = function() {
+Window_UpgradeSkillList.prototype.isCurrentItemEnabled = function () {
   return this.isEnabled(this.item(this.index()));
 };
 
-Window_UpgradeSkillList.prototype.isEnabled = function(skillId) {
+Window_UpgradeSkillList.prototype.isEnabled = function (skillId) {
   return this._actor.isEnabledSusUpgrade(skillId, 0, 0) && this.includes($dataSkills[skillId]);
 }
 
-Window_UpgradeSkillList.prototype.includes = function(item) {
+Window_UpgradeSkillList.prototype.includes = function (item) {
   return this._stypeId ? item && item.stypeId === this._stypeId : true;
 }
 
-Window_UpgradeSkillList.prototype.makeItemList = function() {
+Window_UpgradeSkillList.prototype.makeItemList = function () {
   this._data = [];
   var actor = this._actor;
   if (!actor) return false;
-  this._data = actor._skills.filter( function(skillId) {
+  this._data = actor._skills.filter(function (skillId) {
     return this.isEnabled(skillId);
-  },this);
+  }, this);
 };
 
-Window_UpgradeSkillList.prototype.item = function(index) {
+Window_UpgradeSkillList.prototype.item = function (index) {
   return this._data ? this._data[index] : null;
 };
 
-Window_UpgradeSkillList.prototype.drawItem = function(index) {
+Window_UpgradeSkillList.prototype.drawItem = function (index) {
   if (this._actor) {
     var rect = this.itemRectForText(index);
     this.changeTextColor(this.systemColor());
@@ -2687,25 +3198,25 @@ Window_UpgradeSkillList.prototype.drawItem = function(index) {
   }
 };
 
-Window_UpgradeSkillList.prototype.setItemWindow = function(itemWindow) {
+Window_UpgradeSkillList.prototype.setItemWindow = function (itemWindow) {
   this._itemWindow = itemWindow;
   this.update();
 };
 
-Window_UpgradeSkillList.prototype.setSusStatusWindow = function(susStatusWindow) {
+Window_UpgradeSkillList.prototype.setSusStatusWindow = function (susStatusWindow) {
   this._susActorStatusWindow = susStatusWindow;
   this.update();
 };
 
-Window_UpgradeSkillList.prototype.setStypeId = function(stypeId) {
-    if (this._stypeId !== stypeId) {
-        this._stypeId = stypeId;
-        this.refresh();
-        this.resetScroll();
-    }
+Window_UpgradeSkillList.prototype.setStypeId = function (stypeId) {
+  if (this._stypeId !== stypeId) {
+    this._stypeId = stypeId;
+    this.refresh();
+    this.resetScroll();
+  }
 };
 
-Window_UpgradeSkillList.prototype.update = function() {
+Window_UpgradeSkillList.prototype.update = function () {
   Window_Selectable.prototype.update.call(this);
   var skillId = this.item(this.index());
   if (this._stypeId) this._actor.setLastMenuSkill($dataSkills[skillId]);
@@ -2715,12 +3226,12 @@ Window_UpgradeSkillList.prototype.update = function() {
   }
 };
 
-Window_UpgradeSkillList.prototype.setStatusWindow = function(statusWindow) {
+Window_UpgradeSkillList.prototype.setStatusWindow = function (statusWindow) {
   this._statusWindow = statusWindow;
   this.callUpdateHelp();
 };
 
-Window_UpgradeSkillList.prototype.updateHelp = function() {
+Window_UpgradeSkillList.prototype.updateHelp = function () {
   Window_Selectable.prototype.updateHelp.call(this);
   var skillId = this.item(this.index());
   if (skillId !== undefined) {
@@ -2741,7 +3252,7 @@ function Window_UpgradeTypeList() {
 Window_UpgradeTypeList.prototype = Object.create(Window_Selectable.prototype);
 Window_UpgradeTypeList.prototype.constructor = Window_UpgradeTypeList;
 
-Window_UpgradeTypeList.prototype.initialize = function(x, y, width, height) {
+Window_UpgradeTypeList.prototype.initialize = function (x, y, width, height) {
   Window_Selectable.prototype.initialize.call(this, x, y, width, height);
   this._actor = null;
   this._data = [];
@@ -2749,11 +3260,11 @@ Window_UpgradeTypeList.prototype.initialize = function(x, y, width, height) {
   this.defineUpgradeSound();
 };
 
-Window_UpgradeTypeList.prototype.defineUpgradeSound = function() {
+Window_UpgradeTypeList.prototype.defineUpgradeSound = function () {
   this.setUpgradeSound();
 };
 
-Window_UpgradeTypeList.prototype.setActor = function(actor) {
+Window_UpgradeTypeList.prototype.setActor = function (actor) {
   if (this._actor !== actor) {
     this._actor = actor;
     this.clearWindow();
@@ -2761,7 +3272,7 @@ Window_UpgradeTypeList.prototype.setActor = function(actor) {
   }
 };
 
-Window_UpgradeTypeList.prototype.clearWindow = function() {
+Window_UpgradeTypeList.prototype.clearWindow = function () {
   this._sssIndex = 0;
   this._skillId = null;
   this._typeId = null;
@@ -2769,35 +3280,35 @@ Window_UpgradeTypeList.prototype.clearWindow = function() {
   this.refresh();
 };
 
-Window_UpgradeTypeList.prototype.maxCols = function() {
+Window_UpgradeTypeList.prototype.maxCols = function () {
   return FTKR.SUS.utype.MaxCols.clamp(1, 3);
 };
 
-Window_UpgradeTypeList.prototype.itemHeight = function() {
-    return this.lineHeight() * FTKR.SUS.utype.ItemHeigth.clamp(1, 3);
+Window_UpgradeTypeList.prototype.itemHeight = function () {
+  return this.lineHeight() * FTKR.SUS.utype.ItemHeigth.clamp(1, 3);
 };
 
-Window_UpgradeTypeList.prototype.maxItems = function() {
+Window_UpgradeTypeList.prototype.maxItems = function () {
   return this._data ? this._data.length : 1;
 };
 
-Window_UpgradeTypeList.prototype.item = function() {
+Window_UpgradeTypeList.prototype.item = function () {
   return this._data && this.index() >= 0 ? this._data[this.index()] : null;
 };
 
-Window_UpgradeTypeList.prototype.isCurrentItemEnabled = function() {
+Window_UpgradeTypeList.prototype.isCurrentItemEnabled = function () {
   return this._actor.canSusUpgrade(this._skillId, this._typeId, this._dataId);
 };
 
-Window_UpgradeTypeList.prototype.isEnabled = function(typeId, dataId) {
+Window_UpgradeTypeList.prototype.isEnabled = function (typeId, dataId) {
   return this._actor && !this._actor.isNonUpgradeItem(this._skillId, typeId, dataId);
 };
 
-Window_UpgradeTypeList.prototype.isShowItem = function(typeId, dataId) {
+Window_UpgradeTypeList.prototype.isShowItem = function (typeId, dataId) {
   return this._actor && !this._actor.isLightUpgradeItem(this._skillId, typeId, dataId);
 };
 
-Window_UpgradeTypeList.prototype.makeItemList = function() {
+Window_UpgradeTypeList.prototype.makeItemList = function () {
   this._data = [];
   var actor = this._actor;
   if (!actor) return false;
@@ -2805,14 +3316,14 @@ Window_UpgradeTypeList.prototype.makeItemList = function() {
   var data = {};
   if (this._skillId === null) return false;
   var skill = actor.getSkill(this._skillId);
-  for(var t = 1; t < FTKR.SUS.maxUtypeNum + 1; t++) {
+  for (var t = 1; t < FTKR.SUS.maxUtypeNum + 1; t++) {
     for (var prop in skill) {
       if (prop === FTKR.SUS.uTypes[t].type) {
         var len = prop === 'damages' || prop === 'effects' ? skill[prop].length : 1;
         for (var i = 0; i < len; i++) {
           if (prop === 'damages' && skill.damages[i].type < 1) continue;
           if (this.isEnabled(t, i)) {
-            data = { typeId:t, dataId:i };
+            data = { typeId: t, dataId: i };
             this._data.push(data);
           }
         }
@@ -2822,7 +3333,7 @@ Window_UpgradeTypeList.prototype.makeItemList = function() {
   }
 };
 
-Window_UpgradeTypeList.prototype.drawItem = function(index) {
+Window_UpgradeTypeList.prototype.drawItem = function (index) {
   var actor = this._actor;
   var skillId = this._skillId;
   var typeId = this._data[index].typeId;
@@ -2838,71 +3349,71 @@ Window_UpgradeTypeList.prototype.drawItem = function(index) {
   if (typeId) {
     this.changePaintOpacity(this.isShowItem(typeId, dataId));
     this.drawSepFrame(index);
-    this.drawSkillLine(tx, rect.y, tw-4, skillId, typeId, dataId);
+    this.drawSkillLine(tx, rect.y, tw - 4, skillId, typeId, dataId);
     this.drawStatusIcon(rect.x + 2, rect.y + 2, typeId);
-    this.drawSkillStatus(tx, ty, tw - this.frameThick()*2, rect, skill, typeId, dataId);
+    this.drawSkillStatus(tx, ty, tw - this.frameThick() * 2, rect, skill, typeId, dataId);
     this.changePaintOpacity(1);
   }
 };
 
-Window_UpgradeTypeList.prototype.drawSepFrame = function(index) {
+Window_UpgradeTypeList.prototype.drawSepFrame = function (index) {
   if (Imported.FTKR_DCF) {
     this.drawDcfFrame(index, FTKR.SUS.frame);
   }
 };
 
-Window_UpgradeTypeList.prototype.drawSkillLine = function(x, y, width, skillId, typeId, dataId) {
-    var udata = this._actor.getSusUdata(skillId, typeId, dataId);
-    this.drawSusSkillGauge(x, y, width, udata);
+Window_UpgradeTypeList.prototype.drawSkillLine = function (x, y, width, skillId, typeId, dataId) {
+  var udata = this._actor.getSusUdata(skillId, typeId, dataId);
+  this.drawSusSkillGauge(x, y, width, udata);
 };
 
-Window_UpgradeTypeList.prototype.frameThick = function() {
-    return FTKR.SUS.frame.line.thick;
+Window_UpgradeTypeList.prototype.frameThick = function () {
+  return FTKR.SUS.frame.line.thick;
 };
 
-Window_UpgradeTypeList.prototype.drawSkillStatus = function(tx, ty, tw, rect, skill, typeId, dataId){
-    this.drawSepSkillStatus(tx, ty, tw, rect, typeId, skill, dataId);
+Window_UpgradeTypeList.prototype.drawSkillStatus = function (tx, ty, tw, rect, skill, typeId, dataId) {
+  this.drawSepSkillStatus(tx, ty, tw, rect, typeId, skill, dataId);
 };
 
-Window_UpgradeTypeList.prototype.drawStatusIcon = function(x, y, typeId) {
-    var utype = FTKR.SUS.uTypes[typeId];
-    var icon = utype.icon ? utype.icon : FTKR.SUS.uTypes[0].icon;
-    this.drawIcon(icon, x, y);
+Window_UpgradeTypeList.prototype.drawStatusIcon = function (x, y, typeId) {
+  var utype = FTKR.SUS.uTypes[typeId];
+  var icon = utype.icon ? utype.icon : FTKR.SUS.uTypes[0].icon;
+  this.drawIcon(icon, x, y);
 };
 
-Window_UpgradeTypeList.prototype.updateHelp = function() {
+Window_UpgradeTypeList.prototype.updateHelp = function () {
   this.setHelpWindowItem(this._actor.getSkill(this._skillId));
 };
 
-Window_UpgradeTypeList.prototype.refresh = function() {
+Window_UpgradeTypeList.prototype.refresh = function () {
   this.makeItemList();
   this.createContents();
   this.drawAllItems();
 };
 
-Window_UpgradeTypeList.prototype.setSkillId = function(skillId) {
+Window_UpgradeTypeList.prototype.setSkillId = function (skillId) {
   if (this._skillId === skillId) return;
   this._skillId = skillId;
   this._typeId = 1;
   this.refresh();
 };
 
-Window_UpgradeTypeList.prototype.select = function(index) {
-    Window_Selectable.prototype.select.call(this, index);
-    if (Imported.FTKR_DCF) this.updateDcfFrame(index, FTKR.SUS.frame);
+Window_UpgradeTypeList.prototype.select = function (index) {
+  Window_Selectable.prototype.select.call(this, index);
+  if (Imported.FTKR_DCF) this.updateDcfFrame(index, FTKR.SUS.frame);
 };
 
-Window_UpgradeTypeList.prototype.setCostWindow = function(costWindow) {
+Window_UpgradeTypeList.prototype.setCostWindow = function (costWindow) {
   this._costWindow = costWindow;
   this.update();
 };
 
-Window_UpgradeTypeList.prototype.setConfWindow = function(confWindow) {
+Window_UpgradeTypeList.prototype.setConfWindow = function (confWindow) {
   this._confWindow = confWindow;
   this.update();
 };
 
-Window_UpgradeTypeList.prototype.update = function() {
+Window_UpgradeTypeList.prototype.update = function () {
   Window_Selectable.prototype.update.call(this);
   if (this.item()) {
     this._susIndex = this.index();
@@ -2918,45 +3429,45 @@ Window_UpgradeTypeList.prototype.update = function() {
 //=============================================================================
 
 function Window_SusSkillType() {
-    this.initialize.apply(this, arguments);
+  this.initialize.apply(this, arguments);
 }
 
 Window_SusSkillType.prototype = Object.create(Window_Command.prototype);
 Window_SusSkillType.prototype.constructor = Window_SusSkillType;
 
-Window_SusSkillType.prototype.initialize = function(x, y) {
-    Window_Command.prototype.initialize.call(this, x, y);
-    this._actor = null;
+Window_SusSkillType.prototype.initialize = function (x, y) {
+  Window_Command.prototype.initialize.call(this, x, y);
+  this._actor = null;
 };
 
-Window_SusSkillType.prototype.windowWidth = function() {
-    return FTKR.SUS.skillListWidth;
+Window_SusSkillType.prototype.windowWidth = function () {
+  return FTKR.SUS.skillListWidth;
 };
 
-Window_SusSkillType.prototype.setActor = function(actor) {
-    if (this._actor !== actor) {
-        this._actor = actor;
-        this.refresh();
-        this.selectLast();
-    }
+Window_SusSkillType.prototype.setActor = function (actor) {
+  if (this._actor !== actor) {
+    this._actor = actor;
+    this.refresh();
+    this.selectLast();
+  }
 };
 
-Window_SusSkillType.prototype.numVisibleRows = function() {
-    return 4;
+Window_SusSkillType.prototype.numVisibleRows = function () {
+  return 4;
 };
 
-Window_SusSkillType.prototype.isEnabled = function(stypeId) {
+Window_SusSkillType.prototype.isEnabled = function (stypeId) {
   return this._actor && !this._actor.actor().susNotUpgradeSkillType[stypeId];
 };
 
-Window_SusSkillType.prototype.makeCommandList = function() {
+Window_SusSkillType.prototype.makeCommandList = function () {
   if (this._actor) {
     var skillTypes = this._actor.addedSkillTypes();
-    if (skillTypes) { 
-      skillTypes.sort(function(a, b) {
+    if (skillTypes) {
+      skillTypes.sort(function (a, b) {
         return a - b;
       });
-      skillTypes.forEach(function(stypeId) {
+      skillTypes.forEach(function (stypeId) {
         if (this.isEnabled(stypeId)) {
           var name = $dataSystem.skillTypes[stypeId];
           this.addCommand(name, 'skill', true, stypeId);
@@ -2966,52 +3477,52 @@ Window_SusSkillType.prototype.makeCommandList = function() {
   }
 };
 
-Window_SusSkillType.prototype.drawItem = function(index) {
-    if (Imported.FTKR_DCF && FTKR.DCF.enabled.skill) {
-        this.changePaintOpacity(this.isCommandEnabled(index));
-        this.drawDcfFrame(index);
-    }
-    Window_Command.prototype.drawItem.call(this, index);
+Window_SusSkillType.prototype.drawItem = function (index) {
+  if (Imported.FTKR_DCF && FTKR.DCF.enabled.skill) {
+    this.changePaintOpacity(this.isCommandEnabled(index));
+    this.drawDcfFrame(index);
+  }
+  Window_Command.prototype.drawItem.call(this, index);
 };
 
-Window_SusSkillType.prototype.update = function() {
-    Window_Command.prototype.update.call(this);
-    if (this._skillWindow) this._skillWindow.setStypeId(this.currentExt());
+Window_SusSkillType.prototype.update = function () {
+  Window_Command.prototype.update.call(this);
+  if (this._skillWindow) this._skillWindow.setStypeId(this.currentExt());
 };
 
-Window_SusSkillType.prototype.setSusSkillWindow = function(window) {
-    this._skillWindow = window;
-    this.update();
+Window_SusSkillType.prototype.setSusSkillWindow = function (window) {
+  this._skillWindow = window;
+  this.update();
 };
 
-Window_SusSkillType.prototype.setSusConfTitleWindow = function(window) {
+Window_SusSkillType.prototype.setSusConfTitleWindow = function (window) {
   this._susConfTitleWindow = window;
   this.update();
 };
 
-Window_SusSkillType.prototype.setSusCostWindow = function(window) {
+Window_SusSkillType.prototype.setSusCostWindow = function (window) {
   this._susCostWindow = window;
   this.update();
 };
 
-Window_SusSkillType.prototype.setSusUpgradeWindow = function(window) {
+Window_SusSkillType.prototype.setSusUpgradeWindow = function (window) {
   this._susSkillStatusWindow = window;
   this.update();
 };
 
-Window_SusSkillType.prototype.setSusUpgradeStatusWindow = function(window) {
+Window_SusSkillType.prototype.setSusUpgradeStatusWindow = function (window) {
   this._susStatusTitleWindow = window;
   this.update();
 };
 
-Window_SusSkillType.prototype.setSusConfirmationWindow = function(window) {
+Window_SusSkillType.prototype.setSusConfirmationWindow = function (window) {
   this._susConfWindow = window;
   this.update();
 };
 
-Window_SusSkillType.prototype.selectLast = function() {
-    var skill = this._actor.lastMenuSkill();
-    skill ? this.selectExt(skill.stypeId) : this.select(0);
+Window_SusSkillType.prototype.selectLast = function () {
+  var skill = this._actor.lastMenuSkill();
+  skill ? this.selectExt(skill.stypeId) : this.select(0);
 };
 
 
@@ -3026,33 +3537,33 @@ function Window_SusCost() {
 Window_SusCost.prototype = Object.create(Window_Base.prototype);
 Window_SusCost.prototype.constructor = Window_SusCost;
 
-Window_SusCost.prototype.initialize = function(x, y, width, height) {
+Window_SusCost.prototype.initialize = function (x, y, width, height) {
   Window_Base.prototype.initialize.call(this, x, y, width, height);
   this._actor = null;
   this._draw = true;
   this.clearWindow()
 };
 
-Window_SusCost.prototype.setActor = function(actor) {
+Window_SusCost.prototype.setActor = function (actor) {
   if (this._actor !== actor) {
     this._actor = actor;
     this.refresh();
   }
 };
 
-Window_SusCost.prototype.clearWindow = function() {
+Window_SusCost.prototype.clearWindow = function () {
   this._typeId = null;
   this._skillId = null;
   this._dataId = null;
   this.refresh();
 };
 
-Window_SusCost.prototype.refresh = function() {
-    this.contents.clear();
-    this.drawAllCost();
+Window_SusCost.prototype.refresh = function () {
+  this.contents.clear();
+  this.drawAllCost();
 };
 
-Window_SusCost.prototype.drawAllCost = function() {
+Window_SusCost.prototype.drawAllCost = function () {
   if (this._actor && this._typeId && this._draw) {
     var actor = this._actor;
     var sId = this._skillId;
@@ -3065,30 +3576,30 @@ Window_SusCost.prototype.drawAllCost = function() {
     var y = this.lineHeight();
     var cy = y * 3;
 
-    if(!FTKR.SUS.alwaysDispCost) {
+    if (!FTKR.SUS.alwaysDispCost) {
       this.drawSusUparam(y, width, sepSkill, type, udata, eId);
       cy = 0;
     }
-    this.drawFormatText(FTKR.SUS.ucost.SubTitle2Text, 0, y*3 - cy, width);
+    this.drawFormatText(FTKR.SUS.ucost.SubTitle2Text, 0, y * 3 - cy, width);
     var sp = this.textWidth('0');
-    var dcx = [0,0,0];
+    var dcx = [0, 0, 0];
     var sflag = 1;
     if (FTKR.SUS.ucost.CostLines === 'series') {
-      width = (width - sp*2)/3;
-      dcx = [0, width + sp, width*2 + sp*2];
+      width = (width - sp * 2) / 3;
+      dcx = [0, width + sp, width * 2 + sp * 2];
       sflag = 0;
     }
-    for (var i = 0; i< 3; i++) {
-      this.drawSepCost(FTKR.SUS.ucost.ItemFormat, udata.cost[i], dcx[i], y*4 - cy + y*i*sflag, width);
+    for (var i = 0; i < 3; i++) {
+      this.drawSepCost(FTKR.SUS.ucost.ItemFormat, udata.cost[i], dcx[i], y * 4 - cy + y * i * sflag, width);
     }
   }
 };
 
-Window_SusCost.prototype.drawSusUparam = function(y, width, sepSkill, type, udata, dataId) {
+Window_SusCost.prototype.drawSusUparam = function (y, width, sepSkill, type, udata, dataId) {
   var defname = FTKR.SUS.susUpgradeDefName;
   var params = [
-      sepSkill.name,
-      defname.format(TextManager.skillParam(type, sepSkill, dataId))
+    sepSkill.name,
+    defname.format(TextManager.skillParam(type, sepSkill, dataId))
   ];
   this.drawFormatText(FTKR.SUS.ucost.TitleFormat, 0, 0, params, width);
   this.drawFormatText(FTKR.SUS.ucost.SubTitle1Text, 0, y, false, width);
@@ -3099,20 +3610,20 @@ Window_SusCost.prototype.drawSusUparam = function(y, width, sepSkill, type, udat
       udata.count + 1,
       this.setSusUparam(type, sepSkill, udata.count + 1, dataId)
     ];
-    this.drawFormatText(FTKR.SUS.ucost.TextFromat, 0, y*2, params, width);
+    this.drawFormatText(FTKR.SUS.ucost.TextFromat, 0, y * 2, params, width);
   } else {
-    this.drawFormatText(FTKR.SUS.CannotUpgradeMessage, 0, y*2, width);
+    this.drawFormatText(FTKR.SUS.CannotUpgradeMessage, 0, y * 2, width);
   }
 };
 
-Window_SusCost.prototype.setSkillId = function(skillId) {
+Window_SusCost.prototype.setSkillId = function (skillId) {
   if (this._skillId === skillId) return;
   this._typeId = 0;
   this._skillId = skillId;
   this.refresh();
 };
 
-Window_SusCost.prototype.setTypeId = function(skillId, typeId, dataId) {
+Window_SusCost.prototype.setTypeId = function (skillId, typeId, dataId) {
   if (this._typeId === typeId && this._dataId === dataId) return;
   this._typeId = typeId;
   this._skillId = skillId;
@@ -3131,14 +3642,14 @@ function Window_SusConfTitle() {
 Window_SusConfTitle.prototype = Object.create(Window_Base.prototype);
 Window_SusConfTitle.prototype.constructor = Window_SusConfTitle;
 
-Window_SusConfTitle.prototype.initialize = function(x, y, width, height) {
+Window_SusConfTitle.prototype.initialize = function (x, y, width, height) {
   Window_Base.prototype.initialize.call(this, x, y, width, height);
   this._actor = null;
   this._skillId = null;
   this.refresh();
 };
 
-Window_SusConfTitle.prototype.setActor = function(actor) {
+Window_SusConfTitle.prototype.setActor = function (actor) {
   if (this._actor !== actor) this._actor = actor;
 };
 
@@ -3147,7 +3658,7 @@ Window_SusConfTitle.prototype.refresh = function () {
   this.drawStsText(FTKR.SUS.confTitleFormat);
 };
 
-Window_SusConfTitle.prototype.drawStsText = function(format) {
+Window_SusConfTitle.prototype.drawStsText = function (format) {
   if (this._actor && this._skillId) {
     var skill = this._actor.sepSkill(this._skillId);
     var width = this.width - this.standardPadding() * 2;
@@ -3166,7 +3677,7 @@ function Window_SusConf() {
 Window_SusConf.prototype = Object.create(Window_Selectable.prototype);
 Window_SusConf.prototype.constructor = Window_SusConf;
 
-Window_SusConf.prototype.initialize = function(x, y, width, height) {
+Window_SusConf.prototype.initialize = function (x, y, width, height) {
   Window_Selectable.prototype.initialize.call(this, x, y, width, height);
   this.setUpgradeSound();
   this._actor = null;
@@ -3175,54 +3686,54 @@ Window_SusConf.prototype.initialize = function(x, y, width, height) {
   this._dicision = false;
 };
 
-Window_SusConf.prototype.setActor = function(actor) {
+Window_SusConf.prototype.setActor = function (actor) {
   if (this._actor !== actor) {
     this._actor = actor;
     this.refresh();
   }
 };
 
-Window_SusConf.prototype.maxCols = function() {
-    return 2;
+Window_SusConf.prototype.maxCols = function () {
+  return 2;
 };
 
-Window_SusConf.prototype.maxItems = function() {
+Window_SusConf.prototype.maxItems = function () {
   return this._data ? this._data.length : 1;
 };
 
-Window_SusConf.prototype.item = function() {
+Window_SusConf.prototype.item = function () {
   return this._data && this.index() >= 0 ? this._data[this.index()] : null;
 };
 
-Window_SusConf.prototype.makeItemList = function() {
+Window_SusConf.prototype.makeItemList = function () {
   this._data = [
-    {dicision:true, disp:FTKR.SUS.confOkFormat},
-    {dicision:false, disp:FTKR.SUS.confCancelFormat}
+    { dicision: true, disp: FTKR.SUS.confOkFormat },
+    { dicision: false, disp: FTKR.SUS.confCancelFormat }
   ];
 };
 
-Window_SusConf.prototype.refresh = function() {
+Window_SusConf.prototype.refresh = function () {
   this.makeItemList();
   this.createContents();
   this.drawAllItems();
 };
 
-Window_SusConf.prototype.isEnabled = function(index) {
+Window_SusConf.prototype.isEnabled = function (index) {
   return this._actor && (this._enabled || index > 0);
 };
 
-Window_SusConf.prototype.isCurrentItemEnabled = function() {
+Window_SusConf.prototype.isCurrentItemEnabled = function () {
   return this.isEnabled(this.index());
 };
 
-Window_SusConf.prototype.drawItem = function(index) {
+Window_SusConf.prototype.drawItem = function (index) {
   var rect = this.itemRect(index);
   this.changePaintOpacity(this.isEnabled(index));
   this.drawText(this._data[index].disp, rect.x, rect.y, rect.width, 'center');
   this.changePaintOpacity(1);
 };
 
-Window_SusConf.prototype.setEnabled = function(enabled) {
+Window_SusConf.prototype.setEnabled = function (enabled) {
   if (this._enabled === enabled) return;
   this._enabled = enabled;
   this.refresh();
@@ -3239,19 +3750,19 @@ function Window_SusActorStatus() {
 Window_SusActorStatus.prototype = Object.create(Window_Base.prototype);
 Window_SusActorStatus.prototype.constructor = Window_SusActorStatus;
 
-Window_SusActorStatus.prototype.initialize = function(x, y, width, height) {
+Window_SusActorStatus.prototype.initialize = function (x, y, width, height) {
   Window_Base.prototype.initialize.call(this, x, y, width, height);
   this._actor = null;
 };
 
-Window_SusActorStatus.prototype.setActor = function(actor) {
+Window_SusActorStatus.prototype.setActor = function (actor) {
   if (this._actor !== actor) {
     this._actor = actor;
     this.refresh();
   }
 };
 
-Window_SusActorStatus.prototype.refresh = function() {
+Window_SusActorStatus.prototype.refresh = function () {
   this.contents.clear();
   var actor = this._actor;
   if (!actor) return;
@@ -3300,45 +3811,45 @@ function Window_SepStatus() {
 Window_SepStatus.prototype = Object.create(Window_Base.prototype);
 Window_SepStatus.prototype.constructor = Window_SepStatus;
 
-Window_SepStatus.prototype.initialize = function(x, y, width, height) {
+Window_SepStatus.prototype.initialize = function (x, y, width, height) {
   Window_Base.prototype.initialize.call(this, x, y, width, height);
   this._actor = null;
   this._skillId = null;
 };
 
-Window_SepStatus.prototype.setActor = function(actor) {
+Window_SepStatus.prototype.setActor = function (actor) {
   if (this._actor !== actor) this._actor = actor;
 };
 
-Window_SepStatus.prototype.clearWindow = function() {
+Window_SepStatus.prototype.clearWindow = function () {
   this._skillId = null;
   this.refresh();
 };
 
-Window_SepStatus.prototype.refresh = function() {
+Window_SepStatus.prototype.refresh = function () {
   this.contents.clear();
   this.drawSepState();
 };
 
-Window_SepStatus.prototype.setSkillId = function(skillId) {
+Window_SepStatus.prototype.setSkillId = function (skillId) {
   if (this._skillId === skillId) return;
   this._skillId = skillId;
   this.refresh();
 };
 
-Window_SepStatus.prototype.drawSepState = function() {
+Window_SepStatus.prototype.drawSepState = function () {
   if (this._actor && this._skillId) {
     var skill = this._actor.getSkill(this._skillId);
     var y = this.lineHeight();
     var width = this.width - this.textPadding() * 2;
     this.drawDescTitle(FTKR.SUS.ustatusTitleFormat, 0, 0, width, skill);
     this.drawElement(0, y, width, skill);
-    this.drawDescTitle('説明:\\c[16]', 0, y*2, width, skill);
-    this.drawDescription(0, y*3, width, skill);
+    this.drawDescTitle('説明:\\c[16]', 0, y * 2, width, skill);
+    this.drawDescription(0, y * 3, width, skill);
   }
 };
 
-Window_SepStatus.prototype.drawElement = function(x, y, width, skill) {
+Window_SepStatus.prototype.drawElement = function (x, y, width, skill) {
   var elmId = skill.damages[0].elementId;
   if (elmId === -1) {
     var elmname = FTKR.SUS.Elements.NormalAttackName;
@@ -3348,7 +3859,7 @@ Window_SepStatus.prototype.drawElement = function(x, y, width, skill) {
     var elmname = $dataSystem.elements[skill.damages[0].elementId];
     var elmIds = skill.damages[0].addElmIds;
     if (elmIds) {
-      elmIds.forEach( function(id) {
+      elmIds.forEach(function (id) {
         elmname += ',' + $dataSystem.elements[id];
       });
     }
@@ -3362,7 +3873,7 @@ Window_SepStatus.prototype.drawElement = function(x, y, width, skill) {
 //=============================================================================
 
 // ウィンドウ作成系
-Scene_Base.prototype.susCreateSkillListWindow = function() {
+Scene_Base.prototype.susCreateSkillListWindow = function () {
   var refw = this._skillTypeWindow;
 
   var wy = refw.y + refw.height;
@@ -3372,13 +3883,13 @@ Scene_Base.prototype.susCreateSkillListWindow = function() {
   this._susSkillListWindow = new Window_UpgradeSkillList(0, wy, ww, wh);
   var window = this._susSkillListWindow;
   window.setHelpWindow(this._helpWindow);
-  window.setHandler('ok',     this.onSusSkillOk.bind(this));
+  window.setHandler('ok', this.onSusSkillOk.bind(this));
   window.setHandler('cancel', this.onSusSkillCancel.bind(this));
   refw.setSusSkillWindow(window);
   this.addWindow(window);
 };
 
-Scene_Base.prototype.susCreateSkillStatusTitleWindow = function(wy, wh){
+Scene_Base.prototype.susCreateSkillStatusTitleWindow = function (wy, wh) {
   var refw1 = this._susSkillListWindow;
 
   var wx = refw1.width;
@@ -3391,7 +3902,7 @@ Scene_Base.prototype.susCreateSkillStatusTitleWindow = function(wy, wh){
   this.addWindow(window);
 };
 
-Scene_Base.prototype.susCreateSkillStatusWindow = function() {
+Scene_Base.prototype.susCreateSkillStatusWindow = function () {
   var refw1 = this._susSkillListWindow;
   var refw2 = this._susStatusTitleWindow;
 
@@ -3404,21 +3915,21 @@ Scene_Base.prototype.susCreateSkillStatusWindow = function() {
   this._susSkillStatusWindow = new Window_UpgradeTypeList(wx, wy, ww, wh);
   var window = this._susSkillStatusWindow;
   window.setHelpWindow(this._helpWindow);
-  window.setHandler('ok',     this.onSusUpgradeOk.bind(this));
+  window.setHandler('ok', this.onSusUpgradeOk.bind(this));
   window.setHandler('cancel', this.onSusUpgradeCancel.bind(this));
   this._skillTypeWindow.setSusUpgradeWindow(window);
   refw1.setItemWindow(window);
   this.addWindow(window);
 };
 
-Scene_Base.prototype.susCostWindowHeight = function() {
+Scene_Base.prototype.susCostWindowHeight = function () {
   var line = 7;
-  if (FTKR.SUS.alwaysDispCost) line -= 3; 
-  if (FTKR.SUS.ucost.CostLines === 'series') line -=2;
+  if (FTKR.SUS.alwaysDispCost) line -= 3;
+  if (FTKR.SUS.ucost.CostLines === 'series') line -= 2;
   return this._helpWindow.lineHeight() * line + this._helpWindow.standardPadding() * 2;
 };
 
-Scene_Base.prototype.susCreateUpgradeCostWindow = function() {
+Scene_Base.prototype.susCreateUpgradeCostWindow = function () {
   var flag = !FTKR.SUS.alwaysDispCost;
   var refw1 = this._susConfWindow;
   var refw2 = this._susSkillStatusWindow;
@@ -3435,7 +3946,7 @@ Scene_Base.prototype.susCreateUpgradeCostWindow = function() {
   this.addWindow(window);
 };
 
-Scene_Base.prototype.susCreateConfTitleWindow = function() {
+Scene_Base.prototype.susCreateConfTitleWindow = function () {
   var wr = FTKR.SUS.ucost.CostLines === 'series' ? 4 : 3;
 
   var wx = Graphics.boxWidth * (6 - wr) / 12;
@@ -3450,7 +3961,7 @@ Scene_Base.prototype.susCreateConfTitleWindow = function() {
   this.addWindow(this._susConfTitleWindow);
 };
 
-Scene_Base.prototype.susCreateConfWindow = function() {
+Scene_Base.prototype.susCreateConfWindow = function () {
   var refw = this._susConfTitleWindow;
 
   var wx = refw.x;
@@ -3467,7 +3978,7 @@ Scene_Base.prototype.susCreateConfWindow = function() {
   this.addWindow(window);
 };
 
-Scene_Base.prototype.susRefreshActor = function(actor) {
+Scene_Base.prototype.susRefreshActor = function (actor) {
   if (this._susSkillListWindow) this._susSkillListWindow.setActor(actor);
   if (this._susStatusTitleWindow) this._susStatusTitleWindow.setActor(actor);
   if (this._susSkillStatusWindow) this._susSkillStatusWindow.setActor(actor);
@@ -3484,11 +3995,11 @@ Scene_Base.prototype.susRefreshActor = function(actor) {
   var csw = this._susCostWindow;
   if (csw) {
     csw.setActor(actor);
-    if(!FTKR.SUS.alwaysDispCost) csw.hide();
+    if (!FTKR.SUS.alwaysDispCost) csw.hide();
   }
 };
 
-Scene_Base.prototype.onSusSkillOk = function() {
+Scene_Base.prototype.onSusSkillOk = function () {
   var ssw = this._susSkillStatusWindow;
   if (ssw._skillId) {
     ssw.actSelect(0);
@@ -3504,7 +4015,7 @@ Scene_Base.prototype.onSusSkillOk = function() {
   }
 };
 
-Scene_Base.prototype.onSusSkillCancel = function() {
+Scene_Base.prototype.onSusSkillCancel = function () {
   this._skillTypeWindow.activate();
   this._susSkillListWindow.deselect();
   this._susStatusTitleWindow.clearWindow();
@@ -3513,7 +4024,7 @@ Scene_Base.prototype.onSusSkillCancel = function() {
   this._susCostWindow.clearWindow();
 };
 
-Scene_Base.prototype.onSusUpgradeOk = function() {
+Scene_Base.prototype.onSusUpgradeOk = function () {
   var cfw = this._susConfWindow;
   if (cfw) {
     cfw.actSelect(0);
@@ -3521,11 +4032,11 @@ Scene_Base.prototype.onSusUpgradeOk = function() {
   } else {
     var ssw = this._susSkillStatusWindow;
     this.susUpgrade(ssw._skillId, ssw.item().typeId,
-                    ssw.item().dataId, ssw._upgradeSound);
+      ssw.item().dataId, ssw._upgradeSound);
   }
 };
 
-Scene_Base.prototype.onSusUpgradeCancel = function() {
+Scene_Base.prototype.onSusUpgradeCancel = function () {
   FTKR.SUS.subComOk = false;
   if (FTKR.SUS.subUpgradeOk) {
     FTKR.SUS.subUpgradeOk = false;
@@ -3537,7 +4048,7 @@ Scene_Base.prototype.onSusUpgradeCancel = function() {
   this._susCostWindow.clearWindow();
 };
 
-Scene_Base.prototype.onSusConfirmationOk = function() {
+Scene_Base.prototype.onSusConfirmationOk = function () {
   var cfw = this._susConfWindow;
   if (cfw.item().dicision) {
     FTKR.SUS.confOk = false;
@@ -3545,14 +4056,14 @@ Scene_Base.prototype.onSusConfirmationOk = function() {
     this._susConfTitleWindow.refresh();
     var ssw = this._susSkillStatusWindow;
     this.susUpgrade(ssw._skillId, ssw._typeId, ssw._dataId,
-                    cfw._upgradeSound);
+      cfw._upgradeSound);
     this.susConfHide();
   } else {
     this.onSusConfirmationCancel();
   }
 };
 
-Scene_Base.prototype.onSusConfirmationCancel = function() {
+Scene_Base.prototype.onSusConfirmationCancel = function () {
   this._susConfWindow.deselect();
   var ssw = this._susSkillStatusWindow;
   ssw.actSelect(ssw._susIndex);
@@ -3560,7 +4071,7 @@ Scene_Base.prototype.onSusConfirmationCancel = function() {
   this.susConfHide(this._susConfWindow._active);
 };
 
-Scene_Base.prototype.susUpgrade = function(skillId, typeId, dataId, sound) {
+Scene_Base.prototype.susUpgrade = function (skillId, typeId, dataId, sound) {
   var upgrade = this.actor().upgradeSepSkill(skillId, typeId, dataId);
   if (upgrade) AudioManager.playStaticSe(sound);
   this._susSkillListWindow.refresh();
@@ -3572,18 +4083,18 @@ Scene_Base.prototype.susUpgrade = function(skillId, typeId, dataId, sound) {
   if (this._statusWindow) this._statusWindow.refresh();
 };
 
-Scene_Base.prototype.susConfHide = function() {
+Scene_Base.prototype.susConfHide = function () {
   this._susConfWindow._active = false;
   this._susConfWindow.hide();
   this._susConfTitleWindow.hide();
-  if(!FTKR.SUS.alwaysDispCost) this._susCostWindow.hide();
+  if (!FTKR.SUS.alwaysDispCost) this._susCostWindow.hide();
 };
 
-Scene_Base.prototype.susConfShow = function() {
+Scene_Base.prototype.susConfShow = function () {
   this._susConfWindow._active = true;
   this._susConfWindow.show();
   this._susConfTitleWindow.show();
-  if(!FTKR.SUS.alwaysDispCost) this._susCostWindow.show();
+  if (!FTKR.SUS.alwaysDispCost) this._susCostWindow.show();
 };
 
 //=============================================================================
@@ -3592,7 +4103,7 @@ Scene_Base.prototype.susConfShow = function() {
 
 FTKR.SUS.Scene_Menu_createCommandWindow =
   Scene_Menu.prototype.createCommandWindow;
-Scene_Menu.prototype.createCommandWindow = function() {
+Scene_Menu.prototype.createCommandWindow = function () {
   FTKR.SUS.Scene_Menu_createCommandWindow.call(this);
   if (FTKR.SUS.showCommand === 1) {
     this._commandWindow.setHandler('upgrade skill', this.commandPersonal.bind(this));
@@ -3600,12 +4111,12 @@ Scene_Menu.prototype.createCommandWindow = function() {
 };
 
 FTKR.SUS.Scene_Menu_onPersonalOk = Scene_Menu.prototype.onPersonalOk;
-Scene_Menu.prototype.onPersonalOk = function() {
+Scene_Menu.prototype.onPersonalOk = function () {
   FTKR.SUS.Scene_Menu_onPersonalOk.call(this);
   switch (this._commandWindow.currentSymbol()) {
-  case 'upgrade skill':
-    SceneManager.push(Scene_SUS);
-    break;
+    case 'upgrade skill':
+      SceneManager.push(Scene_SUS);
+      break;
   }
 };
 
@@ -3614,7 +4125,7 @@ Scene_Menu.prototype.onPersonalOk = function() {
 //=============================================================================
 
 FTKR.SUS.Scene_Skill_create = Scene_Skill.prototype.create;
-Scene_Skill.prototype.create = function() {
+Scene_Skill.prototype.create = function () {
   FTKR.SUS.Scene_Skill_create.call(this);
   this.susCreateSkillListWindow();
   this.createSkillStatusTitleWindow();
@@ -3629,40 +4140,40 @@ Scene_Skill.prototype.create = function() {
 
 FTKR.SUS.Scene_Skill_createSkillTypeWindow =
   Scene_Skill.prototype.createSkillTypeWindow;
-Scene_Skill.prototype.createSkillTypeWindow = function() {
+Scene_Skill.prototype.createSkillTypeWindow = function () {
   FTKR.SUS.Scene_Skill_createSkillTypeWindow.call(this);
   this._skillTypeWindow.setHandler('susUpgrade', this.commandSusUpgrade.bind(this));
 };
 
-Scene_Skill.prototype.createSkillStatusTitleWindow = function() {
+Scene_Skill.prototype.createSkillStatusTitleWindow = function () {
   var wy = this._statusWindow.y + this._statusWindow.height;
   var wh = this._helpWindow.lineHeight() * 2 + this._helpWindow.standardPadding() * 2;
   this.susCreateSkillStatusTitleWindow(wy, wh);
 };
 
 FTKR.SUS.Scene_Skill_refreshActor = Scene_Skill.prototype.refreshActor;
-Scene_Skill.prototype.refreshActor = function() {
+Scene_Skill.prototype.refreshActor = function () {
   FTKR.SUS.Scene_Skill_refreshActor.call(this);
   FTKR.SUS.subUpgradeOk = false;
   this.susRefreshActor(this.actor());
 };
 
-Scene_Skill.prototype.commandSusUpgrade = function() {
+Scene_Skill.prototype.commandSusUpgrade = function () {
   this._susCostWindow._draw = false;
   this._susSkillListWindow.actSelect(0);
 };
 
 FTKR.SUS.Scene_Skill_onSubComOk = Scene_Skill.prototype.onSubComOk;
-Scene_Skill.prototype.onSubComOk = function() {
-    var scw = this._sepSubCommandWindow;
-    if (scw.item().symbol === 'upgrade') {
-        FTKR.SUS.subUpgradeOk = true;
-        var ssw = this._susSkillStatusWindow;
-        ssw._skillId = scw._skillId;
-        this.onSusSkillOk();
-    } else {
-      FTKR.SUS.Scene_Skill_onSubComOk.call(this);
-    }
+Scene_Skill.prototype.onSubComOk = function () {
+  var scw = this._sepSubCommandWindow;
+  if (scw.item().symbol === 'upgrade') {
+    FTKR.SUS.subUpgradeOk = true;
+    var ssw = this._susSkillStatusWindow;
+    ssw._skillId = scw._skillId;
+    this.onSusSkillOk();
+  } else {
+    FTKR.SUS.Scene_Skill_onSubComOk.call(this);
+  }
 };
 
 //=============================================================================
@@ -3676,15 +4187,15 @@ function Scene_SUS() {
 Scene_SUS.prototype = Object.create(Scene_Skill.prototype);
 Scene_SUS.prototype.constructor = Scene_SUS;
 
-Scene_SUS.prototype.initialize = function() {
+Scene_SUS.prototype.initialize = function () {
   Scene_Skill.prototype.initialize.call(this);
 };
 
-Scene_SUS.prototype.start = function() {
+Scene_SUS.prototype.start = function () {
   Scene_Skill.prototype.start.call(this);
 };
 
-Scene_SUS.prototype.create = function() {
+Scene_SUS.prototype.create = function () {
   Scene_ItemBase.prototype.create.call(this);
   this.createHelpWindow();
   this.createActorStatusWindow();
@@ -3700,40 +4211,40 @@ Scene_SUS.prototype.create = function() {
   this.refreshActor();
 };
 
-Scene_SUS.prototype.createActorStatusWindow = function() {
+Scene_SUS.prototype.createActorStatusWindow = function () {
   var ww = FTKR.SUS.skillListWidth;
   var wh = this._helpWindow.lineHeight() * 3 + this._helpWindow.standardPadding() * 2;
   this._susActorStatusWindow = new Window_SusActorStatus(0, 0, ww, wh);
   this.addWindow(this._susActorStatusWindow);
 };
 
-Scene_SUS.prototype.createSkillTypeWindow = function() {
+Scene_SUS.prototype.createSkillTypeWindow = function () {
   var wy = this._susActorStatusWindow.y + this._susActorStatusWindow.height;
   this._skillTypeWindow = new Window_SusSkillType(0, wy);
   var window = this._skillTypeWindow;
   window.setHelpWindow(this._helpWindow);
-  window.setHandler('skill',    this.commandSkill.bind(this));
-  window.setHandler('cancel',   this.popScene.bind(this));
+  window.setHandler('skill', this.commandSkill.bind(this));
+  window.setHandler('cancel', this.popScene.bind(this));
   window.setHandler('pagedown', this.nextActor.bind(this));
-  window.setHandler('pageup',   this.previousActor.bind(this));
+  window.setHandler('pageup', this.previousActor.bind(this));
   this.addWindow(window);
   window.actSelect(0);
 };
 
-Scene_SUS.prototype.createSkillStatusTitleWindow = function() {
+Scene_SUS.prototype.createSkillStatusTitleWindow = function () {
   var wh = this._helpWindow.lineHeight() * (3 + Math.floor(FTKR.SUS.DiscriptionLines))
-           + this._helpWindow.standardPadding() * 2;
+    + this._helpWindow.standardPadding() * 2;
   this.susCreateSkillStatusTitleWindow(0, wh);
 };
 
-Scene_SUS.prototype.refreshActor = function() {
+Scene_SUS.prototype.refreshActor = function () {
   var actor = this.actor();
   this._skillTypeWindow.setActor(actor);
   this._susActorStatusWindow.setActor(actor);
   this.susRefreshActor(actor);
 };
 
-Scene_SUS.prototype.commandSkill = function() {
+Scene_SUS.prototype.commandSkill = function () {
   this._susCostWindow._draw = false;
   this._susSkillListWindow.actSelect(0);
 };
@@ -3743,7 +4254,7 @@ Scene_SUS.prototype.commandSkill = function() {
 //=============================================================================
 
 var _SUS_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-Game_Interpreter.prototype.pluginCommand = function(command, args) {
+Game_Interpreter.prototype.pluginCommand = function (command, args) {
   _SUS_Game_Interpreter_pluginCommand.call(this, command, args);
   if (command === 'SUS') {
     switch (args[0]) {
@@ -3781,17 +4292,17 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
             if (!udata) return false;
             $gameVariables.setValue(Number(args[2]), udata.count);
           }
-        // 指定のスイッチを、アクター、スキル、強化タイプの強化回数が指定の値と比べてどうか判定して、結果を代入する
-        } else if (args[1] === 'Switches' && Number(args[2]) > 0　) {
+          // 指定のスイッチを、アクター、スキル、強化タイプの強化回数が指定の値と比べてどうか判定して、結果を代入する
+        } else if (args[1] === 'Switches' && Number(args[2]) > 0) {
           if (args[5] === 'Actor' && args[7] === 'Skill' && args[9] === 'Type') {
             var udata = this.getSusUdata(args[6], args[8], args[10], args[11], args[12]);
             if (!udata) return false;
             if (args[3] === 'CountOver') {
-                $gameSwitches.setValue(Number(args[2]), Number(args[4]) < udata.count);
+              $gameSwitches.setValue(Number(args[2]), Number(args[4]) < udata.count);
             } else if (args[3] === 'CountUnder') {
-                $gameSwitches.setValue(Number(args[2]), Number(args[4]) > udata.count);
+              $gameSwitches.setValue(Number(args[2]), Number(args[4]) > udata.count);
             } else if (args[3] === 'CountEqual') {
-                $gameSwitches.setValue(Number(args[2]), Number(args[4]) == udata.count);
+              $gameSwitches.setValue(Number(args[2]), Number(args[4]) == udata.count);
             }
           }
         }
@@ -3800,7 +4311,7 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
 };
 
 var _SUSW_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-Game_Interpreter.prototype.pluginCommand = function(command, args) {
+Game_Interpreter.prototype.pluginCommand = function (command, args) {
   _SUSW_Game_Interpreter_pluginCommand.call(this, command, args);
   if (command === 'SUS') {
     switch (args[0]) {
@@ -3821,7 +4332,7 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
   }
 };
 
-Game_Interpreter.prototype.getSusUdata = function(Actor, SkillId, TypeId, Effect, dataId) {
+Game_Interpreter.prototype.getSusUdata = function (Actor, SkillId, TypeId, Effect, dataId) {
   var actor = $gameActors.actor(Number(Actor));
   if (!actor) return false;
   var skillId = Number(SkillId);
@@ -3831,5 +4342,3 @@ Game_Interpreter.prototype.getSusUdata = function(Actor, SkillId, TypeId, Effect
   var udata = actor.getSusUdata(skillId, typeId, dataId);
   return udata ? udata : false;
 };
-
-

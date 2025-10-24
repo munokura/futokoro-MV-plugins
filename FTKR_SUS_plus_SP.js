@@ -10,29 +10,61 @@
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.0 スキル強化システムにスキルツリープラグインのSPを導入する
- * @author フトコロ
- * 
- * @help
- * 
- * スキル強化システムにスキルツリープラグインのSPを導入します。
- * 
- * SP のスキル強化コストタイプIDは 7 です。
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2019 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- */
-//=============================================================================
-(function() {
+@plugindesc v1.0.0 Introduced the Skill Tree Plugin SP to the skill enhancement system
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
 
-    Game_Actor.prototype.getSusSkillNotetagsCost = function(skill, typeId) {
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+
+This plugin introduces the skill tree plugin SP to the skill enhancement system.
+
+The skill enhancement cost type ID for SP is 7.
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2019 Futokoro
+http://opensource.org/licenses/mit-license.php
+*/
+
+/*:ja
+@plugindesc v1.0.0 スキル強化システムにスキルツリープラグインのSPを導入する
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+
+スキル強化システムにスキルツリープラグインのSPを導入します。
+
+SP のスキル強化コストタイプIDは 7 です。
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2019 Futokoro
+http://opensource.org/licenses/mit-license.php
+*/
+
+//=============================================================================
+(function () {
+
+    Game_Actor.prototype.getSusSkillNotetagsCost = function (skill, typeId) {
         var results = [];
         var type = false;
         var readCost = false;
@@ -49,47 +81,47 @@
             var costs = costdata.split(';');
             for (var i = 0; i < costs.length; i++) {
                 var cost = costs[i];
-                if(cost.match(case1)) {
+                if (cost.match(case1)) {
                     type = Number(RegExp.$1);
                     if (type === typeId) {
-                    readCost = true;
-                    results.push(this.setUcost('gold', 0, String(RegExp.$2), 0));
+                        readCost = true;
+                        results.push(this.setUcost('gold', 0, String(RegExp.$2), 0));
                     }
-                } else if(cost.match(case2)) {
+                } else if (cost.match(case2)) {
                     type = Number(RegExp.$1);
                     if (type === typeId) {
-                    readCost = true;
-                    results.push(this.setUcost('item', Number(RegExp.$2), String(RegExp.$3), 0));
+                        readCost = true;
+                        results.push(this.setUcost('item', Number(RegExp.$2), String(RegExp.$3), 0));
                     }
-                } else if(cost.match(case2a)) {
+                } else if (cost.match(case2a)) {
                     type = Number(RegExp.$1);
                     if (type === typeId) {
-                    readCost = true;
-                    results.push(this.setUcost('weapon', Number(RegExp.$2), String(RegExp.$3), 0));
+                        readCost = true;
+                        results.push(this.setUcost('weapon', Number(RegExp.$2), String(RegExp.$3), 0));
                     }
-                } else if(cost.match(case2b)) {
+                } else if (cost.match(case2b)) {
                     type = Number(RegExp.$1);
                     if (type === typeId) {
-                    readCost = true;
-                    results.push(this.setUcost('armor', Number(RegExp.$2), String(RegExp.$3), 0));
+                        readCost = true;
+                        results.push(this.setUcost('armor', Number(RegExp.$2), String(RegExp.$3), 0));
                     }
-                } else if(cost.match(case3)) {
+                } else if (cost.match(case3)) {
                     type = Number(RegExp.$1);
                     if (type === typeId) {
-                    readCost = true;
-                    results.push(this.setUcost('var', Number(RegExp.$2), String(RegExp.$3), 0));
+                        readCost = true;
+                        results.push(this.setUcost('var', Number(RegExp.$2), String(RegExp.$3), 0));
                     }
-                } else if(cost.match(case4)) {
+                } else if (cost.match(case4)) {
                     type = Number(RegExp.$1);
                     if (type === typeId) {
-                    readCost = true;
-                    results.push(this.setUcost('jp', 0, String(RegExp.$2), 0));
+                        readCost = true;
+                        results.push(this.setUcost('jp', 0, String(RegExp.$2), 0));
                     }
-                } else if(cost.match(case5)) {
+                } else if (cost.match(case5)) {
                     type = Number(RegExp.$1);
                     if (type === typeId) {
-                    readCost = true;
-                    results.push(this.setUcost('sp', 0, String(RegExp.$2), 0));
+                        readCost = true;
+                        results.push(this.setUcost('sp', 0, String(RegExp.$2), 0));
                     }
                 }
             }
@@ -98,18 +130,18 @@
     };
 
     var _pSP_Game_Actor_convertCtype = Game_Actor.prototype.convertCtype;
-    Game_Actor.prototype.convertCtype = function(ctype) {
+    Game_Actor.prototype.convertCtype = function (ctype) {
         console.log(ctype);
         switch (ctype) {
-          case 7:
-            return 'sp';
-          default:
-            return _pSP_Game_Actor_convertCtype.call(this, ctype);
+            case 7:
+                return 'sp';
+            default:
+                return _pSP_Game_Actor_convertCtype.call(this, ctype);
         };
     };
-    
+
     var _pSP_Game_Actor_paySepCost = Game_Actor.prototype.paySepCost;
-    Game_Actor.prototype.paySepCost = function(cost) {
+    Game_Actor.prototype.paySepCost = function (cost) {
         switch (cost.type) {
             case 'sp': return this.getSp(-this.evalCostValue(cost));
         }
@@ -117,14 +149,14 @@
     };
 
     var _pSP_Window_Base_setSepCost = Window_Base.prototype.setSepCost;
-    Window_Base.prototype.setSepCost = function(cost) {
-        switch(cost.type) {
-          case 'sp':
-            return this.setCost(FTKR.STS.sp.icon, FTKR.STS.sp.dispName, this._actor.stsSp());
-          default:
-            return _pSP_Window_Base_setSepCost.call(this, cost);
+    Window_Base.prototype.setSepCost = function (cost) {
+        switch (cost.type) {
+            case 'sp':
+                return this.setCost(FTKR.STS.sp.icon, FTKR.STS.sp.dispName, this._actor.stsSp());
+            default:
+                return _pSP_Window_Base_setSepCost.call(this, cost);
         }
     };
-      
+
 
 })();
