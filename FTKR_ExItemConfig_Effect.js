@@ -16,134 +16,261 @@ FTKR.EIE = FTKR.EIE || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.2.1 アイテムとスキルの使用効果を拡張するプラグイン
- * @author フトコロ
- *
- * @help
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインを実装することで、アイテムやスキルの使用効果を
- * より詳細に設定できます。
- * 
- * 1. 使用効果の対象を変更できます。
- * 
- * 2. 使用効果の効果量にJS計算式が使用できます。
- * 
- * 3. 使用効果を発生させるための有効条件を設定できます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. 本プラグインは、FTKR_SkillExpansion.jsと組み合わせて使用できません。
- * 
- * 3. YEP_BattleEngineCore.jsと組み合わせて使用する場合は、
- *    本プラグインを、YEP_BattleEngineCore.jsよりも下に配置してください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 使用効果の設定
- *-----------------------------------------------------------------------------
- * アイテムおよびスキルのメモ欄に以下のノートタグを追記することで、
- * 使用効果の設定を変更できます。
- * 
- * <EIC 使用効果: x>
- * code
- * </EIC 使用効果>
- *    :使用効果のId x に対して code部で記述した設定を反映します。
- *    :使用効果のIDは、使用効果欄に設定した順番に上から 0, 1,...となります。
- * 
- * 
- * [code に使用できる項目]
- * Target: y
- * 対象: y
- *    :使用効果の対象を、y に変えることができます。
- *    :y に使用できるコードは以下の通りです。
- *    : user or 使用者 - 使用者を対象にする
- *    : randomFriends or 味方ランダム - 味方からランダムで1体選択
- *    : randomOpponents or 敵ランダム - 敵からランダムで1体選択
- * 
- * Value1: eval
- * 内容1: 計算式
- *    :使用効果の内容1を 計算式(eval) で設定した値に変更します。
- *    :内容1は、使用効果で1つめに設定した数値です。
- *    : 例) HP回復の場合、% で設定する値
- * 
- * Value2: eval
- * 内容2: 計算式
- *    :使用効果の内容2を 計算式(eval) で設定した値に変更します。
- *    :内容2は、使用効果で2つめに設定した数値です。
- *    : 例) HP回復の場合、+ で設定する値
- * 
- * Enabled: eval
- * 有効条件: 計算式
- *    :対象の使用効果ID を 計算式(eval) で設定した条件で有効に
- *    :します。設定しない場合は、常に有効です。
- *    :有効になっていない場合は、効果が発生しません。
- * 
- * 
- * [計算式(eval)の値について]
- * 計算式は、ダメージ計算式のように、計算式を入力することで、固定値以外の値を
- * 使用することができます。以下のコードを使用できます。負の値入力可。
- *  a.param  - 使用者のパラメータを参照します。(a.atk で使用者の攻撃力)
- *  b.param  - 対象のパラメータを参照します。(b.def で対象の防御力)
- *  s[x]     - スイッチID x の状態を参照します。
- *  v[x]     - 変数ID x の値を参照します。
- *  iv[x]    - アイテムのセルフ変数ID x の値を参照します。(*1)
- *  result  - スキル・アイテムを使用した結果を参照します。
- *            result.hpDamage でHPダメージ量を取得します。
- * 
- * (*1) セルフ変数を使用する場合は、FTKR_ItemSelfVariables.jsが必要です。
- * 
- * 
- * 設定例）
- * 使用効果の1番目に「HP回復」を追加して、以下のタグを記入することで
- * スイッチID1またはスイッチID2がONの時に、相手に与えたダメージの20%分、
- * 使用者が回復する効果が発生します。
- * 
- * <EIC 使用効果: 0>
- * 対象: user
- * 内容1: 0
- * 内容2: result.hpDamage * 0.2
- * 有効条件: s[1] && s[2]
- * </EIC 使用効果>
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.2.1 - 2019/05/08 : 不具合修正
- *    1. FTKR_ExStateEffectsの機能で追加した特徴の使用効果が正しく発動しない不具合修正。
- * 
- * v1.2.0 - 2017/08/27 : 機能追加
- *    1. コモンイベントに有効条件を設定する機能を追加。
- * 
- * v1.1.1 - 2017/08/04 : 不要なコメント削除
- * 
- * v1.1.0 - 2017/05/11 : 不具合修正、タグ変更、ヘルプ修正
- * 
- * v1.0.1 - 2017/04/29 : FTKR_ItemSelfVariables の v1.1.0以降に対応
- *    1. ダメージ量の参照用コードを変更。
- * 
- * v1.0.0 - 2017/04/14 : 初版公開
- * 
- *-----------------------------------------------------------------------------
- */
+@plugindesc v1.2.1 A plugin that expands the effects of using items and skills
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+By implementing this plugin, you can configure the effects of using items and skills in more detail.
+
+1. You can change the target of the effect.
+
+2. You can use JS formulas for the effect amount.
+
+3. You can set the activation conditions for the effect.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. This plugin cannot be used in conjunction with FTKR_SkillExpansion.js.
+
+3. When using it in conjunction with YEP_BattleEngineCore.js,
+place this plugin below YEP_BattleEngineCore.js.
+
+-----------------------------------------------------------------------------
+Usage Effect Settings
+-----------------------------------------------------------------------------
+You can change the effect settings by adding the following notetag to the Note field of items and skills.
+
+<EIC EFFECT: x>
+code
+</EIC EFFECT>
+: Reflections the settings written in the code section for the effect ID x.
+: Effect IDs are numbered 0, 1,... in the order they are set in the effect field.
+
+[Items that can be used for code]
+Target: y
+: Changes the target of the effect to y.
+: The following codes can be used for y.
+: user or user - Targets the user.
+: randomFriends or randomAllies - Selects a random ally.
+: randomOpponents or randomEnemy - Selects a random enemy.
+
+VALUE1: eval
+: Changes Content1 of the effect to the value set in Formula (eval).
+: Content1 is the first value set in the effect.
+: Example) For HP recovery, the value to set as a percentage.
+
+VALUE2: eval
+: Changes Content2 of the effect to the value set in Formula (eval).
+: Content2 is the second value set in the effect.
+: Example) For HP recovery, the value to set as a positive number.
+
+ENABLED: eval
+: Enables the target effect ID under the conditions set in Formula (eval).
+: If not set, it is always enabled.
+: If not enabled, the effect will not occur.
+
+[About Formula (eval) Values]
+Like damage formulas, formulas can be used to specify non-fixed values by entering a formula. The following codes can be used. Negative values are allowed.
+a.param - References the user's parameters. (a.atk is the user's attack power.)
+b.param - References the target's parameters. (b.def is the target's defense)
+s[x] - References the state of switch ID x.
+v[x] - References the value of variable ID x.
+iv[x] - References the value of the item's self variable ID x. (*1)
+result - References the result of using a skill or item.
+result.hpDamage obtains the amount of HP damage.
+
+(*1) FTKR_ItemSelfVariables.js is required to use self variables.
+
+Configuration Example)
+By adding "HP Recover" to the first effect and entering the following tag,
+when switch ID 1 or switch ID 2 is ON, the user will recover 20% of the damage dealt to the opponent.
+
+<EIC EFFECT: 0>
+Target: user
+VALUE1: 0
+VALUE2: result.hpDamage * 0.2
+ENABLED: s[1] && s[2]
+</EIC EFFECT>
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+---------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.2.1 - 2019/05/08: Bug Fixes
+1. Fixed a bug where the effects of Traits added with the FTKR_ExStateEffects function were not properly activated.
+
+v1.2.0 - August 27, 2017: Traits additions
+1. Added the ability to set activation conditions for common events.
+
+v1.1.1 - August 4, 2017: Deleted unnecessary comments.
+
+v1.1.0 - May 11, 2017: Bug fixes, tag changes, and help revisions.
+
+v1.0.1 - April 29, 2017: Compatible with FTKR_ItemSelfVariables v1.1.0 and later.
+1. Changed the damage amount reference code.
+
+v1.0.0 - April 14, 2017: First version released.
+
+-----------------------------------------------------------------------------
+*/
+
+/*:ja
+@plugindesc v1.2.1 アイテムとスキルの使用効果を拡張するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインを実装することで、アイテムやスキルの使用効果を
+より詳細に設定できます。
+
+1. 使用効果の対象を変更できます。
+
+2. 使用効果の効果量にJS計算式が使用できます。
+
+3. 使用効果を発生させるための有効条件を設定できます。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. 本プラグインは、FTKR_SkillExpansion.jsと組み合わせて使用できません。
+
+3. YEP_BattleEngineCore.jsと組み合わせて使用する場合は、
+   本プラグインを、YEP_BattleEngineCore.jsよりも下に配置してください。
+
+
+-----------------------------------------------------------------------------
+使用効果の設定
+-----------------------------------------------------------------------------
+アイテムおよびスキルのメモ欄に以下のノートタグを追記することで、
+使用効果の設定を変更できます。
+
+<EIC 使用効果: x>
+code
+</EIC 使用効果>
+   :使用効果のId x に対して code部で記述した設定を反映します。
+   :使用効果のIDは、使用効果欄に設定した順番に上から 0, 1,...となります。
+
+
+[code に使用できる項目]
+Target: y
+対象: y
+   :使用効果の対象を、y に変えることができます。
+   :y に使用できるコードは以下の通りです。
+   : user or 使用者 - 使用者を対象にする
+   : randomFriends or 味方ランダム - 味方からランダムで1体選択
+   : randomOpponents or 敵ランダム - 敵からランダムで1体選択
+
+Value1: eval
+内容1: 計算式
+   :使用効果の内容1を 計算式(eval) で設定した値に変更します。
+   :内容1は、使用効果で1つめに設定した数値です。
+   : 例) HP回復の場合、% で設定する値
+
+Value2: eval
+内容2: 計算式
+   :使用効果の内容2を 計算式(eval) で設定した値に変更します。
+   :内容2は、使用効果で2つめに設定した数値です。
+   : 例) HP回復の場合、+ で設定する値
+
+Enabled: eval
+有効条件: 計算式
+   :対象の使用効果ID を 計算式(eval) で設定した条件で有効に
+   :します。設定しない場合は、常に有効です。
+   :有効になっていない場合は、効果が発生しません。
+
+
+[計算式(eval)の値について]
+計算式は、ダメージ計算式のように、計算式を入力することで、固定値以外の値を
+使用することができます。以下のコードを使用できます。負の値入力可。
+ a.param  - 使用者のパラメータを参照します。(a.atk で使用者の攻撃力)
+ b.param  - 対象のパラメータを参照します。(b.def で対象の防御力)
+ s[x]     - スイッチID x の状態を参照します。
+ v[x]     - 変数ID x の値を参照します。
+ iv[x]    - アイテムのセルフ変数ID x の値を参照します。(*1)
+ result  - スキル・アイテムを使用した結果を参照します。
+           result.hpDamage でHPダメージ量を取得します。
+
+(*1) セルフ変数を使用する場合は、FTKR_ItemSelfVariables.jsが必要です。
+
+
+設定例）
+使用効果の1番目に「HP回復」を追加して、以下のタグを記入することで
+スイッチID1またはスイッチID2がONの時に、相手に与えたダメージの20%分、
+使用者が回復する効果が発生します。
+
+<EIC 使用効果: 0>
+対象: user
+内容1: 0
+内容2: result.hpDamage * 0.2
+有効条件: s[1] && s[2]
+</EIC 使用効果>
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.2.1 - 2019/05/08 : 不具合修正
+   1. FTKR_ExStateEffectsの機能で追加した特徴の使用効果が正しく発動しない不具合修正。
+
+v1.2.0 - 2017/08/27 : 機能追加
+   1. コモンイベントに有効条件を設定する機能を追加。
+
+v1.1.1 - 2017/08/04 : 不要なコメント削除
+
+v1.1.0 - 2017/05/11 : 不具合修正、タグ変更、ヘルプ修正
+
+v1.0.1 - 2017/04/29 : FTKR_ItemSelfVariables の v1.1.0以降に対応
+   1. ダメージ量の参照用コードを変更。
+
+v1.0.0 - 2017/04/14 : 初版公開
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
 
@@ -157,49 +284,49 @@ FTKR.EIE.parameters = PluginManager.parameters('FTKR_ExItemConfig_Effect');
 //=============================================================================
 
 FTKR.gameData = FTKR.gameData || {
-    user   :null,
-    target :null,
-    item   :null,
-    number :0,
+    user: null,
+    target: null,
+    item: null,
+    number: 0,
 };
 
 if (!FTKR.setGameData) {
-FTKR.setGameData = function(user, target, item, number) {
-    FTKR.gameData = {
-        user   :user || null,
-        target :target || null,
-        item   :item || null,
-        number :number || 0
+    FTKR.setGameData = function (user, target, item, number) {
+        FTKR.gameData = {
+            user: user || null,
+            target: target || null,
+            item: item || null,
+            number: number || 0
+        };
     };
-};
 }
 
 if (!FTKR.evalFormula) {
-FTKR.evalFormula = function(formula) {
-    var datas = FTKR.gameData;
-    try {
-        var s = $gameSwitches._data;
-        var v = $gameVariables._data;
-        var a = datas.user;
-        var b = datas.target;
-        var item   = datas.item;
-        var number = datas.number;
-        if (b) var result = b.result();
-        var value = eval(formula);
-        if (isNaN(value)) value = 0;
-        return value;
-    } catch (e) {
-        console.error(e);
-        return 0;
-    }
-};
+    FTKR.evalFormula = function (formula) {
+        var datas = FTKR.gameData;
+        try {
+            var s = $gameSwitches._data;
+            var v = $gameVariables._data;
+            var a = datas.user;
+            var b = datas.target;
+            var item = datas.item;
+            var number = datas.number;
+            if (b) var result = b.result();
+            var value = eval(formula);
+            if (isNaN(value)) value = 0;
+            return value;
+        } catch (e) {
+            console.error(e);
+            return 0;
+        }
+    };
 }
 
 //=============================================================================
 // 自作関数(ローカル)
 //=============================================================================
 
-var readEntrapmentCodeToTextEx = function(obj, codeTitles) {
+var readEntrapmentCodeToTextEx = function (obj, codeTitles) {
     regs = convertEntrapmentRegArrayEx('EIC ', codeTitles);
     var notedata = obj.note.split(/[\r\n]+/);
     var setMode = 'none';
@@ -209,8 +336,8 @@ var readEntrapmentCodeToTextEx = function(obj, codeTitles) {
         var line = notedata[i];
         if (matchRegs(line, regs, 'start')) {
             var data = {
-                id:RegExp.$1,
-                text:''
+                id: RegExp.$1,
+                text: ''
             };
             setMode = 'read';
         } else if (matchRegs(line, regs, 'end')) {
@@ -223,29 +350,29 @@ var readEntrapmentCodeToTextEx = function(obj, codeTitles) {
     return results;
 };
 
-var convertRegs = function(metacodes) {
-    return metacodes.map(function(metacode){
+var convertRegs = function (metacodes) {
+    return metacodes.map(function (metacode) {
         return new RegExp(metacode + ':[ ]*(.+)', 'i');
     });
 };
 
-var convertEntrapmentRegArrayEx = function(header, codeTitles) {
-    return codeTitles.map(function(codeTitle) {
+var convertEntrapmentRegArrayEx = function (header, codeTitles) {
+    return codeTitles.map(function (codeTitle) {
         return {
-            start:new RegExp('<' + header + codeTitle + ':[ ]*(.+)>', 'i'),
-            end  :new RegExp('<\/' + header + codeTitle + '>', 'i')
+            start: new RegExp('<' + header + codeTitle + ':[ ]*(.+)>', 'i'),
+            end: new RegExp('<\/' + header + codeTitle + '>', 'i')
         };
     });
 };
 
-var matchRegs = function(data, regs, prop) {
-    return regs.some(function(reg){
+var matchRegs = function (data, regs, prop) {
+    return regs.some(function (reg) {
         return prop ? data.match(reg[prop]) : data.match(reg);
     });
 };
 
-var matchTexts = function(data, texts, prop) {
-    return convertRegs(texts).some(function(reg){
+var matchTexts = function (data, texts, prop) {
+    return convertRegs(texts).some(function (reg) {
         return prop ? data.match(reg[prop]) : data.match(reg);
     });
 };
@@ -256,7 +383,7 @@ var matchTexts = function(data, texts, prop) {
 
 FTKR.EIE.DatabaseLoaded = false;
 FTKR.EIE.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-DataManager.isDatabaseLoaded = function() {
+DataManager.isDatabaseLoaded = function () {
     if (!FTKR.EIE.DataManager_isDatabaseLoaded.call(this)) return false;
     if (!FTKR.EIE.DatabaseLoaded) {
         this.eicEffectNotetags($dataSkills);
@@ -266,7 +393,7 @@ DataManager.isDatabaseLoaded = function() {
     return true;
 };
 
-DataManager.eicEffectNotetags = function(group) {
+DataManager.eicEffectNotetags = function (group) {
     for (var n = 1; n < group.length; n++) {
         var obj = group[n];
         this.setEicEffectData(obj);
@@ -275,8 +402,8 @@ DataManager.eicEffectNotetags = function(group) {
     }
 };
 
-DataManager.setEicEffectData = function(obj) {
-    obj.effects.forEach( function(effect) {
+DataManager.setEicEffectData = function (obj) {
+    obj.effects.forEach(function (effect) {
         effect.target = '';
         effect.baseValue1 = effect.value1;
         effect.baseValue2 = effect.value2;
@@ -286,7 +413,7 @@ DataManager.setEicEffectData = function(obj) {
     });
 };
 
-DataManager.readEicEffectMetaDatas = function(obj, metaDatas) {
+DataManager.readEicEffectMetaDatas = function (obj, metaDatas) {
     for (var t = 0; t < metaDatas.length; t++) {
         var dataId = Number(metaDatas[t].id);
         var datas = metaDatas[t].text.split(';');
@@ -310,10 +437,10 @@ DataManager.readEicEffectMetaDatas = function(obj, metaDatas) {
 //=============================================================================
 
 FTKR.EIE.BattleManager_invokeNormalAction = BattleManager.invokeNormalAction;
-BattleManager.invokeNormalAction = function(subject, target) {
+BattleManager.invokeNormalAction = function (subject, target) {
     FTKR.EIE.BattleManager_invokeNormalAction.call(this, subject, target);
     var effectTarget = this._action._targetSepEffect;
-    if(effectTarget) this._logWindow.displayActionSepResults(subject, effectTarget);
+    if (effectTarget) this._logWindow.displayActionSepResults(subject, effectTarget);
 };
 
 
@@ -322,14 +449,14 @@ BattleManager.invokeNormalAction = function(subject, target) {
 //=============================================================================
 
 var _EIE_Game_Action_initialize = Game_Action.prototype.initialize;
-Game_Action.prototype.initialize = function(subject, forcing) {
+Game_Action.prototype.initialize = function (subject, forcing) {
     _EIE_Game_Action_initialize.call(this, subject, forcing);
     this._target = {};
     this._targetSepEffect = null;
 };
 
 var _EIE_Game_Action_applyItemEffect = Game_Action.prototype.applyItemEffect;
-Game_Action.prototype.applyItemEffect = function(target, effect) {
+Game_Action.prototype.applyItemEffect = function (target, effect) {
     if (effect) {
         target = this.changeTargetEffect(target, effect);
         if (this.evalEffectEnabled(effect, target)) {
@@ -339,12 +466,12 @@ Game_Action.prototype.applyItemEffect = function(target, effect) {
     }
 };
 
-Game_Action.prototype.evalEffectEnabled = function(effect, target) {
+Game_Action.prototype.evalEffectEnabled = function (effect, target) {
     FTKR.setGameData(this.subject(), target, this.item());
-    return !effect.enabled ? true: FTKR.evalFormula(effect.enabled);
+    return !effect.enabled ? true : FTKR.evalFormula(effect.enabled);
 };
 
-Game_Action.prototype.changeTargetEffect = function(target, effect) {
+Game_Action.prototype.changeTargetEffect = function (target, effect) {
     this._target = target;
     if (effect.target) {
         switch (effect.target) {
@@ -368,11 +495,11 @@ Game_Action.prototype.changeTargetEffect = function(target, effect) {
     return target;
 };
 
-Game_Action.prototype.changeTargetForRandom = function(isEnemy) {
+Game_Action.prototype.changeTargetForRandom = function (isEnemy) {
     return isEnemy ? $gameTroop.randomTarget() : $gameParty.randomTarget();
 };
 
-Game_Action.prototype.setSepEffectValue = function(effect) {
+Game_Action.prototype.setSepEffectValue = function (effect) {
     if (this.item()) {
         FTKR.setGameData(this.subject(), this._target, this.item());
         effect.value1 = this.setSepEffectValue1(effect);
@@ -380,18 +507,18 @@ Game_Action.prototype.setSepEffectValue = function(effect) {
     }
 };
 
-Game_Action.prototype.setSepEffectValue1 = function(effect) {
+Game_Action.prototype.setSepEffectValue1 = function (effect) {
     return effect.sepValue1 ? FTKR.evalFormula(effect.sepValue1) : effect.baseValue1;
 };
 
-Game_Action.prototype.setSepEffectValue2 = function(effect) {
+Game_Action.prototype.setSepEffectValue2 = function (effect) {
     return effect.sepValue2 ? FTKR.evalFormula(effect.sepValue2) : effect.baseValue2;
 };
 
 //書き換え
-Game_Action.prototype.applyGlobal = function() {
+Game_Action.prototype.applyGlobal = function () {
     if (Imported.YEP_BattleEngineCore && $gameParty.inBattle()) return;
-    this.item().effects.forEach(function(effect) {
+    this.item().effects.forEach(function (effect) {
         if (effect.code === Game_Action.EFFECT_COMMON_EVENT && this.evalEffectEnabled(effect)) {
             $gameTemp.reserveCommonEvent(effect.dataId);
         }
@@ -399,21 +526,21 @@ Game_Action.prototype.applyGlobal = function() {
 };
 
 if (Imported.YEP_BattleEngineCore) {
-BattleManager.actionActionCommonEvent = function() {
-    this._action.item().effects.forEach(function(effect) {
-        if (effect.code === Game_Action.EFFECT_COMMON_EVENT && this._action.evalEffectEnabled(effect)) {
-            $gameTemp.reserveCommonEvent(effect.dataId);
-        }
-    }, this);
-    return false;
-};
+    BattleManager.actionActionCommonEvent = function () {
+        this._action.item().effects.forEach(function (effect) {
+            if (effect.code === Game_Action.EFFECT_COMMON_EVENT && this._action.evalEffectEnabled(effect)) {
+                $gameTemp.reserveCommonEvent(effect.dataId);
+            }
+        }, this);
+        return false;
+    };
 }
 
 //=============================================================================
 // Window_BattleLog
 //=============================================================================
 
-Window_BattleLog.prototype.displayActionSepResults = function(subject, target) {
+Window_BattleLog.prototype.displayActionSepResults = function (subject, target) {
     if (target.result().used) {
         this.push('pushBaseLine');
         this.displayCritical(target);

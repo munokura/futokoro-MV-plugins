@@ -13,147 +13,279 @@ Imported.FTKR_EEC = true;
 
 var FTKR = FTKR || {};
 FTKR.EEC = FTKR.EEC || {};
-
 /*:
- * @plugindesc v1.0.2 制御文字を拡張するプラグイン
- * @author フトコロ
- *
- * @param -- 画像の表示 --
- * @desc 
- * 
- * @param Advance Load Files
- * @desc ゲーム起動時に読み込む画像ファイル名を指定
- * 複数ある場合は、カンマ(,)で区切ること
- * @default 
- *
- * @param Enabled Adjust Height
- * @desc 画像高さに合わせて、行の高さを自動調整する
- * 0 - 無効にする, 1 - 有効にする
- * @default 0
- *
- * @param Image Width
- * @desc 制御文字\IMG[]で表示する画像の幅
- * @default 
- *
- * @param Image Height
- * @desc 制御文字\IMG[]で表示する画像の高さ
- * @default 
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 文章の表示等に使用できる制御文字に、以下の制御文字を追加します。
- * 
- * 1. 画像の表示
- * \IMG[画像ファイル名(, 画像番号, 画像幅, 画像高さ, 画像拡大率, 表示位置)]
- * 
- * 2. 行の高さの変更
- * \LH[行の高さ]
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 「画像の表示」機能
- *-----------------------------------------------------------------------------
- * 以下の制御文字で画像を表示できます。
- * 
- * \IMG[画像ファイル名(, 画像番号, 画像幅, 画像高さ, 画像拡大率, 表示位置)]
- * 
- * 画像ファイル名
- *    :表示させたい画像のファイル名を指定します。
- *    :画像ファイルは、/img/systemフォルダに保存してください。(*1)
- * 
- * 画像番号
- *    :画像ファイル内の何番目の画像を表示するか指定します。
- *    :アイコン画像のように、左上の画像を 0番、右上の画像を 15番、
- *    :左上から一段下の画像を 16番として数えます。
- *    :入力しない場合は、0番目の画像を表示します。
- * 
- * 画像幅
- *    :画像の幅を指定します。
- *    :0を指定、または入力しない場合は、プラグインパラメータ<Image Width>の値を
- *    :使用します。
- * 
- * 画像高さ
- *    :画像の高さを指定します。
- *    :0を指定、または入力しない場合は、プラグインパラメータ<Image Height>の値を
- *    :使用します。
- *    :プラグインパラメータ<Enabled Adjust Height>を有効にした場合、
- *    :画像の高さに合わせて以降の行の高さを自動で調整します。
- * 
- * 画像拡大率
- *    :100を基準として、画像の拡大率を指定します。
- *    :入力しない場合は、元のサイズのまま表示します。
- * 
- * 表示位置
- *    :行の高さよりも、画像高さが小さい場合に、画像を表示する位置を設定できます。
- *    : 中央(middle)   - 中央揃えで表示
- *    : 下揃え(bottom) - 下揃えで表示
- *    :入力しない場合は、上揃えで表示します。
- * 
- * 入力例)
- *    \IMG[file]
- *      画像ファイル file.png の 0番目の画像を表示する。
- *      画像の幅と高さは、プラグインパラメータの値を使用する。
- * 
- *    \IMG[file, 1, 48, 48, 80, 中央]
- *      48*48 の画像の画像ファイル file.png の 1番目の画像を80%に
- *      縮小して表示する。
- *      このとき、1行が48よりも大きい場合に中央揃えで表示する。
- * 
- * (*1):画像ファイルは、プラグインパラメータ<Advance Load File>に
- *      ファイル名を入力することで、ゲーム起動時に事前に読み込むことが
- *      できます。
- *      事前に読み込んでいない画像の場合、ゲーム起動後の最初の画像表示の際に
- *      正しく表示できない場合があります。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 「行の高さの変更」機能
- *-----------------------------------------------------------------------------
- * 以下の制御文字で行の高さの変更できます。
- * 
- * \LH[行の高さ]
- * 
- * 行の高さ
- *    :この制御文字以降の1行の高さを、pixel単位で指定します。
- *    :MV標準の行の高さは 36 です。
- *    :0 を指定すると、標準の高さに変更します。
- * 
- * 入力例)
- *    \LH[48]
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2017 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.2 - 2017/03/28 : 不具合修正
- * 
- * v1.0.1 - 2017/03/27 : 機能追加
- *    1. 制御文字「行の高さの変更」を追加
- *    2. 制御文字「画像の表示」に、行の高さと表示位置の調整機能を追加
- * 
- * v1.0.0 - 2017/03/27 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.2 Control character extension plugin
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+The following control characters are added to the control characters available for displaying text, etc.
+
+1. Displaying Images
+\IMG[Image File Name (, Image Number, Image Width, Image Height, Image Magnification, Display Position)]
+
+2. Changing Line Height
+\LH[Line Height]
+
+-----------------------------------------------------------------------------
+Settings
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+---------------------------------------------------------------------------
+"Image Display" Function
+----------------------------------------------------------------------------
+You can display images using the following control characters:
+
+\IMG[Image File Name (, Image Number, Image Width, Image Height, Image Magnification, Display Position)]
+
+Image File Name
+: Specify the file name of the image you want to display.
+: Save the image file in the /img/system folder. (*1)
+
+Image Number
+: Specify the image number within the image file to display.
+: Like icon images, the top left image is counted as 0, the top right image as 15,
+: The image one row below the top left is counted as 16.
+: If left unentered, image 0 will be displayed.
+
+Image Width
+: Specifies the image width.
+: If 0 is specified or no entry is made, the value of the plugin parameter <Image Width> will be used.
+
+Image Height
+: Specifies the image height.
+: If 0 is specified or no entry is made, the value of the plugin parameter <Image Height> will be used.
+: If the plugin parameter <Enabled Adjust Height> is enabled,
+: The height of subsequent rows will automatically adjust to match the image height.
+
+Image Magnification
+: Specifies the image magnification ratio, with 100 as the base.
+: If no entry is made, the image will be displayed at its original size.
+
+Display Position
+: Allows you to set the position at which the image will be displayed if the image height is smaller than the row height.
+: center (middle) - centered
+: bottom (bottom) - bottom-aligned
+: If no parameter is entered, the image will be top-aligned.
+
+Example:
+\IMG[file]
+Displays the 0th image in the image file file.png.
+The image width and height are determined by the plugin parameter values.
+
+\IMG[file, 1, 48, 48, 80, center]
+Displays the 1st image in the 48x48 image file file.png, scaled to 80%.
+If a line is larger than 48, the image will be centered.
+
+(*1): Image files can be preloaded when the game starts by entering their filename in the plugin parameter <Advance Load File>.
+Images that have not been preloaded may not display correctly the first time they are displayed after starting the game.
+
+-----------------------------------------------------------------------------
+"Change Line Height" Function
+-----------------------------------------------------------------------------
+You can change the line height using the following control characters.
+
+\LH[Line Height]
+
+Line Height
+: Specifies the height of the line following this control character in pixels.
+: The standard MV line height is 36.
+: Specifying 0 will change it to the standard height.
+
+Input Example)
+\LH[48]
+
+-----------------------------------------------------------------------------
+License for this Plugin
+----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+----------------------------------------------------------------------------
+Change History
+----------------------------------------------------------------------------
+
+v1.0.2 - March 28, 2017: Bug fixes
+
+v1.0.1 - March 27, 2017: Added Traits
+1. Added "Change Line Height" control
+2. Added line height and position adjustment functionality to the "Display Image" control
+
+v1.0.0 - March 27, 2017: First version created
+
+----------------------------------------------------------------------------
+
+@param -- 画像の表示 --
+@text -- View image --
+
+@param Advance Load Files
+@desc Specify the image file name to load when the game starts. If there are multiple images, separate them with a comma (,).
+
+@param Enabled Adjust Height
+@desc Auto adjust row height to fit image height 0 - disable, 1 - enable
+@default 0
+
+@param Image Width
+@desc Width of image displayed with control character \IMG[]
+
+@param Image Height
+@desc Image height displayed with control character \IMG[]
 */
+
+/*:ja
+@plugindesc v1.0.2 制御文字を拡張するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+文章の表示等に使用できる制御文字に、以下の制御文字を追加します。
+
+1. 画像の表示
+\IMG[画像ファイル名(, 画像番号, 画像幅, 画像高さ, 画像拡大率, 表示位置)]
+
+2. 行の高さの変更
+\LH[行の高さ]
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+-----------------------------------------------------------------------------
+「画像の表示」機能
+-----------------------------------------------------------------------------
+以下の制御文字で画像を表示できます。
+
+\IMG[画像ファイル名(, 画像番号, 画像幅, 画像高さ, 画像拡大率, 表示位置)]
+
+画像ファイル名
+   :表示させたい画像のファイル名を指定します。
+   :画像ファイルは、/img/systemフォルダに保存してください。(*1)
+
+画像番号
+   :画像ファイル内の何番目の画像を表示するか指定します。
+   :アイコン画像のように、左上の画像を 0番、右上の画像を 15番、
+   :左上から一段下の画像を 16番として数えます。
+   :入力しない場合は、0番目の画像を表示します。
+
+画像幅
+   :画像の幅を指定します。
+   :0を指定、または入力しない場合は、プラグインパラメータ<Image Width>の値を
+   :使用します。
+
+画像高さ
+   :画像の高さを指定します。
+   :0を指定、または入力しない場合は、プラグインパラメータ<Image Height>の値を
+   :使用します。
+   :プラグインパラメータ<Enabled Adjust Height>を有効にした場合、
+   :画像の高さに合わせて以降の行の高さを自動で調整します。
+
+画像拡大率
+   :100を基準として、画像の拡大率を指定します。
+   :入力しない場合は、元のサイズのまま表示します。
+
+表示位置
+   :行の高さよりも、画像高さが小さい場合に、画像を表示する位置を設定できます。
+   : 中央(middle)   - 中央揃えで表示
+   : 下揃え(bottom) - 下揃えで表示
+   :入力しない場合は、上揃えで表示します。
+
+入力例)
+   \IMG[file]
+     画像ファイル file.png の 0番目の画像を表示する。
+     画像の幅と高さは、プラグインパラメータの値を使用する。
+
+   \IMG[file, 1, 48, 48, 80, 中央]
+     48*48 の画像の画像ファイル file.png の 1番目の画像を80%に
+     縮小して表示する。
+     このとき、1行が48よりも大きい場合に中央揃えで表示する。
+
+(*1):画像ファイルは、プラグインパラメータ<Advance Load File>に
+     ファイル名を入力することで、ゲーム起動時に事前に読み込むことが
+     できます。
+     事前に読み込んでいない画像の場合、ゲーム起動後の最初の画像表示の際に
+     正しく表示できない場合があります。
+
+
+-----------------------------------------------------------------------------
+「行の高さの変更」機能
+-----------------------------------------------------------------------------
+以下の制御文字で行の高さの変更できます。
+
+\LH[行の高さ]
+
+行の高さ
+   :この制御文字以降の1行の高さを、pixel単位で指定します。
+   :MV標準の行の高さは 36 です。
+   :0 を指定すると、標準の高さに変更します。
+
+入力例)
+   \LH[48]
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2017 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.2 - 2017/03/28 : 不具合修正
+
+v1.0.1 - 2017/03/27 : 機能追加
+   1. 制御文字「行の高さの変更」を追加
+   2. 制御文字「画像の表示」に、行の高さと表示位置の調整機能を追加
+
+v1.0.0 - 2017/03/27 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param -- 画像の表示 --
+@text -- 画像の表示 --
+
+@param Advance Load Files
+@desc ゲーム起動時に読み込む画像ファイル名を指定 複数ある場合は、カンマ(,)で区切ること
+
+@param Enabled Adjust Height
+@desc 画像高さに合わせて、行の高さを自動調整する 0 - 無効にする, 1 - 有効にする
+@default 0
+
+@param Image Width
+@desc 制御文字\IMG[]で表示する画像の幅
+
+@param Image Height
+@desc 制御文字\IMG[]で表示する画像の高さ
+*/
+
 //=============================================================================
 
 
@@ -177,12 +309,12 @@ Window_Base.EEC_IMG_LENGTH = 16;
 
 //画像ファイルの事前ロード
 FTKR.EEC.DataManager_loadDatabase = DataManager.loadDatabase;
-DataManager.loadDatabase = function(name, src) {
+DataManager.loadDatabase = function (name, src) {
     FTKR.EEC.DataManager_loadDatabase.call(this, name, src);
-    if(!FTKR.EEC.files) return;
+    if (!FTKR.EEC.files) return;
     images = FTKR.EEC.files.split(',');
     if (!images.length) return;
-    images.forEach( function(image) {
+    images.forEach(function (image) {
         ImageManager.loadSystem(image);
     });
 };
@@ -192,7 +324,7 @@ DataManager.loadDatabase = function(name, src) {
 //=============================================================================
 
 //画像表示関数 /img/system/に保存したname.pngを表示する。
-Window_Base.prototype.drawEecImage = function(name, index, x, y, width, height, scale) {
+Window_Base.prototype.drawEecImage = function (name, index, x, y, width, height, scale) {
     if (name) {
         var bitmap = ImageManager.loadSystem(name);
         var pw = width;
@@ -210,26 +342,26 @@ Window_Base.prototype.drawEecImage = function(name, index, x, y, width, height, 
 //=============================================================================
 
 FTKR.EEC.Window_Base_processEscapeCharacter = Window_Base.prototype.processEscapeCharacter;
-Window_Base.prototype.processEscapeCharacter = function(code, textState) {
+Window_Base.prototype.processEscapeCharacter = function (code, textState) {
     switch (code) {
-    case 'IMG':
-        this.processDrawEecImg(this.obtainEscapeEecParam(textState), textState);
-        break;
-    case 'LH':
-        textState.height = this.obtainEscapeParam(textState) || this.lineHeight();
-        break;
-    default:
-        FTKR.EEC.Window_Base_processEscapeCharacter.call(this, code, textState);
-        break;
+        case 'IMG':
+            this.processDrawEecImg(this.obtainEscapeEecParam(textState), textState);
+            break;
+        case 'LH':
+            textState.height = this.obtainEscapeParam(textState) || this.lineHeight();
+            break;
+        default:
+            FTKR.EEC.Window_Base_processEscapeCharacter.call(this, code, textState);
+            break;
     }
 };
 
-Window_Base.prototype.obtainEscapeEecParam = function(textState) {
+Window_Base.prototype.obtainEscapeEecParam = function (textState) {
     var arr = /^\[([^\]]+)\]/.exec(textState.text.slice(textState.index));
     if (arr) {
         textState.index += arr[0].length;
         var eec = arr[1].split(',');
-        eec = eec.map( function(elm, i) {
+        eec = eec.map(function (elm, i) {
             return isNaN(parseInt(elm)) ? elm : parseInt(elm);
         });
         return eec;
@@ -238,21 +370,21 @@ Window_Base.prototype.obtainEscapeEecParam = function(textState) {
     }
 };
 
-Window_Base.prototype.processDrawEecImg = function(ececs, textState) {
+Window_Base.prototype.processDrawEecImg = function (ececs, textState) {
     var index = ececs[1] || 0;
     var width = ececs[2] || FTKR.EEC.width;
     var height = ececs[3] || FTKR.EEC.height;
     var scale = ececs[4] / 100 || 1;
     var imgHeight = 0;
-    var offset = 0; 
-    if(FTKR.EEC.enabledAdjustHeight) {
+    var offset = 0;
+    if (FTKR.EEC.enabledAdjustHeight) {
         imgHeight = Math.floor(height * scale) + 4;
-        var offset = 0; 
+        var offset = 0;
         switch (ececs[5]) {
             case 'middle':
             case '中央':
                 offset = (textState.height - imgHeight) / 2;
-                if(offset < 0) offset = 0;
+                if (offset < 0) offset = 0;
                 break;
             case 'bottom':
             case '下揃え':
@@ -264,4 +396,3 @@ Window_Base.prototype.processDrawEecImg = function(ececs, textState) {
     textState.x += Math.floor(width * scale) + 4;
     textState.height = Math.max(imgHeight, textState.height);
 };
-

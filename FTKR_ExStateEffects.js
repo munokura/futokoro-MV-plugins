@@ -16,111 +16,211 @@ FTKR.ESE = FTKR.ESE || {};
 
 //=============================================================================
 /*:
- * @plugindesc v1.0.0 ステートが掛かっている間に使用したスキルに別のスキルの特徴を追加する
- * @author フトコロ
- *
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * ステート付与中に使用したスキルに、別のスキルの特徴を追加することができます。
- * 
- * FTKR_ExItemConfig_Effect.jsと併用できます。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 
- *-----------------------------------------------------------------------------
- * ステートの設定方法
- *-----------------------------------------------------------------------------
- * ステートのメモ欄に以下のタグを追加します。
- * 
- * <ESE_特徴追加: x>
- * 追加条件
- * </ESE_特徴追加>
- * 
- * または
- * 
- * <ESE_ADD_EFFECT: x>
- * 追加条件
- * </ESE_ADD_EFFECT>
- *    : x - スキルID
- *    :ここで設定したスキルIDの特徴が、使用したスキルに追加して発動します。
- * 
- * 
- * 以下の内容をタグ内に追記することで、特徴を追加する条件を設定できます。
- * 条件は複数設定できます。
- * 
- * スキルタイプ: タイプ
- * SKILLTYPE: type
- *    :指定したスキルタイプのスキルを使用した時のみ特徴を追加します。
- *    :タイプには、データベースのタイプで設定したスキルタイプを記載します。
- * 
- * 命中タイプ: タイプ
- * HITTYPE: type
- *    :指定した命中タイプのスキルを使用した時のみ特徴を追加します。
- *    :タイプには、以下の中のいずれかを記載します。
- *    : 必中
- *    : 物理攻撃
- *    : 魔法攻撃
- * 
- * ダメージタイプ: タイプ
- * DAMAGETYPE: type
- *    :指定したダメージタイプのスキルを使用した時のみ特徴を追加します。
- *    :タイプには、以下の中のいずれかを記載します。
- *    : HPダメージ
- *    : MPダメージ
- *    : HP回復
- *    : MP回復
- *    : HP吸収
- *    : MP吸収
- *    :※HPとMPは半角にすること
- * 
- * 属性: 属性名
- * ELEMENT: elementname
- *    :指定した属性のスキルを使用した時のみ特徴を追加します。
- *    :属性名には、データベースのタイプで設定した属性、または'通常攻撃'の
- *    :いずれかを記載します。
- * 
- * 
- * 記載例
- * 
- * <ESE_特徴追加: 10>
- * 命中タイプ:物理攻撃
- * 属性:通常攻撃
- * </ESE_特徴追加>
- * 
- * このステートが付加されているアクターが
- * 命中タイプが物理攻撃で属性が通常攻撃のスキルを使用した時に
- * スキルID10の特徴が追加発動します。
- * 
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.0.0 - 2017/08/04 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.0.0 Add the Traits of another skill to the skill used while the state is active
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+You can add the effect of another skill to the skill used while applying a state.
+
+Can be used in conjunction with FTKR_ExItemConfig_Effect.js.
+
+-----------------------------------------------------------------------------
+Setup Instructions
+-----------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+-----------------------------------------------------------------------------
+How to Set a State
+-----------------------------------------------------------------------------
+Add the following tag to the state's Note field.
+
+<ESE_ADD_EFFECT: x>
+Additional Condition
+</ESE_ADD_EFFECT>
+: x - Skill ID
+: The effect of the skill ID set here will be added to the skill used and activated.
+
+You can set the condition for adding an effect by adding the following content to the tag.
+Multiple conditions can be set.
+
+Skill Type: Type
+SKILLTYPE: type
+: Adds a Traits only when using a skill of the specified skill type.
+: Type is the skill type set in the database type.
+
+HIT Type: Type
+HITTYPE: type
+: Adds a Traits only when using a skill of the specified hit type.
+: Type is one of the following:
+: Guaranteed Hit
+: Physical Attack
+: Magic Attack
+
+Damage Type: Type
+DAMAGETYPE: type
+: Adds a Traits only when using a skill of the specified damage type.
+: Type is one of the following:
+: HP Damage
+: MP Damage
+: HP Recover
+: MP Recover
+: HP Drain
+: MP Drain
+: *HP and MP must be half-width characters.
+
+Elements: Elements Name
+ELEMENT: elementname
+: Adds a Traits only when using a skill of the specified Elements.
+: Elements Name is either the Elements set in the database type or 'Normal Attack'.
+
+Example
+
+<ESE_ADD_EFFECT: 10>
+Hit Type: Physical Attack
+Elements: Normal Attack
+</ESE_ADD_EFFECT>
+
+When an actor with this state attached
+uses a skill with a hit type of physical attack and an Elements of normal attack,
+the Traits with skill ID 10 will be activated.
+
+-----------------------------------------------------------------------------
+License for this Plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.0.0 - August 4, 2017: First version created
+
+-----------------------------------------------------------------------------
 */
+
+/*:ja
+@plugindesc v1.0.0 ステートが掛かっている間に使用したスキルに別のスキルの特徴を追加する
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+ステート付与中に使用したスキルに、別のスキルの特徴を追加することができます。
+
+FTKR_ExItemConfig_Effect.jsと併用できます。
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+
+-----------------------------------------------------------------------------
+ステートの設定方法
+-----------------------------------------------------------------------------
+ステートのメモ欄に以下のタグを追加します。
+
+<ESE_特徴追加: x>
+追加条件
+</ESE_特徴追加>
+
+または
+
+<ESE_ADD_EFFECT: x>
+追加条件
+</ESE_ADD_EFFECT>
+   : x - スキルID
+   :ここで設定したスキルIDの特徴が、使用したスキルに追加して発動します。
+
+
+以下の内容をタグ内に追記することで、特徴を追加する条件を設定できます。
+条件は複数設定できます。
+
+スキルタイプ: タイプ
+SKILLTYPE: type
+   :指定したスキルタイプのスキルを使用した時のみ特徴を追加します。
+   :タイプには、データベースのタイプで設定したスキルタイプを記載します。
+
+命中タイプ: タイプ
+HITTYPE: type
+   :指定した命中タイプのスキルを使用した時のみ特徴を追加します。
+   :タイプには、以下の中のいずれかを記載します。
+   : 必中
+   : 物理攻撃
+   : 魔法攻撃
+
+ダメージタイプ: タイプ
+DAMAGETYPE: type
+   :指定したダメージタイプのスキルを使用した時のみ特徴を追加します。
+   :タイプには、以下の中のいずれかを記載します。
+   : HPダメージ
+   : MPダメージ
+   : HP回復
+   : MP回復
+   : HP吸収
+   : MP吸収
+   :※HPとMPは半角にすること
+
+属性: 属性名
+ELEMENT: elementname
+   :指定した属性のスキルを使用した時のみ特徴を追加します。
+   :属性名には、データベースのタイプで設定した属性、または'通常攻撃'の
+   :いずれかを記載します。
+
+
+記載例
+
+<ESE_特徴追加: 10>
+命中タイプ:物理攻撃
+属性:通常攻撃
+</ESE_特徴追加>
+
+このステートが付加されているアクターが
+命中タイプが物理攻撃で属性が通常攻撃のスキルを使用した時に
+スキルID10の特徴が追加発動します。
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.0.0 - 2017/08/04 : 初版作成
+
+-----------------------------------------------------------------------------
+*/
+
 //=============================================================================
 
-(function() {
+(function () {
 
     // 拡張型挟み込み形式のメタデータを読み取とってobjを返す
-    var readEntrapmentCodeToTextEx = function(obj, codeTitles) {
+    var readEntrapmentCodeToTextEx = function (obj, codeTitles) {
         var regs = convertEntrapmentRegArrayEx(codeTitles);
         var notedata = obj.note.split(/[\r\n]+/);
         var setMode = 'none';
@@ -130,8 +230,8 @@ FTKR.ESE = FTKR.ESE || {};
             var line = notedata[i];
             if (matchRegs(line, regs, 'start')) {
                 var data = {
-                    id:RegExp.$1,
-                    text:''
+                    id: RegExp.$1,
+                    text: ''
                 };
                 setMode = 'read';
             } else if (matchRegs(line, regs, 'end')) {
@@ -145,44 +245,44 @@ FTKR.ESE = FTKR.ESE || {};
     };
 
     //文字列の配列を拡張型挟み込み形式用の正規表現オブジェクトの配列に変換する
-    var convertEntrapmentRegArrayEx = function(codeTitles) {
-        return codeTitles.map(function(codeTitle) {
+    var convertEntrapmentRegArrayEx = function (codeTitles) {
+        return codeTitles.map(function (codeTitle) {
             return {
-                start:new RegExp('<' + codeTitle + ':[ ]*(.+)>', 'i'),
-                end  :new RegExp('<\/' + codeTitle + '>', 'i')
+                start: new RegExp('<' + codeTitle + ':[ ]*(.+)>', 'i'),
+                end: new RegExp('<\/' + codeTitle + '>', 'i')
             };
         });
     };
 
     //正規表現オブジェクトの配列とdataをマッチさせる
-    var matchRegs = function(data, regs, prop) {
-        return regs.some(function(reg){
+    var matchRegs = function (data, regs, prop) {
+        return regs.some(function (reg) {
             return prop ? data.match(reg[prop]) : data.match(reg);
         });
     };
 
     //findIndex を追加
     if (!Array.prototype.findIndex) {
-      Array.prototype.findIndex = function(predicate) {
-        if (this === null) {
-          throw new TypeError('Array.prototype.findIndex called on null or undefined');
-        }
-        if (typeof predicate !== 'function') {
-          throw new TypeError('predicate must be a function');
-        }
-        var list = Object(this);
-        var length = list.length >>> 0;
-        var thisArg = arguments[1];
-        var value;
+        Array.prototype.findIndex = function (predicate) {
+            if (this === null) {
+                throw new TypeError('Array.prototype.findIndex called on null or undefined');
+            }
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            var list = Object(this);
+            var length = list.length >>> 0;
+            var thisArg = arguments[1];
+            var value;
 
-        for (var i = 0; i < length; i++) {
-          value = list[i];
-          if (predicate.call(thisArg, value, i, list)) {
-            return i;
-          }
-        }
-        return -1;
-      };
+            for (var i = 0; i < length; i++) {
+                value = list[i];
+                if (predicate.call(thisArg, value, i, list)) {
+                    return i;
+                }
+            }
+            return -1;
+        };
     }
 
     //=============================================================================
@@ -196,7 +296,7 @@ FTKR.ESE = FTKR.ESE || {};
 
     var _ESE_DatabaseLoaded = false;
     var _ESE_DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-    DataManager.isDatabaseLoaded = function() {
+    DataManager.isDatabaseLoaded = function () {
         if (!_ESE_DataManager_isDatabaseLoaded.call(this)) return false;
         if (!_ESE_DatabaseLoaded) {
             this.eseSkillConditionNotetags($dataStates);
@@ -205,7 +305,7 @@ FTKR.ESE = FTKR.ESE || {};
         return true;
     };
 
-    DataManager.eseSkillConditionNotetags = function(group) {
+    DataManager.eseSkillConditionNotetags = function (group) {
         for (var n = 1; n < group.length; n++) {
             var obj = group[n];
             obj.eseCon = [];
@@ -214,7 +314,7 @@ FTKR.ESE = FTKR.ESE || {};
         }
     };
 
-    DataManager.readEseConditionMetaDatas = function(obj, metaDatas) {
+    DataManager.readEseConditionMetaDatas = function (obj, metaDatas) {
         for (var t = 0; t < metaDatas.length; t++) {
             obj.eseCon[t] = {};
             obj.eseCon[t].skillId = Number(metaDatas[t].id);
@@ -250,49 +350,49 @@ FTKR.ESE = FTKR.ESE || {};
     //=============================================================================
 
     var _ESE_Game_Action_applyItemUserEffect = Game_Action.prototype.applyItemUserEffect;
-    Game_Action.prototype.applyItemUserEffect = function(target) {
+    Game_Action.prototype.applyItemUserEffect = function (target) {
         this.applyEseStateEffects(target);
         _ESE_Game_Action_applyItemUserEffect.call(this, target);
     };
 
-    Game_Action.prototype.applyEseStateEffects = function(target){
+    Game_Action.prototype.applyEseStateEffects = function (target) {
         var skillIds = [];
-        this.subject().states().forEach(function(state){
-            state.eseCon.forEach(function(condition){
+        this.subject().states().forEach(function (state) {
+            state.eseCon.forEach(function (condition) {
                 if (this.checkActionItemConditions(condition)) skillIds.push(condition.skillId);
-            },this);
-        },this);
-        skillIds.forEach(function(skillId) {
+            }, this);
+        }, this);
+        skillIds.forEach(function (skillId) {
             var skill = $dataSkills[skillId];
             if (skill) {
-                skill.effects.forEach(function(effect){
+                skill.effects.forEach(function (effect) {
                     this.applyItemEffect(target, effect);
-                },this);
+                }, this);
             }
         }, this);
     };
 
-    Game_Action.prototype.checkActionItemConditions = function(conditions) {
+    Game_Action.prototype.checkActionItemConditions = function (conditions) {
         var c = conditions;
         var item = this.item();
         if (c.skilltype) {
             if (c.skilltype === 'なし') {
                 var skilltype = 0;
             } else {
-                var skilltype = $dataSystem.skilltypes.findIndex(function(type) {
+                var skilltype = $dataSystem.skilltypes.findIndex(function (type) {
                     return type === c.skilltype;
                 });
             }
             if (skilltype !== item.stypeId) return false;
         }
         if (c.hitType) {
-            var hitType = ['必中','物理攻撃','魔法攻撃'].findIndex(function(type){
+            var hitType = ['必中', '物理攻撃', '魔法攻撃'].findIndex(function (type) {
                 return type === c.hitType;
             });
             if (hitType !== item.hitType) return false;
         }
         if (c.damageType) {
-            var damageType = ['なし','HPダメージ','MPダメージ','HP回復','MP回復','HP吸収','MP吸収'].findIndex(function(type){
+            var damageType = ['なし', 'HPダメージ', 'MPダメージ', 'HP回復', 'MP回復', 'HP吸収', 'MP吸収'].findIndex(function (type) {
                 return type === c.damageType;
             });
             if (damageType !== item.damage.type) return false;
@@ -301,7 +401,7 @@ FTKR.ESE = FTKR.ESE || {};
             if (c.element === '通常攻撃') {
                 var element = -1;
             } else {
-                var element = $dataSystem.elements.findIndex(function(type) {
+                var element = $dataSystem.elements.findIndex(function (type) {
                     return type === c.element;
                 });
             }

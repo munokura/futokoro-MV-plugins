@@ -13,202 +13,365 @@ Imported.FTKR_EBE = true;
 
 var FTKR = FTKR || {};
 FTKR.EBE = FTKR.EBE || {};
-
 /*:
- * @plugindesc v1.3.6 バトルイベントを拡張するプラグイン
- * @author フトコロ
- * 
- * @param Battle Event
- * @desc 戦闘中に実行するコモンイベントID
- * 0 - 実行しない、カンマ(,)で区切って複数設定できます
- * @default 
- * 
- * @param --勝利時イベント--
- * @desc 
- * 
- * @param Custom Victory Event
- * @desc 戦闘勝利時の処理を変更できるようにするか
- * 0 - 変更しない, 1 - 変更する
- * @type select
- * @option 変更しない
- * @value 0
- * @option 変更する
- * @value 1
- * @default 0
- * 
- * @param Victory Event
- * @desc 戦闘勝利時に実行するコモンイベントID
- * 0 - 実行しない
- * @type common_event
- * @default 
- * 
- * @param --敗北時イベント--
- * @desc 
- * 
- * @param Custom Defeat Event
- * @desc 戦闘敗北時の処理を変更できるようにするか
- * 0 - 変更しない, 1 - 変更する
- * @type select
- * @option 変更しない
- * @value 0
- * @option 変更する
- * @value 1
- * @default 0
- * 
- * @param Defeat Event
- * @desc 戦闘敗北時に実行するコモンイベントID
- * 0 - 実行しない
- * @type common_event
- * @default 
- * 
- * @param --逃走時イベント--
- * @desc 
- * 
- * @param Custom Escape Event
- * @desc 戦闘逃走時の処理を変更できるようにするか
- * 0 - 変更しない, 1 - 変更する
- * @type select
- * @option 変更しない
- * @value 0
- * @option 変更する
- * @value 1
- * @default 0
- * 
- * @param Escape Event
- * @desc 戦闘逃走時に実行するコモンイベントID
- * 0 - 実行しない
- * @type common_event
- * @default 
- * 
- * @param --中断時イベント--
- * @desc 
- * 
- * @param Custom Abort Event
- * @desc 戦闘中断時の処理を変更できるようにするか
- * 0 - 変更しない, 1 - 変更する
- * @type select
- * @option 変更しない
- * @value 0
- * @option 変更する
- * @value 1
- * @default 0
- * 
- * @param Abort Event
- * @desc 戦闘中断時に実行するコモンイベントID
- * 0 - 実行しない
- * @type common_event
- * @default 
- * 
- * @param Abort BugFix
- * @desc コアスクリプトにおける戦闘中断時のバグ修正を行う。他のプラグインと競合する場合は、無効にしてください。
- * @type boolean
- * @on 有効
- * @off 無効
- * @default false
- * 
- * @param --戦闘行動の強制--
- * @desc 
- * 
- * @param Invalid Battle Phase
- * @desc ここで規定したバトルフェーズ中に戦闘行動の強制が有効になる。複数規定する場合はカンマ(,)で区切る。
- * @default action
- * 
- * @help 
- *-----------------------------------------------------------------------------
- * 概要
- *-----------------------------------------------------------------------------
- * 本プラグインを実装することで、バトル終了時または中断時に
- * 指定したイベントを実行します。
- * 
- * 実行可能なタイミング
- *      １．勝利時（敵が全滅した後）
- *      ２．敗北時（パーティーが全滅した後）
- *      ３．逃走時（パーティーコマンド「逃げる」やスキルの逃げる効果使用後）
- *      ４．中断時（イベントコマンド「バトルの中断」実行後）
- * 
- * 戦闘終了時のイベントの処理が終了すると、バトル画面が終了します。
- * 
- * 
- * プラグインの使い方は、下のオンラインマニュアルページを見てください。
- * https://github.com/futokoro/RPGMaker/blob/master/FTKR_ExBattleEvent.ja.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 設定方法
- *-----------------------------------------------------------------------------
- * 1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
- *    ください。
- * 
- * 2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
- * 
- *    FTKR_CSS_CustomizeBattleResults.js
- *    ↑このプラグインよりも上に登録↑
- *    FTKR_ExBattleEvent.js
- *    ↓このプラグインよりも下に登録↓
- *    FTKR_ExVariablesChange.js
- *    
- * 
- *-----------------------------------------------------------------------------
- * 本プラグインのライセンスについて(License)
- *-----------------------------------------------------------------------------
- * 本プラグインはMITライセンスのもとで公開しています。
- * This plugin is released under the MIT License.
- * 
- * Copyright (c) 2019 Futokoro
- * http://opensource.org/licenses/mit-license.php
- * 
- * 
- * プラグイン公開元
- * https://github.com/futokoro/RPGMaker/blob/master/README.md
- * 
- * 
- *-----------------------------------------------------------------------------
- * 変更来歴
- *-----------------------------------------------------------------------------
- * 
- * v1.3.6 - 2020/03/02 : 機能追加
- *    1. 逃走時と中断時に指定のイベントを実行する機能を追加。
- * 
- * v1.3.5 - 2020/01/15 : 不具合修正
- *    1. 戦闘終了時イベントで「戦闘行動の強制」を実行できない不具合を修正。
- * 
- * v1.3.4 - 2019/12/29 : 仕様見直し
- *    1. 戦闘終了時イベントの実行処理を見直し。
- * 
- * v1.3.3 - 2018/02/19 : 不具合修正
- *    1. Custom Victory Eventが0の時に、戦闘勝利イベントを実行すると
- *       戦闘勝利回数が2回増加してしまう不具合を修正。
- * 
- * v1.3.2 - 2018/01/13 : 機能追加
- *    1. メッセージ表示関係のプラグインコマンドに、イベント処理を止める機能を追加。
- * 
- * v1.3.1 - 2018/01/12 : 不具合修正
- *    1. 戦闘終了時イベント中にウェイトコマンドを実行すると、アクターの
- *       モーションが正常に再生されない不具合を修正。
- * 
- * v1.3.0 - 2017/06/30 : 機能追加
- *    1. 戦闘終了時のイベントの後に、MVデフォルトの戦闘終了処理を実行する
- *       機能を追加。
- * 
- * v1.2.0 - 2017/06/01 : 機能追加
- *    1. 敵キャラの戦闘行動を再設定するプラグインコマンドを追加。
- * 
- * v1.1.0 - 2017/05/26 : 機能追加
- *    1. バトル中にコモンイベントを実行できる機能を追加。
- *    2. モーション実行コマンドにアクターを対象にできる機能を追加。
- *    3. 画面に数字をポップアップさせるプラグインコマンドを追加。
- * 
- * v1.0.0 - 2017/05/25 : 初版作成
- * 
- *-----------------------------------------------------------------------------
+@plugindesc v1.3.6 Battle event expansion plugin
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+English Help Translator: munokura
+This is an unofficial English translation of the plugin help,
+created to support global RPG Maker users.
+Feedback is welcome to improve translation quality
+(see: https://github.com/munokura/futokoro-MV-plugins ).
+Original plugin by Futokoro.
+Please check the URL below for the latest version of the plugin.
+URL https://github.com/futokoro/RPGMaker
+-----
+-----------------------------------------------------------------------------
+Overview
+-----------------------------------------------------------------------------
+By implementing this plugin, you can execute a specified event at the end of a battle or when the battle is interrupted.
+
+Available Events
+1. Upon victory (after all enemies are annihilated)
+2. Upon defeat (after the entire party is annihilated)
+3. Upon fleeing (after using the "Escape" party command or a skill's escape effect)
+4. Upon interruption (after executing the "Abort Battle" Event's Contents)
+
+The battle screen will close once the end-of-battle event has finished processing.
+
+For instructions on how to use the plugin, see the online manual page below.
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_ExBattleEvent.ja.md
+
+-----------------------------------------------------------------------------
+Setup Instructions
+---------------------------------------------------------------------------
+1. Add this plugin to the "Plugin Manager."
+
+2. When combining with the following plugins, be sure to pay attention to the order of plugin management.
+
+FTKR_CSS_CustomizeBattleResults.js
+↑Register above this plugin↑
+FTKR_ExBattleEvent.js
+↓Register below this plugin↓
+FTKR_ExVariablesChange.js
+
+-----------------------------------------------------------------------------
+License for this plugin
+-----------------------------------------------------------------------------
+This plugin is released under the MIT License.
+
+Copyright (c) 2019 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+Plugin publisher
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+-----------------------------------------------------------------------------
+Change History
+-----------------------------------------------------------------------------
+
+v1.3.6 - 2020/03/02: Traits Added
+1. Added the ability to execute specified events when fleeing or interrupting.
+
+v1.3.5 - 2020/01/15: Bug Fixes
+1. Fixed an issue where "Force Battle Action" could not be executed during the end-of-battle event.
+
+v1.3.4 - 2019/12/29: Specification Revision
+1. Revised the execution process for the end-of-battle event.
+
+v1.3.3 - 2018/02/19: Bug Fixes
+1. Fixed an issue where executing a battle victory event when Custom Victory Event was set to 0 would increase the number of battle victories by two.
+
+v1.3.2 - 2018/01/13: Traits Additions
+1. Added a function to stop event processing for message display-related plugin commands.
+
+v1.3.1 - 2018/01/12: Bug Fixes
+1. Fixed an issue where actor motions would not play correctly when executing a wait command during the end-of-battle event.
+
+v1.3.0 - June 30, 2017: Traits Added
+1. Added a Traits to execute the MV default battle end process after the end-of-battle event.
+
+v1.2.0 - June 1, 2017: Traits Added
+1. Added a plugin command to reset Enemies battle behavior.
+
+v1.1.0 - May 26, 2017: Traits Added
+1. Added the ability to execute common events during battle.
+2. Added the ability to target actors to the motion execution command.
+3. Added a plugin command to display numbers as pop-ups on the screen.
+
+v1.0.0 - May 25, 2017: First version created
+
+-----------------------------------------------------------------------------
+
+@param Battle Event
+@desc Common event ID to execute during battle 0 - Do not execute, multiple events can be set by separating them with commas (,)
+
+@param --勝利時イベント--
+@text --Victory Event--
+
+@param Custom Victory Event
+@desc Whether to allow the process of winning a battle to be changed: 0 - Do not change, 1 - Change
+@default 0
+@type select
+@option Do not change
+@value 0
+@option Change
+@value 1
+
+@param Victory Event
+@desc Common event ID to execute when winning a battle: 0 - Do not execute
+@type common_event
+
+@param --敗北時イベント--
+@text --Defeat Event--
+
+@param Custom Defeat Event
+@desc Can you change the process when losing a battle? 0 - Do not change, 1 - Change
+@default 0
+@type select
+@option Do not change
+@value 0
+@option Change
+@value 1
+
+@param Defeat Event
+@desc Common event ID to execute when losing a battle: 0 - Do not execute
+@type common_event
+
+@param --逃走時イベント--
+@text --Escape event--
+
+@param Custom Escape Event
+@desc Whether to change the process of fleeing from battle: 0 - Do not change, 1 - Change
+@default 0
+@type select
+@option Do not change
+@value 0
+@option Change
+@value 1
+
+@param Escape Event
+@desc Common event ID to execute when fleeing from battle 0 - Do not execute
+@type common_event
+
+@param --中断時イベント--
+@text --Interruption Event--
+
+@param Custom Abort Event
+@desc Whether to allow the process of interrupting a battle to be changed: 0 - Do not change, 1 - Change
+@default 0
+@type select
+@option Do not change
+@value 0
+@option Change
+@value 1
+
+@param Abort Event
+@desc Common event ID to execute when battle is interrupted 0 - Do not execute
+@type common_event
+
+@param Abort BugFix
+@desc Fix a bug in the core script when interrupting battle. If it conflicts with other plugins, please disable it.
+@default false
+@type boolean
+@on valid
+@off invalid
+
+@param --戦闘行動の強制--
+@text --Compulsory Battle action--
+
+@param Invalid Battle Phase
+@desc The forced Battle action will be effective during the battle phase specified here. If multiple are specified, separate them with a comma (,).
+@default action
 */
+
+/*:ja
+@plugindesc v1.3.6 バトルイベントを拡張するプラグイン
+@author Futokoro
+@url https://github.com/munokura/futokoro-MV-plugins
+@license MIT License
+
+@help
+-----------------------------------------------------------------------------
+概要
+-----------------------------------------------------------------------------
+本プラグインを実装することで、バトル終了時または中断時に
+指定したイベントを実行します。
+
+実行可能なタイミング
+     １．勝利時（敵が全滅した後）
+     ２．敗北時（パーティーが全滅した後）
+     ３．逃走時（パーティーコマンド「逃げる」やスキルの逃げる効果使用後）
+     ４．中断時（イベントコマンド「バトルの中断」実行後）
+
+戦闘終了時のイベントの処理が終了すると、バトル画面が終了します。
+
+
+プラグインの使い方は、下のオンラインマニュアルページを見てください。
+https://github.com/futokoro/RPGMaker/blob/master/FTKR_ExBattleEvent.ja.md
+
+
+-----------------------------------------------------------------------------
+設定方法
+-----------------------------------------------------------------------------
+1.「プラグインマネージャー(プラグイン管理)」に、本プラグインを追加して
+   ください。
+
+2. 以下のプラグインと組み合わせる場合は、プラグイン管理の順番に注意してください。
+
+   FTKR_CSS_CustomizeBattleResults.js
+   ↑このプラグインよりも上に登録↑
+   FTKR_ExBattleEvent.js
+   ↓このプラグインよりも下に登録↓
+   FTKR_ExVariablesChange.js
+
+
+-----------------------------------------------------------------------------
+本プラグインのライセンスについて(License)
+-----------------------------------------------------------------------------
+本プラグインはMITライセンスのもとで公開しています。
+This plugin is released under the MIT License.
+
+Copyright (c) 2019 Futokoro
+http://opensource.org/licenses/mit-license.php
+
+
+プラグイン公開元
+https://github.com/futokoro/RPGMaker/blob/master/README.md
+
+
+-----------------------------------------------------------------------------
+変更来歴
+-----------------------------------------------------------------------------
+
+v1.3.6 - 2020/03/02 : 機能追加
+   1. 逃走時と中断時に指定のイベントを実行する機能を追加。
+
+v1.3.5 - 2020/01/15 : 不具合修正
+   1. 戦闘終了時イベントで「戦闘行動の強制」を実行できない不具合を修正。
+
+v1.3.4 - 2019/12/29 : 仕様見直し
+   1. 戦闘終了時イベントの実行処理を見直し。
+
+v1.3.3 - 2018/02/19 : 不具合修正
+   1. Custom Victory Eventが0の時に、戦闘勝利イベントを実行すると
+      戦闘勝利回数が2回増加してしまう不具合を修正。
+
+v1.3.2 - 2018/01/13 : 機能追加
+   1. メッセージ表示関係のプラグインコマンドに、イベント処理を止める機能を追加。
+
+v1.3.1 - 2018/01/12 : 不具合修正
+   1. 戦闘終了時イベント中にウェイトコマンドを実行すると、アクターの
+      モーションが正常に再生されない不具合を修正。
+
+v1.3.0 - 2017/06/30 : 機能追加
+   1. 戦闘終了時のイベントの後に、MVデフォルトの戦闘終了処理を実行する
+      機能を追加。
+
+v1.2.0 - 2017/06/01 : 機能追加
+   1. 敵キャラの戦闘行動を再設定するプラグインコマンドを追加。
+
+v1.1.0 - 2017/05/26 : 機能追加
+   1. バトル中にコモンイベントを実行できる機能を追加。
+   2. モーション実行コマンドにアクターを対象にできる機能を追加。
+   3. 画面に数字をポップアップさせるプラグインコマンドを追加。
+
+v1.0.0 - 2017/05/25 : 初版作成
+
+-----------------------------------------------------------------------------
+
+@param Battle Event
+@desc 戦闘中に実行するコモンイベントID 0 - 実行しない、カンマ(,)で区切って複数設定できます
+
+@param --勝利時イベント--
+@text --勝利時イベント--
+
+@param Custom Victory Event
+@desc 戦闘勝利時の処理を変更できるようにするか 0 - 変更しない, 1 - 変更する
+@default 0
+@type select
+@option 変更しない
+@value 0
+@option 変更する
+@value 1
+
+@param Victory Event
+@desc 戦闘勝利時に実行するコモンイベントID 0 - 実行しない
+@type common_event
+
+@param --敗北時イベント--
+@text --敗北時イベント--
+
+@param Custom Defeat Event
+@desc 戦闘敗北時の処理を変更できるようにするか 0 - 変更しない, 1 - 変更する
+@default 0
+@type select
+@option 変更しない
+@value 0
+@option 変更する
+@value 1
+
+@param Defeat Event
+@desc 戦闘敗北時に実行するコモンイベントID 0 - 実行しない
+@type common_event
+
+@param --逃走時イベント--
+@text --逃走時イベント--
+
+@param Custom Escape Event
+@desc 戦闘逃走時の処理を変更できるようにするか 0 - 変更しない, 1 - 変更する
+@default 0
+@type select
+@option 変更しない
+@value 0
+@option 変更する
+@value 1
+
+@param Escape Event
+@desc 戦闘逃走時に実行するコモンイベントID 0 - 実行しない
+@type common_event
+
+@param --中断時イベント--
+@text --中断時イベント--
+
+@param Custom Abort Event
+@desc 戦闘中断時の処理を変更できるようにするか 0 - 変更しない, 1 - 変更する
+@default 0
+@type select
+@option 変更しない
+@value 0
+@option 変更する
+@value 1
+
+@param Abort Event
+@desc 戦闘中断時に実行するコモンイベントID 0 - 実行しない
+@type common_event
+
+@param Abort BugFix
+@desc コアスクリプトにおける戦闘中断時のバグ修正を行う。他のプラグインと競合する場合は、無効にしてください。
+@default false
+@type boolean
+@on 有効
+@off 無効
+
+@param --戦闘行動の強制--
+@text --戦闘行動の強制--
+
+@param Invalid Battle Phase
+@desc ここで規定したバトルフェーズ中に戦闘行動の強制が有効になる。複数規定する場合はカンマ(,)で区切る。
+@default action
+*/
+
 //=============================================================================
 
-var paramParse = function(obj) {
+var paramParse = function (obj) {
     return JSON.parse(JSON.stringify(obj, paramReplace));
 }
 
-var paramReplace = function(key, value) {
+var paramReplace = function (key, value) {
     try {
         return JSON.parse(value || null);
     } catch (e) {
@@ -216,50 +379,50 @@ var paramReplace = function(key, value) {
     }
 };
 
-var matchTextToRegs = function(test, regs) {
-    return regs.some( function(reg){
+var matchTextToRegs = function (test, regs) {
+    return regs.some(function (reg) {
         return test.match(reg);
     });
 };
 
-var readCommentMeta = function(comment, metacodes) {
+var readCommentMeta = function (comment, metacodes) {
     if (!comment) return false;
-    return metacodes.some(function(metacode){
+    return metacodes.some(function (metacode) {
         var metaReg = new RegExp('<' + metacode + '>', 'i');
         return metaReg.test(comment);
     });
 };
 
-var splitConvertNumber = function(param) {
+var splitConvertNumber = function (param) {
     var results = [];
-    (param + '').split(',').forEach( function(split){
+    (param + '').split(',').forEach(function (split) {
         match = /[ ]*(\d+)[ ]*-[ ]*(\d+)/.exec(split);
         if (match) {
             for (var i = Number(match[1]); i <= Number(match[2]); i++) {
                 results.push(i);
             }
         } else {
-            if(!isNaN(split)) results.push(Number(split));
+            if (!isNaN(split)) results.push(Number(split));
         }
     });
     return results;
 };
 
 // textを条件式に使える状態に変換する
-var convertTextToConditions = function(text) {
+var convertTextToConditions = function (text) {
     var result = '';
     if (text) {
         var datas = text.split(';');
-        datas.forEach(function(data, i) {
+        datas.forEach(function (data, i) {
             result += data;
-            if (datas[i+1]) result += ')&&(';
+            if (datas[i + 1]) result += ')&&(';
         });
         result = '(' + result + ')';
     }
     return result;
 };
 
-var convertEscapeCharacters = function(text) {
+var convertEscapeCharacters = function (text) {
     if (text == null) text = '';
     var window = SceneManager._scene._windowLayer.children[0];
     return window ? window.convertEscapeCharacters(text) : text;
@@ -270,42 +433,42 @@ var convertEscapeCharacters = function(text) {
 //=============================================================================
 
 FTKR.gameData = FTKR.gameData || {
-    user   :null,
-    target :null,
-    item   :null,
-    number :0,
+    user: null,
+    target: null,
+    item: null,
+    number: 0,
 };
 
 if (!FTKR.setGameData) {
-FTKR.setGameData = function(user, target, item, number) {
-    FTKR.gameData = {
-        user   :user || null,
-        target :target || null,
-        item   :item || null,
-        number :number || 0
+    FTKR.setGameData = function (user, target, item, number) {
+        FTKR.gameData = {
+            user: user || null,
+            target: target || null,
+            item: item || null,
+            number: number || 0
+        };
     };
-};
 }
 
 if (!FTKR.evalFormula) {
-FTKR.evalFormula = function(formula) {
-    var datas = FTKR.gameData;
-    try {
-        var s = $gameSwitches._data;
-        var v = $gameVariables._data;
-        var a = datas.user;
-        var b = datas.target;
-        var item   = datas.item;
-        var number = datas.number;
-        if (b) var result = b.result();
-        var value = eval(formula);
-        if (isNaN(value)) value = 0;
-        return value;
-    } catch (e) {
-        console.error(e);
-        return 0;
-    }
-};
+    FTKR.evalFormula = function (formula) {
+        var datas = FTKR.gameData;
+        try {
+            var s = $gameSwitches._data;
+            var v = $gameVariables._data;
+            var a = datas.user;
+            var b = datas.target;
+            var item = datas.item;
+            var number = datas.number;
+            if (b) var result = b.result();
+            var value = eval(formula);
+            if (isNaN(value)) value = 0;
+            return value;
+        } catch (e) {
+            console.error(e);
+            return 0;
+        }
+    };
 }
 
 //=============================================================================
@@ -315,23 +478,23 @@ var parameters = PluginManager.parameters('FTKR_ExBattleEvent');
 
 FTKR.EBE.battleEvents = splitConvertNumber(parameters['Battle Event']);
 FTKR.EBE.battleEnd = {
-    victory : paramParse(parameters['Victory Event'] || 0),
-    customV : paramParse(parameters['Custom Victory Event'] || 0),
-    defeat  : paramParse(parameters['Defeat Event'] || 0),
-    customD : paramParse(parameters['Custom Defeat Event'] || 0),
-    escape  : paramParse(parameters['Escape Event'] || 0),
-    customE : paramParse(parameters['Custom Escape Event'] || 0),
-    abort   : paramParse(parameters['Abort Event'] || 0),
-    customA : paramParse(parameters['Custom Abort Event'] || 0),
-    abortBF : paramParse(parameters['Abort BugFix'] || false),
-    invalid : parameters['Invalid Battle Phase'] || '',
+    victory: paramParse(parameters['Victory Event'] || 0),
+    customV: paramParse(parameters['Custom Victory Event'] || 0),
+    defeat: paramParse(parameters['Defeat Event'] || 0),
+    customD: paramParse(parameters['Custom Defeat Event'] || 0),
+    escape: paramParse(parameters['Escape Event'] || 0),
+    customE: paramParse(parameters['Custom Escape Event'] || 0),
+    abort: paramParse(parameters['Abort Event'] || 0),
+    customA: paramParse(parameters['Custom Abort Event'] || 0),
+    abortBF: paramParse(parameters['Abort BugFix'] || false),
+    invalid: parameters['Invalid Battle Phase'] || '',
 };
 
 //=============================================================================
 // プラグインコマンド
 //=============================================================================
 
-Game_Interpreter.prototype.setArgNumber = function(arg) {
+Game_Interpreter.prototype.setArgNumber = function (arg) {
     try {
         var arg = convertEscapeCharacters(arg);
         return Number(eval(arg));
@@ -342,7 +505,7 @@ Game_Interpreter.prototype.setArgNumber = function(arg) {
 };
 
 var _EBE_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-Game_Interpreter.prototype.pluginCommand = function(command, args) {
+Game_Interpreter.prototype.pluginCommand = function (command, args) {
     _EBE_Game_Interpreter_pluginCommand.call(this, command, args);
     if (!command.match(/EBE_(.+)/i)) return;
     command = (RegExp.$1 + '').toUpperCase();
@@ -357,7 +520,7 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
             break;
         case 'モーション実行':
         case 'REQUEST_MOTION':
-            if(!args[1] || args[1] === '全員' || args[1].toUpperCase() === 'ALL') {
+            if (!args[1] || args[1] === '全員' || args[1].toUpperCase() === 'ALL') {
                 $gameParty.requestMotion(args[0]);
             } else if (Number(args[1]) >= 0) {
                 var actor = $gameActors.actor(Number(args[1]));
@@ -387,17 +550,17 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
         case '勝利メッセージ表示':
         case 'DISPLAY_VICTORY_MESSAGE':
             BattleManager.displayVictoryMessage();
-            if (args[0] === '-s')this.setWaitMode('message');
+            if (args[0] === '-s') this.setWaitMode('message');
             break;
         case '敗北メッセージ表示':
         case 'DISPLAY_DEFEAT_MESSAGE':
             BattleManager.displayDefeatMessage();
-            if (args[0] === '-s')this.setWaitMode('message');
+            if (args[0] === '-s') this.setWaitMode('message');
             break;
         case '戦闘報酬表示':
         case 'DISPLAY_REWARDS':
             BattleManager.displayRewards();
-            if (args[0] === '-s')this.setWaitMode('message');
+            if (args[0] === '-s') this.setWaitMode('message');
             break;
         case '戦闘報酬入手':
         case 'GAIN_REWARDS':
@@ -419,7 +582,7 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
     }
 };
 
-Game_Interpreter.prototype.setupNumberPopup = function(args) {
+Game_Interpreter.prototype.setupNumberPopup = function (args) {
     var index = this.setArgNumber(args[0]);
     for (var i = 1; i < args.length; i++) {
         var arg = (args[i] + '').toUpperCase();
@@ -438,7 +601,7 @@ Game_Interpreter.prototype.setupNumberPopup = function(args) {
             case 'POPUP_HEIGHT':
                 i++;
                 var height = this.setArgNumber(args[i]);
-                if (!isNaN(args[i+1])) {
+                if (!isNaN(args[i + 1])) {
                     i++;
                     var offsetY = this.setArgNumber(args[i]);
                 }
@@ -467,7 +630,7 @@ Game_Interpreter.prototype.setupNumberPopup = function(args) {
             case '消去':
             case 'ERASE':
                 BattleManager.eraseNumberPopup(index);
-                return ;
+                return;
         }
     }
     var sprite = BattleManager.setupNumberPopup(index);
@@ -475,7 +638,7 @@ Game_Interpreter.prototype.setupNumberPopup = function(args) {
     if (!isNaN(height)) sprite.setPopupHeight(height, offsetY);
     if (!isNaN(duration)) sprite.setDuration(duration);
     if (!isNaN(maxcount)) sprite.setMaxcount(maxcount);
-    if (!isNaN(x) && !isNaN(y))sprite.setPosition(x, y);
+    if (!isNaN(x) && !isNaN(y)) sprite.setPosition(x, y);
     if (remain) sprite.setRemain();
     if (!isNaN(value)) sprite.setValue(value);
 };
@@ -485,7 +648,7 @@ Game_Interpreter.prototype.setupNumberPopup = function(args) {
 //=============================================================================
 
 var _EBE_BattleManager_initMembers = BattleManager.initMembers;
-BattleManager.initMembers = function() {
+BattleManager.initMembers = function () {
     _EBE_BattleManager_initMembers.call(this);
     this._checkEbeBattleEvent = false;
     this._battleEndPattern = 0;
@@ -494,22 +657,22 @@ BattleManager.initMembers = function() {
 };
 
 var _EBE_Game_Party_requestMotionRefresh = Game_Party.prototype.requestMotionRefresh;
-Game_Party.prototype.requestMotionRefresh = function() {
+Game_Party.prototype.requestMotionRefresh = function () {
     if (!BattleManager.isBattleEndEvent()) {
         _EBE_Game_Party_requestMotionRefresh.call(this);
     }
 };
 
-BattleManager.isBattleEndEvent = function() {
+BattleManager.isBattleEndEvent = function () {
     return $gameParty.inBattle() && this._checkEbeBattleEvent;
 };
 
-BattleManager.isInvalidPhase = function() {
+BattleManager.isInvalidPhase = function () {
     return this._invalidPhase.contains(this._phase);
 };
 
 var _EBE_BattleManager_updateEvent = BattleManager.updateEvent;
-BattleManager.updateEvent = function() {
+BattleManager.updateEvent = function () {
     if (this.isBattleEndEvent() && !this.isInvalidPhase()) {
         if (this.isActionForced()) {
             this.processForcedAction();
@@ -523,7 +686,7 @@ BattleManager.updateEvent = function() {
 };
 
 var _EBE_BattleManager_checkBattleEnd = BattleManager.checkBattleEnd;
-BattleManager.checkBattleEnd = function() {
+BattleManager.checkBattleEnd = function () {
     if (this.isBattleEndEvent()) {
         this._checkEbeBattleEvent = false;
         switch (this._battleEndPattern) {
@@ -552,7 +715,7 @@ BattleManager.checkBattleEnd = function() {
 };
 
 var _EBE_BattleManager_processVictory = BattleManager.processVictory;
-BattleManager.processVictory = function() {
+BattleManager.processVictory = function () {
     if (FTKR.EBE.battleEnd.victory && !this.isBattleEndEvent()) {
         if ($gameTroop.setupEbeBattleEvent('victory', ['EBE_戦闘勝利時'])) {
             this._checkEbeBattleEvent = true;
@@ -564,7 +727,7 @@ BattleManager.processVictory = function() {
 };
 
 var _EBE_BattleManager_processDefeat = BattleManager.processDefeat;
-BattleManager.processDefeat = function() {
+BattleManager.processDefeat = function () {
     if (FTKR.EBE.battleEnd.defeat && !this.isBattleEndEvent()) {
         if ($gameTroop.setupEbeBattleEvent('defeat', ['EBE_戦闘敗北時'])) {
             this._checkEbeBattleEvent = true;
@@ -576,7 +739,7 @@ BattleManager.processDefeat = function() {
 };
 
 var _EBE_BattleManager_checkAbort = BattleManager.checkAbort;
-BattleManager.checkAbort = function() {
+BattleManager.checkAbort = function () {
     if (FTKR.EBE.battleEnd.abortBF) {
         if ($gameParty.isEmpty()) {
             SoundManager.playEscape();
@@ -593,7 +756,7 @@ BattleManager.checkAbort = function() {
 };
 
 var _EBE_BattleManager_processAbort = BattleManager.processAbort;
-BattleManager.processAbort = function() {
+BattleManager.processAbort = function () {
     if (FTKR.EBE.battleEnd.abort && !this.isBattleEndEvent() && this.isAborting()) {
         if ($gameTroop.setupEbeBattleEvent('abort', ['EBE_戦闘中断時'])) {
             this._checkEbeBattleEvent = true;
@@ -612,7 +775,7 @@ BattleManager.processAbort = function() {
     _EBE_BattleManager_processAbort.call(this);
 };
 
-BattleManager.setupNumberPopup = function(index) {
+BattleManager.setupNumberPopup = function (index) {
     if (!this._numberSprite[index]) {
         var sprite = new Sprite_Number();
         this._numberSprite[index] = sprite;
@@ -621,20 +784,20 @@ BattleManager.setupNumberPopup = function(index) {
     return this._numberSprite[index];
 };
 
-BattleManager.eraseNumberPopup = function(index) {
+BattleManager.eraseNumberPopup = function (index) {
     this._spriteset._battleField.removeChild(this._numberSprite[index]);
     this._numberSprite[index] = {};
 };
 
-BattleManager.isActed = function(battler) {
+BattleManager.isActed = function (battler) {
     return !this._actionBattlers.contains(battler);
 };
 
-BattleManager.isActedEnemy = function(battlerId) {
+BattleManager.isActedEnemy = function (battlerId) {
     return !this.isActed($gameTroop.members()[battlerId]);
 };
 
-BattleManager.isActedActor = function(battlerId) {
+BattleManager.isActedActor = function (battlerId) {
     return !this.isActed($gameParty.members()[battlerId]);
 };
 
@@ -642,8 +805,8 @@ BattleManager.isActedActor = function(battlerId) {
 // Game_Party
 //=============================================================================
 
-Game_Party.prototype.requestMotion = function(motionName) {
-    this.members().forEach(function(actor) {
+Game_Party.prototype.requestMotion = function (motionName) {
+    this.members().forEach(function (actor) {
         if (actor.canMove()) actor.requestMotion(motionName);
     });
 };
@@ -653,13 +816,13 @@ Game_Party.prototype.requestMotion = function(motionName) {
 //=============================================================================
 
 FTKR.EBE.Game_Troop_clear = Game_Troop.prototype.clear;
-Game_Troop.prototype.clear = function() {
+Game_Troop.prototype.clear = function () {
     FTKR.EBE.Game_Troop_clear.call(this);
     this._commonEventFlags = [];
 };
 
 FTKR.EBE.Game_Troop_setupBattleEvent = Game_Troop.prototype.setupBattleEvent;
-Game_Troop.prototype.setupBattleEvent = function() {
+Game_Troop.prototype.setupBattleEvent = function () {
     FTKR.EBE.Game_Troop_setupBattleEvent.call(this);
     if (!this._interpreter.isRunning()) {
         if (this._interpreter.setupReservedCommonEvent()) {
@@ -682,7 +845,7 @@ Game_Troop.prototype.setupBattleEvent = function() {
 };
 
 FTKR.EBE.Game_Troop_increaseTurn = Game_Troop.prototype.increaseTurn;
-Game_Troop.prototype.increaseTurn = function() {
+Game_Troop.prototype.increaseTurn = function () {
     var eventIds = FTKR.EBE.battleEvents;
     for (var i = 0; i < eventIds.length; i++) {
         if (eventIds[i]) {
@@ -695,7 +858,7 @@ Game_Troop.prototype.increaseTurn = function() {
     FTKR.EBE.Game_Troop_increaseTurn.call(this);
 };
 
-Game_Troop.prototype.setupEbeBattleEvent = function(condition, metacodes) {
+Game_Troop.prototype.setupEbeBattleEvent = function (condition, metacodes) {
     if (!this._interpreter.isRunning()) {
         if (this._interpreter.setupReservedCommonEvent()) {
             return false;
@@ -716,7 +879,7 @@ Game_Troop.prototype.setupEbeBattleEvent = function(condition, metacodes) {
     return false;
 };
 
-Game_Troop.prototype.meetsPagesCommentConditions = function(page, metacodes) {
+Game_Troop.prototype.meetsPagesCommentConditions = function (page, metacodes) {
     for (var v = 0; v < page.list.length; v++) {
         var list = page.list[v];
         if (list && ([108, 408].contains(list.code))) {
@@ -725,15 +888,15 @@ Game_Troop.prototype.meetsPagesCommentConditions = function(page, metacodes) {
     }
 };
 
-Game_Troop.prototype.commonEventSpan = function(event) {
+Game_Troop.prototype.commonEventSpan = function (event) {
     for (var v = 0; v < event.list.length; v++) {
         var list = event.list[v];
         if (list && ([108, 408].contains(list.code))) {
             var match = /<([^<>:]+)(:?)([^>]*)>/g.exec(list.parameters[0]);
-            switch((match[1] + '').toUpperCase()) {
+            switch ((match[1] + '').toUpperCase()) {
                 case 'スパン':
                 case 'SPAN':
-                    switch((match[3] + '').toUpperCase()) {
+                    switch ((match[3] + '').toUpperCase()) {
                         case 'バトル':
                         case 'BATTLE':
                             return 0;
@@ -750,11 +913,11 @@ Game_Troop.prototype.commonEventSpan = function(event) {
     return 0;
 };
 
-Game_Troop.prototype.meetsCommonEventCommentConditions = function(event) {
+Game_Troop.prototype.meetsCommonEventCommentConditions = function (event) {
     return this.meetsConditions(this.convertCommonEventConditions(event));
 };
 
-Game_Troop.prototype.convertCommonEventConditions = function(event) {
+Game_Troop.prototype.convertCommonEventConditions = function (event) {
     var conditions = {};
     var code = false;
     for (var i = 0; i < event.list.length; i++) {
@@ -762,7 +925,7 @@ Game_Troop.prototype.convertCommonEventConditions = function(event) {
         if (list && ([108, 408].contains(list.code))) {
             var match = /<([^<>:]+)(:?)([^>]*)>/g.exec(list.parameters[0]);
             if (match) {
-                switch((match[1] + '').toUpperCase()){
+                switch ((match[1] + '').toUpperCase()) {
                     case 'ターン終了':
                     case 'TURNEND':
                         conditions.turnEnding = true;
@@ -821,29 +984,29 @@ Game_Troop.prototype.convertCommonEventConditions = function(event) {
                         break;
                 }
             } else {
-                 if (code) conditions.custom += list.parameters[0] + ';';
+                if (code) conditions.custom += list.parameters[0] + ';';
             }
         }
     }
-    var page = {conditions:conditions};
+    var page = { conditions: conditions };
     return page;
 };
 
-Game_Troop.prototype.evalConditionsFormula = function(text) {
+Game_Troop.prototype.evalConditionsFormula = function (text) {
     var formula = convertTextToConditions(text);
     if (!formula) return true;
     return FTKR.evalFormula(formula);
 };
 
 FTKR.EBE.Game_Troop_meetsConditions = Game_Troop.prototype.meetsConditions;
-Game_Troop.prototype.meetsConditions = function(page) {
+Game_Troop.prototype.meetsConditions = function (page) {
     var c = page.conditions;
     var result = FTKR.EBE.Game_Troop_meetsConditions.call(this, page);
     if (!c.turnEnding && !result) {
         return false;
     }
     if ((c.turnEnding || c.turnValid || c.enemyValid ||
-            c.actorValid || c.switchValid) && !result) {
+        c.actorValid || c.switchValid) && !result) {
         return false;
     }
     if (c.customValid && !this.evalConditionsFormula(c.custom)) {
@@ -864,7 +1027,7 @@ function Sprite_Number() {
 Sprite_Number.prototype = Object.create(Sprite.prototype);
 Sprite_Number.prototype.constructor = Sprite_Number;
 
-Sprite_Number.prototype.initialize = function() {
+Sprite_Number.prototype.initialize = function () {
     Sprite.prototype.initialize.call(this);
     this._flashColor = [0, 0, 0, 0];
     this._flashDuration = 0;
@@ -881,64 +1044,64 @@ Sprite_Number.prototype.initialize = function() {
     this._fullDuration = this._duration;
 };
 
-Sprite_Number.prototype.setupCriticalEffect = function() {
+Sprite_Number.prototype.setupCriticalEffect = function () {
     this._flashColor = [255, 0, 0, 160];
     this._flashDuration = 60;
 };
 
-Sprite_Number.prototype.digitWidth = function() {
+Sprite_Number.prototype.digitWidth = function () {
     return this._damageBitmap ? this._damageBitmap.width / 10 : 0;
 };
 
-Sprite_Number.prototype.digitHeight = function() {
+Sprite_Number.prototype.digitHeight = function () {
     return this._damageBitmap ? this._damageBitmap.height / 5 : 0;
 };
 
-Sprite_Number.prototype.setBaseRow = function(baseRow) {
+Sprite_Number.prototype.setBaseRow = function (baseRow) {
     this._baseRow = baseRow;
 };
 
-Sprite_Number.prototype.setDuration = function(duration) {
+Sprite_Number.prototype.setDuration = function (duration) {
     this._duration = duration;
 };
 
-Sprite_Number.prototype.setValue = function(value) {
+Sprite_Number.prototype.setValue = function (value) {
     this._value = value;
     this.resetFullDuration();
 };
 
-Sprite_Number.prototype.setMaxcount = function(maxcount) {
+Sprite_Number.prototype.setMaxcount = function (maxcount) {
     this._maxcount = maxcount;
     this._count = this._maxcount;
 };
 
-Sprite_Number.prototype.setPosition = function(x, y) {
+Sprite_Number.prototype.setPosition = function (x, y) {
     this.x = x;
     this.y = y;
 };
 
-Sprite_Number.prototype.setRemain = function() {
+Sprite_Number.prototype.setRemain = function () {
     this._remain = true;
 };
 
-Sprite_Number.prototype.setPopupHeight = function(popupHeight, popupOffsetY) {
+Sprite_Number.prototype.setPopupHeight = function (popupHeight, popupOffsetY) {
     this._popupHeight = popupHeight;
-    if(!isNaN(popupOffsetY)) this._popupOffsetY = popupOffsetY;
+    if (!isNaN(popupOffsetY)) this._popupOffsetY = popupOffsetY;
 };
 
-Sprite_Number.prototype.resetFullDuration = function() {
+Sprite_Number.prototype.resetFullDuration = function () {
     var string = Math.abs(this._value).toString();
     this._fullDuration = this._duration * string.length;
 };
 
-Sprite_Number.prototype.updateOpacity = function() {
+Sprite_Number.prototype.updateOpacity = function () {
     if (this._remain) return;
     if (this._fullDuration < 10) {
         this.opacity = 255 * this._fullDuration / 10;
     }
 };
 
-Sprite_Number.prototype.update = function() {
+Sprite_Number.prototype.update = function () {
     Sprite.prototype.update.call(this);
     if (this._count >= this._maxcount) {
         this.createDigit(this._index);
@@ -957,7 +1120,7 @@ Sprite_Number.prototype.update = function() {
     this.updateOpacity();
 };
 
-Sprite_Number.prototype.createChildSprite = function() {
+Sprite_Number.prototype.createChildSprite = function () {
     var sprite = new Sprite();
     sprite.bitmap = this._damageBitmap;
     sprite.anchor.x = 0.5;
@@ -968,7 +1131,7 @@ Sprite_Number.prototype.createChildSprite = function() {
     return sprite;
 };
 
-Sprite_Number.prototype.createDigit = function(index) {
+Sprite_Number.prototype.createDigit = function (index) {
     var value = this._value;
     var baseRow = this._baseRow;
     var string = Math.abs(value).toString();
@@ -983,7 +1146,7 @@ Sprite_Number.prototype.createDigit = function(index) {
     sprite.dy = -this._popupOffsetY * 2 * index;
 };
 
-Sprite_Number.prototype.updateChild = function(sprite) {
+Sprite_Number.prototype.updateChild = function (sprite) {
     sprite.dy += this._popupOffsetY;
     sprite.ry += sprite.dy;
     if (sprite.ry >= 0) {
@@ -994,14 +1157,14 @@ Sprite_Number.prototype.updateChild = function(sprite) {
     sprite.setBlendColor(this._flashColor);
 };
 
-Sprite_Number.prototype.updateFlash = function() {
+Sprite_Number.prototype.updateFlash = function () {
     if (this._flashDuration > 0) {
         var d = this._flashDuration--;
         this._flashColor[3] *= (d - 1) / d;
     }
 };
 
-Sprite_Number.prototype.isPlaying = function() {
+Sprite_Number.prototype.isPlaying = function () {
     return this._duration > 0;
 };
 
